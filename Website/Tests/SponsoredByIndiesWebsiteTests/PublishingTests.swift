@@ -1,0 +1,213 @@
+import Foundation
+import Ignite
+import Testing
+
+@testable import SponsoredByIndiesWebsite
+
+// Ignite keeps a shared publishing context across suspension points. Serialize
+// publishing tests while leaving the pure catalogue tests free to run in parallel.
+@Suite(.serialized)
+@MainActor
+struct PublishingTests {
+    private var source: URL {
+        URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+            .deletingLastPathComponent().deletingLastPathComponent()
+    }
+
+    @Test(arguments: [true, false])
+    func populatedPagesRespectApprovalAndEditionBoundaries(preview: Bool) async throws {
+        var catalog = CatalogFixture.make()
+        catalog.conferences[0].name = "Sample \"North\" & <Friends>"
+        catalog.conferences[0].description = "A cool & <welcoming> conference."
+        catalog.conferences[0].connectionEditions = ["2024", "2025 \"friends\" & crew"]
+        catalog.editions[0].introduction = "An \"extra\" & useful bundle."
+        catalog.contactURL = "mailto:team%26events@example.org"
+        let editionID = "sample-\"2027\""
+        catalog.editions[0].id = editionID
+        catalog.participations[0].editionID = editionID
+        catalog.offers[0].editionID = editionID
+        var archived = catalog.editions[0]
+        archived.id = "sample-2000"
+        archived.slug = "2000"
+        archived.label = "2000"
+        archived.startDate = "2000-02-02"
+        archived.endDate = "2000-02-04"
+        catalog.editions.append(archived)
+        var another = catalog.conferences[0]
+        another.id = "another"
+        another.slug = "another"
+        another.name = "Another Conference"
+        catalog.conferences.insert(another, at: 0)
+        catalog.indies.append(
+            Indie(
+                id: "draft-maker", name: "UNAPPROVED MAKER",
+                company: nil, websiteURL: nil, socials: [], initials: "UM"))
+        catalog.participations.append(
+            Participation(
+                editionID: editionID, indieID: "draft-maker",
+                connection: nil, quote: nil, publicationApproved: false))
+        var draft = catalog.offers[0]
+        draft.id = "draft-offer"
+        draft.indieID = "draft-maker"
+        draft.productName = "UNAPPROVED PRODUCT"
+        draft.publicationApproved = false
+        catalog.offers.append(draft)
+        catalog.editions[0].valueSummary = ValueSummary(
+            amountLabel: "€10", explanation: "A verified compatible saving.",
+            verifiedOn: "2026-11-12", offerIDs: ["tool"])
+        try catalog.validate()
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        var site = IndiesSite(catalog: catalog, preview: preview, url: try #require(URL(string: "https://example.org")))
+        try await site.generate(sourceDirectory: source, buildDirectory: root)
+
+        func page(_ path: String) throws -> String {
+            try String(contentsOf: root.appendingPathComponent(path), encoding: .utf8)
+        }
+        for path in ["conferences/sample/index.html", "conferences/sample/2027/index.html"] {
+            let html = try page(path)
+            #expect(html.contains("A &amp; B &lt;Studio&gt;"))
+            #expect(html.contains("Tool &amp; &lt;Kit&gt;"))
+            #expect(!html.contains("<Studio>"))
+            #expect(!html.contains("<Kit>"))
+            #expect(html.contains("A welcoming community."))
+            for field in ["property=\"og:title\"", "name=\"twitter:title\""] {
+                #expect(html.contains(field + " content=\"Sample &quot;North&quot; &amp;"))
+            }
+            for field in ["name=\"description\"", "property=\"og:description\"", "name=\"twitter:description\""] {
+                #expect(html.contains(field + " content=\"An &quot;extra&quot; &amp; useful bundle.\""))
+            }
+            #expect(html.contains("A cool &amp; &lt;welcoming&gt; conference."))
+            #expect(html.contains("For ticket holders."))
+            #expect(html.contains("A verified compatible saving."))
+            #expect(html.contains("id=\"makers\""))
+            #expect(html.contains("noindex, nofollow") == preview)
+        }
+        let home = try page("index.html")
+        let terms = try page("terms/index.html")
+        #expect(terms.contains("Community &amp; &lt;care&gt;."))
+        #expect(terms.contains("Shared &lt;responsibilities&gt;"))
+        #expect(terms.contains("A &amp; B act independently."))
+        #expect(!terms.contains("<care>"))
+        #expect(terms.contains("mailto:team%26events@example.org"))
+        let assetVersion = try AssetFingerprint.make(in: source)
+        #expect(home.contains("/styles.css?v=tokens-\(assetVersion)"))
+        #expect(home.contains("/logo.svg?v=shared-imprint-01-\(assetVersion)"))
+        #expect(home.contains("/favicon-shared-imprint-01.svg?v=\(assetVersion)"))
+        #expect(home.contains("data-next-edition=\"sample-&quot;2027&quot;\""))
+        let contribution = try page("participate/indies/index.html")
+        #expect(contribution.contains("value=\"Sample &quot;North&quot; &amp;"))
+        let suggestionsRange = try #require(contribution.range(of: "<datalist[^>]*id=\"conference-options\"[^>]*>.*?</datalist>", options: .regularExpression))
+        let suggestions = String(contribution[suggestionsRange])
+        #expect(suggestions.contains("2024"))
+        #expect(suggestions.contains("2025 &quot;friends&quot; &amp; crew"))
+        #expect(!suggestions.contains("2027"))
+        #expect(!suggestions.contains("2000"))
+        #expect(!FileManager.default.fileExists(atPath: root.appendingPathComponent("conferences/sample/2024/index.html").path))
+        #expect(contribution.contains("data-recipient=\"team&amp;events@example.org\""))
+        let access = try page("conferences/sample/2027/access/index.html")
+        #expect(access.contains("Follow the attendee instructions."))
+        #expect(access.contains("https://example.org/attendees"))
+        #expect(access.contains(preview ? "noindex, nofollow" : "noindex, follow"))
+        for path in ["conferences/sample/2000/index.html", "conferences/another/index.html"] {
+            let html = try page(path)
+            #expect(!html.contains("Tool &amp; &lt;Kit&gt;"))
+            #expect(!html.contains("A &amp; B &lt;Studio&gt;"))
+        }
+        func generatedHTML() throws -> [String] {
+            let enumerator = try #require(FileManager.default.enumerator(at: root, includingPropertiesForKeys: nil))
+            return try enumerator.compactMap { entry in
+                guard let file = entry as? URL, file.pathExtension == "html" else { return nil }
+                return try String(contentsOf: file, encoding: .utf8)
+            }
+        }
+        for html in try generatedHTML() {
+            #expect(html.contains("href=\"/terms/\""))
+            #expect(!html.contains("UNAPPROVED MAKER"))
+            #expect(!html.contains("UNAPPROVED PRODUCT"))
+        }
+    }
+
+    @Test(arguments: ["2027-02-04", "2027-02-05", "2029-01-01"])
+    func searchMetadataFollowsFeaturedEdition(day: String) async throws {
+        var catalog = CatalogFixture.make()
+        var next = catalog.editions[0]
+        next.id = "sample-2028"
+        next.slug = "2028"
+        next.label = "2028"
+        next.startDate = "2028-02-02"
+        next.endDate = "2028-02-04"
+        catalog.editions.append(next)
+        var empty = catalog.conferences[0]
+        empty.id = "empty"
+        empty.slug = "empty"
+        catalog.conferences.append(empty)
+        try catalog.validate()
+        let date = try #require(ISO8601DateFormatter().date(from: day + "T12:00:00Z"))
+        let expectedYear = day == "2027-02-04" ? "2027" : "2028"
+        let root = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        var site = IndiesSite(catalog: catalog, preview: false, url: try #require(URL(string: "https://custom.example.org")), publicationDate: date)
+        try await site.generate(sourceDirectory: source, buildDirectory: root)
+        let hub = try String(contentsOf: root.appending(path: "conferences/sample/index.html"), encoding: .utf8)
+        let canonical = "https://custom.example.org/conferences/sample/\(expectedYear)/"
+        #expect(hub.contains("href=\"\(canonical)\" rel=\"canonical\""))
+        #expect(hub.contains("property=\"og:url\" content=\"\(canonical)\""))
+        #expect(hub.components(separatedBy: "rel=\"canonical\"").count == 2)
+        #expect(hub.components(separatedBy: "property=\"og:url\"").count == 2)
+        let home = try String(contentsOf: root.appending(path: "index.html"), encoding: .utf8)
+        #expect(home.contains("<title>Indie bundles for Swift &amp; iOS conferences"))
+        #expect(home.contains("content=\"https://custom.example.org/social-preview.png?v="))
+        let directory = try String(contentsOf: root.appending(path: "conferences/index.html"), encoding: .utf8)
+        let contribution = try String(contentsOf: root.appending(path: "participate/indies/index.html"), encoding: .utf8)
+        #expect(contribution.contains("value=\"Sample Conference 2027\""))
+        #expect(contribution.contains("value=\"Sample Conference 2028\""))
+        #expect(directory.contains("href=\"/conferences/sample/\(expectedYear)/\""))
+        let sitemap = try String(contentsOf: root.appending(path: "sitemap.xml"), encoding: .utf8)
+        #expect(!sitemap.contains("<loc>https://custom.example.org/conferences/sample/</loc>"))
+        #expect(!sitemap.contains("/access/"))
+        #expect(sitemap.contains("<loc>https://custom.example.org/conferences/empty/</loc>"))
+        for year in ["2027", "2028"] {
+            #expect(sitemap.contains("<loc>https://custom.example.org/conferences/sample/\(year)/</loc>"))
+            let edition = try String(contentsOf: root.appending(path: "conferences/sample/\(year)/index.html"), encoding: .utf8)
+            #expect(edition.contains("href=\"https://custom.example.org/conferences/sample/\(year)/\" rel=\"canonical\""))
+        }
+    }
+
+    @Test func textareaOptionsComposeIndependently() async throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        var site = FormOptionsSite(url: try #require(URL(string: "https://example.org")))
+        try await site.publish(sourceDirectory: source, buildDirectory: root)
+        let html = try String(contentsOf: root.appendingPathComponent("index.html"), encoding: .utf8)
+        for index in 0..<8 {
+            let range = try #require(html.range(of: "<textarea[^>]*id=\"field-\(index)\"[^>]*>", options: .regularExpression))
+            let control = String(html[range])
+            #expect((control.range(of: "\\srequired(?:\\s|=|>)", options: .regularExpression) != nil) == (index & 1 != 0))
+            #expect((control.range(of: "\\sreadonly(?:\\s|=|>)", options: .regularExpression) != nil) == (index & 2 != 0))
+            #expect(control.contains("data-resource-field=\"description\"") == (index & 4 != 0))
+            #expect(control.contains("aria-describedby=\"help\""))
+            #expect(html.contains("for=\"field-\(index)\""))
+        }
+    }
+}
+
+private struct FormOptionsSite: Site {
+    let url: URL
+    var name = "Form option checks"
+    var layout = MarketingLayout(preview: true)
+    var feedConfiguration: FeedConfiguration? = nil
+    var builtInIconsEnabled: BootstrapOptions = .none
+    var homePage: MarketingPage {
+        MarketingPage(path: "/", title: "Form option checks", description: "Synthetic form controls.") {
+            Text("Form option checks").font(.title1)
+            Text("Field help").id("help")
+            for index in 0..<8 {
+                FormFields.multiline(
+                    "Field \(index)", id: "field-\(index)", required: index & 1 != 0,
+                    readOnly: index & 2 != 0, resourceKey: index & 4 != 0 ? "description" : nil,
+                    helpID: "help")
+            }
+        }
+    }
+}

@@ -1,0 +1,15 @@
+.DS_Store
+Website/.build/
+Website/.swiftpm/
+Website/Build/
+Website/BuildPublic/
+Website/.cache/
+Website/.ignite/
+
+# Working notes belong in the separate private planning repository.
+/docs/
+/conferences/
+/pilots/
+*.md
+!/README.md
+!/AGENTS.md

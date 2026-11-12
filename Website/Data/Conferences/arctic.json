@@ -1,0 +1,35 @@
+{
+  "conference": {
+    "id": "arctic",
+    "slug": "arctic",
+    "name": "ARCTIC",
+    "location": "Oulu, Finland",
+    "websiteURL": "https://arcticonference.com/",
+    "description": "The northernmost, and therefore coolest, Apple developer conference.",
+    "connectionEditions": ["2024", "2025", "2026"],
+    "branding": {
+      "background": "#1f1f24",
+      "accent": "#5dd8ff",
+      "highlight": "#fc5fa3",
+      "detail": "#fc5fa3"
+    }
+  },
+  "editions": [
+    {
+      "id": "arctic-2027",
+      "conferenceID": "arctic",
+      "slug": "2027",
+      "label": "2027",
+      "dateLabel": "2–4 February 2027",
+      "startDate": "2027-02-02",
+      "endDate": "2027-02-04",
+      "status": "Pilot in preparation",
+      "introduction": "Indies connected to ARCTIC are putting together a bundle to add a little more to every attendee’s ticket. Hey Ho!",
+      "accessIntroduction": "Redemption details are being arranged with the conference team. There is nothing to claim here yet. Once the bundle is ready, this page will explain how ticket holders receive their offers and how to redeem each one.",
+      "accessURL": null,
+      "valueSummary": null
+    }
+  ],
+  "participations": [],
+  "offers": []
+}
