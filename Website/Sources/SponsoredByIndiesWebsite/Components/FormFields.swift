@@ -1,6 +1,24 @@
 import Ignite
 
 enum FormFields {
+    static func actionButton(_ label: String, icon: String, role: Role) -> Button {
+        Button {
+            Image(systemName: icon, description: "").aria(.hidden, "true")
+            Span(" ")
+            Span(escaped(label)).customAttribute(name: "data-action-label", value: "true")
+        }.type(.plain).role(role)
+    }
+
+    // Ignite's Form cannot apply label placement through a native Tag boundary.
+    static func textInput(_ label: String, id: String, limit: Int = 160, resourceKey: String, helpID: String) -> some HTML {
+        Section {
+            Tag("label") { escaped(label) }.attribute("for", id).class("form-label")
+            Tag("input").id(id).attribute("name", id).attribute("type", "text")
+                .attribute("maxlength", String(limit)).attribute("data-resource-field", resourceKey)
+                .attribute("autocomplete", "off").aria(.describedBy, helpID).class("form-control")
+        }.class("form-field")
+    }
+
     static func field(
         _ label: String, id: String, type: TextField.TextType = .text, required: Bool = false, autocomplete: String = "off",
         limit: Int = 160, list: String? = nil, resourceKey: String? = nil, helpID: String? = nil

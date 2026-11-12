@@ -32,7 +32,7 @@ The first Ignite command creates the pages; the second opens them in your browse
 
 Keep existing page addresses and add only approved conference and offer details. Each year’s participation and offers need fresh approval.
 
-Read [AGENTS.md](AGENTS.md) for coding conventions and accessibility guidance.
+Read [AGENTS.md](AGENTS.md) for coding conventions and verification guidance.
 
 ## Build and check
 

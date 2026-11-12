@@ -7,6 +7,7 @@ struct IndiesTheme: Theme {
     var primary: Color { Color(hex: palette.accent) }
     var secondary: Color { Color(hex: palette.muted) }
     var secondaryAccent: Color { Color(hex: palette.muted) }
+    var danger: Color { Color(hex: palette.accent) }
     var background: Color { Color(hex: palette.paper) }
     var secondaryBackground: Color { Color(hex: palette.tint) }
     var link: Color { Color(hex: palette.blue) }

@@ -55,6 +55,9 @@ main:focus { outline: none; }
 .btn-secondary { background: var(--paper); color: var(--ink); border-color: var(--blue); --bs-btn-bg: var(--paper); --bs-btn-color: var(--ink); --bs-btn-border-color: var(--blue); --bs-btn-hover-bg: var(--tint); --bs-btn-hover-color: var(--ink); --bs-btn-hover-border-color: var(--blue); --bs-btn-active-bg: var(--tint); --bs-btn-active-color: var(--ink); }
 .btn-primary:hover,.btn-primary:active { background: var(--accent-hover); color: var(--white); border-color: var(--accent-hover); }
 .btn-secondary:hover,.btn-secondary:active { background: var(--tint); color: var(--ink); }
+/* Shared destructive role keeps the same outline geometry as secondary actions. */
+.btn-danger { background: transparent; color: var(--accent); border-color: var(--accent); --bs-btn-bg: transparent; --bs-btn-color: var(--accent); --bs-btn-border-color: var(--accent); --bs-btn-hover-bg: var(--paper); --bs-btn-hover-color: var(--accent-hover); --bs-btn-hover-border-color: var(--accent); --bs-btn-active-bg: var(--paper); --bs-btn-active-color: var(--accent-hover); --bs-btn-active-border-color: var(--accent); }
+.btn-danger:hover,.btn-danger:active { background: var(--paper); color: var(--accent-hover); border-color: var(--accent); }
 .btn-tertiary { background: var(--surface); border-color: var(--muted); --bs-btn-bg: var(--surface); --bs-btn-border-color: var(--muted); --bs-btn-hover-bg: var(--paper); --bs-btn-hover-border-color: var(--blue); --bs-btn-active-bg: var(--paper); --bs-btn-active-border-color: var(--blue); }
 .btn-tertiary:hover,.btn-tertiary:active { background: var(--paper); color: var(--ink); border-color: var(--blue); }
 .tinted-section { background: var(--tint); border-block: var(--border-width) solid var(--line); }

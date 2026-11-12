@@ -1,39 +1,41 @@
 # Sponsored by Indies conventions
 
-Read [README.md](README.md) for the project structure, local preview and verification commands. This is a Swift/Ignite static site. Ignite resembles SwiftUI but is a separate framework; check the pinned source in `Website/.build/checkouts/Ignite` before assuming an API exists.
+Read [README.md](README.md) for project structure, local preview and verification commands. This is a Swift static site built with Ignite. Keep contributor documentation focused on building, changing and testing this public website, using concise, plain English.
 
-## Keep it simple
+## Prefer Ignite
 
-- Keep the README and contributor explanations concise and in plain English. Explain unfamiliar tools when first introduced.
-- Keep public documentation focused on using and contributing to the website. Leave internal planning, correspondence, repository-migration history and operational notes out of the README.
-- Prefer Ignite components and semantic modifiers to Bootstrap utility classes, inline styles, custom CSS or JavaScript.
-- Use semantic HTML. Use `Tag` where Ignite has no suitable element and preserve native keyboard and browser behaviour.
-- Keep pages focused on composition, shared UI in `Components`, content models and validation in `Models`, and build concerns in `Publishing`.
-- Extract repeated behaviour with a clear purpose. Use descriptive names, small functions and comments that explain decisions or invariants. Avoid speculative abstractions and comments that repeat the code.
-- Keep `AnyHTML` at necessary heterogeneous boundaries, such as the page registry.
-- CSS exceptions need a reason: shared fluid layouts, inherited conference variables, descendant/state selectors or accessibility media queries. Preserve these when they express shared behaviour clearly.
-- Site colours, spacing and dimensions belong in `DesignTokens.swift`. Components and CSS consume those values. Brand SVG paints use palette variables with preview fallbacks and are resolved during generation; conference palettes stay in their JSON records.
-- After changing the logo, palette or artwork renderer, rebuild the site and copy `Website/Build/readme-banner.png` to `Images/readme-banner.png` to refresh the README banner.
-- Limit JavaScript to progressive enhancements Ignite cannot provide. Preserve direct email and static-content fallbacks. Use the HTML `hidden` attribute where browser modules toggle `element.hidden`; Ignite's `.hidden()` generates a class instead.
+- Start with Ignite's components, layout containers, themes and SwiftUI-like modifiers. Prefer those APIs for spacing, sizing, alignment, colours, typography and control appearance before adding classes, inline styles or custom CSS.
+- Ignite resembles SwiftUI but is a separate framework. Check the pinned source in `Website/.build/checkouts/Ignite` for supported APIs and their generated markup; do not assume a SwiftUI modifier exists or behaves the same way.
+- Compose pages from Ignite elements rather than assembling HTML strings. Use `Tag` for native elements or attributes Ignite cannot express, preserving browser behaviour.
+- Use Ignite's theme and role APIs for shared presentation. Use Bootstrap classes only when Ignite has no suitable modifier, and keep the reason clear.
+- Add custom CSS only for a requirement the framework cannot express cleanly, such as shared fluid layouts, inherited conference variables or descendant/state selectors. Keep justified shared rules rather than replacing them with repeated per-element styles.
+- Limit JavaScript to browser behaviour Ignite cannot provide. Keep it in small modules with static content and direct email fallbacks. Use the native `hidden` attribute when toggling `element.hidden`; Ignite's `.hidden()` generates a class instead.
 
-## Public content boundaries
+## Structure and shared design
 
-- Editorial input comes only from `Website/Data`. Every record in this repository must be approved for public release, even if rendering would omit it.
-- Keep private planning, correspondence, contacts, attendee records, restricted codes and unapproved contributions in private storage. Never copy private repository history or Git metadata into this repository.
-- Run `swift Scripts/CheckPublicRepository.swift` before committing. Its allowlist permits `README.md` and this curated `AGENTS.md`; other Markdown and internal documentation remain excluded. Extend the allowlist only for an explicitly reviewed public file.
+- Keep pages focused on composition, shared UI in `Components`, content models and validation in `Models`, and generation concerns in `Publishing`.
+- Use descriptive names, small functions and explicit dependencies. Extract repeated behaviour with a clear purpose; avoid speculative abstractions.
+- Keep `AnyHTML` at necessary heterogeneous boundaries, such as the page registry. Preserve concrete types elsewhere where practical.
+- Write comments for decisions and invariants rather than restating the code.
+- Define site colours, spacing and dimensions in `DesignTokens.swift`. Components and CSS consume those definitions instead of duplicating values.
+- Bind brand SVG paints to palette variables with preview fallbacks, resolving them during generation. Keep conference palettes in their conference JSON records.
+- After changing the logo, palette or artwork renderer, rebuild and copy `Website/Build/readme-banner.png` to `Images/readme-banner.png` to refresh the README banner.
+
+## Content and generation
+
+- Load editorial content from `Website/Data`. Commit only approved content; filtering generated output does not hide source records in a public repository. Keep credentials and redemption codes out of source and generated assets.
 - Keep conference identity, editions, participation and offers in separate per-conference records. Share maker identities through `indies.json`.
-- IDs and routes are stable; changing a label must not rename an existing route. A new conference or edition should require data changes only. Keep conference branding and edition-specific wording out of Swift and CSS.
-- Approval belongs to each edition's participation and offer. Never carry approval or discounts across years. An approved offer requires approved participation in the same edition.
-- Load and validate all content before resolving references or rendering. Fail on invalid content and escape editorial plain text at the Ignite rendering boundary.
-- Keep typed relational data in JSON. Use Ignite's supported content pipeline if substantial editorial Markdown is later needed; review its public-file boundary explicitly and avoid a custom front-matter parser.
+- Keep IDs and routes stable when labels change. Adding a conference or edition should require data changes only; keep its branding and prose out of shared Swift and CSS.
+- Validate participation and offer approval separately for each edition. Approval and discounts do not carry across years; an approved offer requires approved participation in the same edition.
+- Load and validate all content before resolving references or rendering. Fail on invalid content rather than generating incomplete pages. Escape editorial text and attributes at the Ignite rendering boundary, and encode URL components appropriately.
+- Keep typed relational data in JSON. If substantial editorial Markdown is needed, use Ignite's supported content pipeline rather than a custom front-matter parser.
+- Generate into staging before replacing output so stale pages disappear and failures preserve the previous successful tree. Generated builds are disposable and excluded from source control.
 
-## Accessibility and verification
+## Verification
 
-- Preserve one main landmark and H1, heading order, skip navigation, labelled controls, native validation and visible keyboard focus.
-- Preserve reflow, reduced-motion and forced-colour support. Keep interactive targets at least 44×44 CSS pixels and check contrast when changing colours.
-- After a coherent change, run the Swift tests, preview/public generation and Node checks listed in the README, as well as the public repository check.
-- Add meaningful regression tests for approval, validation, dates, links and other behaviour changes. Use Swift Testing for Swift tests; avoid tests that merely reproduce styling or implementation details.
-- Prefer Swift for project automation. Browser modules and their Node tests use JavaScript to exercise actual browser logic. Keep additional runtimes out of the production site.
-- Keep Ignite pinned with `Package.resolved`. Generate into staging before replacing output so stale pages disappear and generation failures preserve the previous successful tree.
-- Never claim browser or screen-reader checks you did not perform. Automated checks do not establish real email-app handoff, offer redemption or assistive-technology behaviour.
-- Keep local generation, deployment and launch readiness distinct. Verify hosting, HTTPS, actual approved offers and access instructions, email handoff and manual accessibility before announcing readiness.
+- After a coherent change, run the Swift tests, preview and public generation, Node checks and repository check listed in the README.
+- Add meaningful regression tests for changed behaviour, including validation, approval, dates, links and browser interactions. Use Swift Testing for Swift tests and Node tests for browser modules. Avoid tests that merely reproduce styling or implementation details.
+- Prefer Swift for project automation and keep additional runtimes out of the production site.
+- Keep Ignite pinned through `Package.swift` and `Package.resolved`; use `--force-resolved-versions` for reproducible checks.
+- Run `swift Scripts/CheckPublicRepository.swift` before committing. Keep its file allowlist aligned with the intended website sources, assets, tests and contributor documentation.
+- Report checks actually performed and distinguish local generation from deployment. Verify generated links, metadata and the real email-app handoff when those behaviours change.

@@ -1,11 +1,10 @@
 const newline = "\r\n";
-// A conservative handoff threshold, not a limit defined by the mailto standard.
-// Longer answers remain complete in the preview and copy fallback.
-export const MAILTO_HANDOFF_LIMIT = 1900;
+// An advisory only: email apps have different URL limits. Always offer the full link.
+export const LONG_EMAIL_HINT_LENGTH = 1900;
 
 export function makeContributionEmail(data, recipient) {
   const clean = value => String(value ?? "").trim();
-  const line = (label, value) => `${label}: ${clean(value) || "To be discussed"}`;
+  const line = (label, value) => clean(value) ? `${label}: ${clean(value)}` : null;
   const subject = Array.from(`Indie contribution — ${clean(data.conference)} — ${clean(data.name)}`.replace(/[\r\n]+/g, " ")).slice(0, 100).join("");
   const lines = [
     "Hi! I’d like to contribute to Sponsored by Indies.", "",
@@ -17,18 +16,35 @@ export function makeContributionEmail(data, recipient) {
   ];
   data.resources.forEach((resource, index) => {
     lines.push(`RESOURCE ${index + 1}`, line("Name", resource.product), line("URL", resource.url),
-      line("Type", resource.category), line("Description", resource.description),
-      line("Proposed offer", resource.offer), line("Standard price/currency/period", resource.regularPrice),
-      line("Attendee price/discount", resource.attendeePrice),
-      line("Availability and redemption", resource.conditions), "");
+      line("Type", resource.category), line("Description", resource.description), "");
+    resource.offers.forEach((offer, offerIndex) => {
+      lines.push(`Offer ${offerIndex + 1}`, line("Offer type", offer.kind),
+        line("Attendee price/discount", offer.kind === "Free" ? "Free (0)" : offer.discount),
+        line("Available to", offer.audience));
+      if (offer.audience === "Limited prize licenses") lines.push(line("Prize licenses", offer.quantity));
+      lines.push(line("Product edition/plan", offer.plan), line("Usual price and currency", offer.regularPrice),
+        line("Access duration", offer.duration), line("Last day to claim", offer.validUntil),
+        line("Conditions and redemption", offer.conditions), "");
+    });
   });
   lines.push("This is an initial proposal. Final offers and public profile details are still to be agreed.");
-  const body = lines.join(newline).replace(/\r\n|\r|\n/g, newline);
-  // Keep address characters such as ? and # in the recipient, never in headers.
+  const body = lines.filter(line => line !== null).join(newline).replace(/\r\n|\r|\n/g, newline);
   const address = encodeURIComponent(recipient).replace(/%40/g, "@");
-  const base = `mailto:${address}?subject=${encodeURIComponent(subject)}`;
-  const mailto = `${base}&body=${encodeURIComponent(body)}`;
-  return { subject, body, mailto, blankMailto: base, canHandoff: mailto.length <= MAILTO_HANDOFF_LIMIT };
+  const mailto = `mailto:${address}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  return { subject, body, mailto, isLong: mailto.length > LONG_EMAIL_HINT_LENGTH };
+}
+
+function base64(text) {
+  return btoa(Array.from(new TextEncoder().encode(text), byte => String.fromCharCode(byte)).join(""));
+}
+
+// MIME encoding keeps Unicode, long answers and header-like body text intact.
+export function makeEmailFile(draft, recipient) {
+  if (/[\r\n<>]/.test(recipient)) throw new Error("Invalid email recipient");
+  const subject = Array.from(draft.subject.matchAll(/.{1,10}/gu), match => `=?UTF-8?B?${base64(match[0])}?=`).join(`${newline} `);
+  const body = base64(draft.body).match(/.{1,76}/g)?.join(newline) ?? "";
+  return ["X-Unsent: 1", `To: ${recipient}`, `Subject: ${subject}`, "MIME-Version: 1.0",
+    'Content-Type: text/plain; charset="UTF-8"', "Content-Transfer-Encoding: base64", "", body, ""].join(newline);
 }
 
 function initialiseForm() {
@@ -39,54 +55,121 @@ function initialiseForm() {
   const bodyField = document.getElementById("draft-body");
   const subjectField = document.getElementById("draft-subject");
   const emailLink = document.getElementById("draft-email-link");
+  const downloadLink = document.getElementById("download-draft");
   const addButton = document.getElementById("add-resource");
+  const resourceTemplate = form.querySelector("[data-resource]").cloneNode(true);
+  const offerTemplate = resourceTemplate.querySelector("[data-offer]").cloneNode(true);
   let resourceID = 1;
+  let offerID = 1;
   let currentDraft;
+  let downloadURL;
 
   function invalidateDraft() {
     if (!currentDraft) return;
     currentDraft = undefined;
     preview.hidden = true;
+    if (downloadURL) URL.revokeObjectURL(downloadURL);
+    downloadURL = undefined;
+    downloadLink.removeAttribute("href");
+    emailLink.removeAttribute("href");
     status.textContent = "Your answers changed. Prepare a new draft to include the changes.";
   }
   form.addEventListener("input", invalidateDraft);
-  form.addEventListener("change", invalidateDraft);
+  form.addEventListener("invalid", event => {
+    // Optional details may have been collapsed after entering an invalid date.
+    let details = event.target.closest("details");
+    while (details) {
+      details.open = true;
+      details = details.parentElement.closest("details");
+    }
+  }, true);
+  form.addEventListener("change", event => {
+    invalidateDraft();
+    const offer = event.target.closest("[data-offer]");
+    if (offer) updateOffer(offer);
+  });
 
   const resources = () => [...form.querySelectorAll("fieldset[data-resource]")];
+  const offers = resource => [...resource.querySelectorAll("fieldset[data-offer]")];
+  function updateOffer(offer) {
+    const free = offer.querySelector('[data-resource-field="kind"]').value === "Free";
+    const discount = offer.querySelector("[data-discount-details]");
+    discount.hidden = free;
+    discount.querySelector("input").disabled = free;
+    discount.querySelector("input").required = !free;
+    const prize = offer.querySelector('[data-resource-field="audience"]').value === "Limited prize licenses";
+    const quantity = offer.querySelector("[data-prize-details]");
+    quantity.hidden = !prize;
+    quantity.querySelector("input").disabled = !prize;
+    quantity.querySelector("input").required = prize;
+  }
+
   function renumberResources() {
     const fields = resources();
     fields.forEach((fieldset, index) => {
       fieldset.querySelector("legend").textContent = `Resource ${index + 1}`;
       const button = fieldset.querySelector("[data-remove-resource]");
-      button.textContent = `Remove resource ${index + 1}`;
+      button.querySelector("[data-action-label]").textContent = `Remove resource ${index + 1}`;
       button.hidden = fields.length === 1;
+      const entries = offers(fieldset);
+      entries.forEach((offer, offerIndex) => {
+        offer.querySelector("legend").textContent = `Offer ${offerIndex + 1}`;
+        const remove = offer.querySelector("[data-remove-offer]");
+        remove.querySelector("[data-action-label]").textContent = `Remove offer ${offerIndex + 1}`;
+        remove.setAttribute("aria-label", `Remove offer ${offerIndex + 1} from resource ${index + 1}`);
+        remove.hidden = entries.length === 1;
+      });
     });
+  }
+
+  function cloneFields(template, prefix) {
+    const clone = template.cloneNode(true);
+    const oldPrefix = template.id;
+    clone.id = prefix;
+    clone.querySelectorAll("[id],[name],[for],[aria-describedby],[aria-labelledby]").forEach(element => {
+      for (const attribute of ["id", "name", "for", "aria-describedby", "aria-labelledby"]) {
+        const value = element.getAttribute(attribute);
+        if (value) element.setAttribute(attribute, value.split(/\s+/).map(token =>
+          token.startsWith(`${oldPrefix}-`) ? prefix + token.slice(oldPrefix.length) : token).join(" "));
+      }
+    });
+    return clone;
   }
 
   addButton.addEventListener("click", () => {
     invalidateDraft();
-    const source = resources()[0];
-    const clone = source.cloneNode(true);
-    const oldPrefix = source.id;
-    const nextPrefix = `resource-${++resourceID}`;
-    clone.id = nextPrefix;
-    clone.querySelectorAll("[id],[name],[for],[aria-describedby],[aria-labelledby]").forEach(element => {
-      for (const attribute of ["id", "name", "for", "aria-describedby", "aria-labelledby"]) {
-        const value = element.getAttribute(attribute);
-        if (value?.startsWith(`${oldPrefix}-`)) element.setAttribute(attribute, value.replace(oldPrefix, nextPrefix));
-      }
-    });
-    clone.querySelectorAll("input,textarea,select").forEach(control => {
-      if (control.tagName === "SELECT") control.selectedIndex = 0;
-      else control.value = "";
-    });
+    const clone = cloneFields(resourceTemplate, `resource-${++resourceID}`);
     resources().at(-1).after(clone);
+    offers(clone).forEach(updateOffer);
     renumberResources();
     clone.querySelector("input").focus();
     status.textContent = `Resource ${resources().length} added.`;
   });
 
   form.addEventListener("click", event => {
+    const addOffer = event.target.closest("[data-add-offer]");
+    if (addOffer) {
+      invalidateDraft();
+      const resource = addOffer.closest("[data-resource]");
+      const clone = cloneFields(offerTemplate, `${resource.id}-offer-${++offerID}`);
+      offers(resource).at(-1).after(clone);
+      updateOffer(clone);
+      renumberResources();
+      clone.querySelector("select").focus();
+      status.textContent = "Offer added to this resource.";
+      return;
+    }
+    const removeOffer = event.target.closest("[data-remove-offer]");
+    if (removeOffer) {
+      const resource = removeOffer.closest("[data-resource]");
+      if (offers(resource).length === 1) return;
+      invalidateDraft();
+      removeOffer.closest("[data-offer]").remove();
+      renumberResources();
+      resource.querySelector("[data-add-offer]").focus();
+      status.textContent = "Offer removed.";
+      return;
+    }
     const remove = event.target.closest("[data-remove-resource]");
     if (!remove || resources().length === 1) return;
     invalidateDraft();
@@ -96,34 +179,40 @@ function initialiseForm() {
     status.textContent = "Resource removed.";
   });
 
+  function readFields(container, offerFields) {
+    return Object.fromEntries([...container.querySelectorAll("[data-resource-field]")]
+      .filter(control => !control.disabled && Boolean(control.closest("[data-offer]")) === offerFields)
+      .map(control => [control.dataset.resourceField, control.value]));
+  }
+
   function readForm() {
     const value = name => form.elements.namedItem(name)?.value ?? "";
     return {
       name: value("maker-name"), email: value("maker-email"), company: value("maker-company"),
       website: value("maker-website"), socials: value("maker-socials"), assets: value("maker-assets"),
       conference: value("conference"), connection: value("connection"), quote: value("conference-quote"),
-      resources: resources().map(fieldset => Object.fromEntries(
-        [...fieldset.querySelectorAll("[data-resource-field]")].map(control => [control.dataset.resourceField, control.value])
-      ))
+      resources: resources().map(resource => ({ ...readFields(resource, false),
+        offers: offers(resource).map(offer => readFields(offer, true)) }))
     };
   }
 
   form.addEventListener("submit", event => {
     event.preventDefault();
     if (!form.reportValidity()) return;
+    if (downloadURL) URL.revokeObjectURL(downloadURL);
     currentDraft = makeContributionEmail(readForm(), form.dataset.recipient);
     subjectField.value = currentDraft.subject;
     bodyField.value = currentDraft.body;
-    emailLink.href = currentDraft.canHandoff ? currentDraft.mailto : currentDraft.blankMailto;
+    emailLink.href = currentDraft.mailto;
+    downloadURL = URL.createObjectURL(new Blob([makeEmailFile(currentDraft, form.dataset.recipient)], { type: "message/rfc822" }));
+    downloadLink.href = downloadURL;
     preview.hidden = false;
-    if (!currentDraft.canHandoff) {
-      status.textContent = "Your response is ready, but it is too long for a reliable prefilled email link. Copy the email text below, then use Open email app and paste it into the draft. All your answers are included.";
-      bodyField.focus();
-    } else if (event.submitter?.value === "preview") {
-      status.textContent = "Your email preview is ready. Nothing has been sent.";
+    const longHint = currentDraft.isLong ? " If your app cannot open this long draft, download the complete email file below or use Copy email text." : "";
+    if (event.submitter?.value === "preview") {
+      status.textContent = `Your email preview is ready. Nothing has been sent.${longHint}`;
       bodyField.focus();
     } else {
-      status.textContent = "Opening your email app. Nothing has been sent by this website. If no draft appears, use the preview and copy option below.";
+      status.textContent = `Opening your email app with the recipient, subject and complete text. Nothing has been sent by this website.${longHint}`;
       window.location.assign(currentDraft.mailto);
     }
   });
@@ -140,7 +229,8 @@ function initialiseForm() {
     }
   });
 
-  // Reveal only after preventing browser form submission and wiring the draft builder.
+  offers(resources()[0]).forEach(updateOffer);
+  renumberResources();
   form.hidden = false;
 }
 

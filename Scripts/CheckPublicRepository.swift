@@ -1,15 +1,37 @@
 import Foundation
 
+func fail(_ message: String) -> Never {
+    FileHandle.standardError.write(Data((message + "\n").utf8))
+    exit(1)
+}
+
+func gitOutput(_ arguments: [String]) throws -> Data {
+    let git = Process()
+    git.executableURL = URL(fileURLWithPath: "/usr/bin/git")
+    git.arguments = arguments
+    let output = Pipe()
+    git.standardOutput = output
+    try git.run()
+    let data = output.fileHandleForReading.readDataToEndOfFile()
+    git.waitUntilExit()
+    guard git.terminationStatus == 0 else { fail("Could not inspect the Git index.") }
+    return data
+}
+
+func checkApprovals(_ data: Data, context: String) throws {
+    let record = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+    for key in ["participations", "offers"] {
+        guard let entries = record?[key] as? [[String: Any]] else {
+            fail("Missing \(key) in \(context).")
+        }
+        guard entries.allSatisfy({ ($0["publicationApproved"] as? Bool) == true }) else {
+            fail("Unapproved \(key) in \(context) must stay in private planning, outside public source.")
+        }
+    }
+}
+
 // Check the index as well as the working tree so accidentally staged notes fail.
-let git = Process()
-git.executableURL = URL(fileURLWithPath: "/usr/bin/git")
-git.arguments = ["ls-files", "-z"]
-let output = Pipe()
-git.standardOutput = output
-try git.run()
-let data = output.fileHandleForReading.readDataToEndOfFile()
-git.waitUntilExit()
-guard git.terminationStatus == 0 else { fatalError("Could not inspect tracked files.") }
+let data = try gitOutput(["ls-files", "-z"])
 
 let paths = String(decoding: data, as: UTF8.self).split(separator: "\0").map(String.init)
 let rootFiles = Set(["README.md", "AGENTS.md", ".gitignore", ".github/workflows/pages.yml", "Scripts/CheckPublicRepository.swift", "Images/readme-banner.png"])
@@ -21,20 +43,18 @@ let unexpected = paths.filter { path in
     return !websiteFiles.contains(path) && !websiteFolders.contains(where: { path.hasPrefix($0) })
 }
 guard unexpected.isEmpty else {
-    fatalError("Files outside the public website allowlist: \(unexpected.joined(separator: ", "))")
+    fail("Files outside the public website allowlist: \(unexpected.joined(separator: ", "))")
+}
+
+// Read the actual indexed blobs: the working copy may already have been fixed
+// without staging that correction, leaving an unapproved record in the commit.
+for path in paths where path.hasPrefix("Website/Data/Conferences/") && path.hasSuffix(".json") {
+    try checkApprovals(gitOutput(["show", ":\(path)"]), context: "staged \(path)")
 }
 
 let conferences = URL(fileURLWithPath: "Website/Data/Conferences")
 for file in try FileManager.default.contentsOfDirectory(at: conferences, includingPropertiesForKeys: nil)
     where file.pathExtension == "json" {
-    let record = try JSONSerialization.jsonObject(with: Data(contentsOf: file)) as? [String: Any]
-    for key in ["participations", "offers"] {
-        guard let entries = record?[key] as? [[String: Any]] else {
-            fatalError("Missing \(key) in \(file.lastPathComponent).")
-        }
-        guard entries.allSatisfy({ ($0["publicationApproved"] as? Bool) == true }) else {
-            fatalError("Unapproved \(key) must stay in private planning, outside public source.")
-        }
-    }
+    try checkApprovals(Data(contentsOf: file), context: "working copy \(file.lastPathComponent)")
 }
 print("Public repository file and publication-approval checks passed.")

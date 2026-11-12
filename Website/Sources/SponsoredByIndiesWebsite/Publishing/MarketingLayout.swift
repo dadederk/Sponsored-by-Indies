@@ -20,6 +20,7 @@ struct MarketingLayout: Layout {
             Title(page.title)
             MetaTag(name: "description", content: escaped(page.description))
             MetaLink.standardCSS
+            MetaLink.iconCSS
             MetaLink(href: "/css/ignite-core.min.css?v=\(assetVersion)", rel: "stylesheet")
             MetaLink(href: canonicalURL, rel: "canonical")
             MetaTag(.openGraphSiteName, content: escaped(site.name))

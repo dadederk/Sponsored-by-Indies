@@ -11,7 +11,7 @@ struct IndiesSite: Site {
     var titleSuffix = " · Sponsored by Indies"
     var description: String? = "Indie apps, games, books, courses, tools… Free products and discounts for attendees of iOS, Swift and Apple platform developer conferences."
     var useDefaultBootstrapURLs: BootstrapOptions = .localBootstrap
-    var builtInIconsEnabled: BootstrapOptions = .none
+    var builtInIconsEnabled: BootstrapOptions = .localBootstrap
     var darkTheme: (any Theme)? = nil
     var lightTheme: (any Theme)? = IndiesTheme()
     var feedConfiguration: FeedConfiguration? = nil
