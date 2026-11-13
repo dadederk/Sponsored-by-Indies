@@ -33,8 +33,10 @@
       "valueSummary": {
         "explanation": "The total counts one compatible offer per app. Xarra’s free yearly subscription and discounted lifetime purchase are alternatives, so only the larger saving is counted. RetroRapid’s contribution is assumed to include Unlimited Plays. Final offer pricing, eligibility, and redemption details are still being arranged.",
         "offerIDs": [
+          "ai-fundamentals-course",
           "dee-yearly",
           "rocketsim-yearly",
+          "rockettrace-yearly",
           "xarra-lifetime",
           "retrorapid-free"
         ]
@@ -205,6 +207,64 @@
         "review": "provisional",
         "verifiedOn": "2026-11-13",
         "sourceURL": "https://apps.apple.com/us/app/rocketsim-for-xcode-simulator/id1504940162"
+      }
+    },
+    {
+      "editionID": "arctic-2027",
+      "indieID": "antoine-van-der-lee",
+      "redemptionInstructions": "Not open yet. Eligibility and deadline to be confirmed; instructions will come through the conference.",
+      "publicationApproved": true,
+      "id": "rockettrace-yearly",
+      "productName": "RocketTrace for Xcode",
+      "productURL": "https://rockettrace.app/",
+      "productIconPath": "/app-icons/rockettrace.png",
+      "description": "Find performance issues in Xcode Instruments recordings. Review ranked findings, share focused investigation prompts with your coding agent, and compare recordings after making changes.",
+      "benefit": "30% off your first year",
+      "terms": "Yearly Pro subscription; first year only. Renewal price to be confirmed.",
+      "savingEstimate": {
+        "regularPriceUSD": 69.99,
+        "discountPercent": 30,
+        "plan": "RocketTrace Pro Yearly",
+        "period": "year",
+        "discountedPeriods": 1,
+        "currency": "USD",
+        "storefront": "US",
+        "observedPricesUSD": [
+          69.99
+        ],
+        "review": "unambiguous",
+        "verifiedOn": "2026-11-13",
+        "sourceURL": "https://apps.apple.com/us/app/rockettrace-for-xcode/id6798298905"
+      }
+    },
+    {
+      "editionID": "arctic-2027",
+      "indieID": "antoine-van-der-lee",
+      "redemptionInstructions": "Not open yet. Eligibility and deadline to be confirmed; instructions will come through the conference.",
+      "publicationApproved": true,
+      "id": "ai-fundamentals-course",
+      "productName": "AI Fundamentals",
+      "productURL": "https://aifundamentals.dev/",
+      "productIconPath": "/app-icons/ai-fundamentals.png",
+      "description": "A practical course on working with AI coding agents. Learn to give clear context and instructions, check results, and build repeatable workflows across tools.",
+      "benefit": "25% off lifetime course access",
+      "terms": "Discount on the regular course price. One payment for lifetime access; taxes added at checkout.",
+      "savingEstimate": {
+        "regularPriceUSD": 199,
+        "discountPercent": 25,
+        "plan": "Lifetime course access",
+        "period": "lifetime",
+        "discountedPeriods": 1,
+        "currency": "USD",
+        "storefront": "US",
+        "observedPricesUSD": [
+          199
+        ],
+        "review": "unambiguous",
+        "verifiedOn": "2026-11-13",
+        "sourceURL": "https://aifundamentals.dev/pricing/?country=US",
+        "sourceFormat": "schemaOrg",
+        "sourceProductName": "AI Fundamentals: agentic coding fundamentals for developers"
       }
     }
   ]

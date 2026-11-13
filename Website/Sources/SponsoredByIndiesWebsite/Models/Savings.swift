@@ -5,6 +5,7 @@ import Foundation
 struct SavingEstimate: Decodable {
     enum Period: String, Decodable { case year, lifetime, oneTime }
     enum Review: String, Decodable { case unambiguous, provisional }
+    enum SourceFormat: String, Decodable { case appStore, schemaOrg }
 
     var regularPriceUSD: Decimal
     var discountPercent: Int
@@ -17,6 +18,8 @@ struct SavingEstimate: Decodable {
     var review: Review
     var verifiedOn: String
     var sourceURL: String
+    var sourceFormat: SourceFormat? = nil
+    var sourceProductName: String? = nil
 
     /// Round savings down to cents rather than overstate a fractional-cent discount.
     /// This is an estimate; the store's eligible checkout remains authoritative.

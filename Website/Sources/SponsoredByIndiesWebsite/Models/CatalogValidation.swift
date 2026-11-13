@@ -111,6 +111,9 @@ extension Catalog {
                 try require(estimate.discountedPeriods == 1, "Savings count exactly one eligible purchase or first annual period.")
                 try require(estimate.currency == "USD" && estimate.storefront == "US", "Reference prices must use the US/USD baseline.")
                 try nonempty([estimate.plan], "price plan for \(offer.id)")
+                if estimate.sourceFormat == .schemaOrg {
+                    try nonempty([estimate.sourceProductName ?? ""], "structured price product for \(offer.id)")
+                }
                 try require(!estimate.observedPricesUSD.isEmpty && estimate.observedPricesUSD.allSatisfy(money), "Record the observed reference prices.")
                 try require(Set(estimate.observedPricesUSD).count == estimate.observedPricesUSD.count, "Observed prices must be distinct.")
                 try require(estimate.observedPricesUSD.contains(estimate.regularPriceUSD), "Selected price must occur in the source evidence.")

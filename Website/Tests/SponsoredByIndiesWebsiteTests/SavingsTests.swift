@@ -36,12 +36,22 @@ struct SavingsTests {
         let catalog = try Catalog.load(from: directory)
         let edition = try #require(catalog.editions.first { $0.id == "arctic-2027" })
         let products = catalog.visibleProductContributions(for: edition)
-        #expect(products.map(\.product.productName) == ["Dee: Muay Thai Coach", "RocketSim for Xcode", "Xarra!", "RetroRapid!"])
+        #expect(products.map(\.product.productName) == ["AI Fundamentals", "Dee: Muay Thai Coach", "RocketSim for Xcode", "RocketTrace for Xcode", "Xarra!", "RetroRapid!"])
         let value = try #require(catalog.bundleValue(for: edition))
         #expect(value.totalUSD == products.reduce(0) { $0 + ($1.maximumSavingUSD ?? 0) })
-        #expect(value.totalUSD == Decimal(string: "68.96"))
-        #expect(value.amountLabel == "US$68")
+        #expect(value.totalUSD == Decimal(string: "139.70"))
+        #expect(value.amountLabel == "US$139")
         #expect(value.offers.first { $0.id == "rocketsim-yearly" }?.savingEstimate?.review == .provisional)
+        let course = try #require(value.offers.first { $0.id == "ai-fundamentals-course" }?.savingEstimate)
+        #expect(course.regularPriceUSD == 199)
+        #expect(course.discountPercent == 25)
+        #expect(course.period == .lifetime)
+        #expect(course.sourceFormat == .schemaOrg)
+        #expect(course.amountUSD == Decimal(string: "49.75"))
+        let trace = try #require(value.offers.first { $0.id == "rockettrace-yearly" }?.savingEstimate)
+        #expect(trace.discountPercent == 30)
+        #expect(trace.period == .year)
+        #expect(trace.amountUSD == Decimal(string: "20.99"))
     }
 
     @Test(arguments: ["currency", "storefront", "percentage zero", "percentage too large", "duration", "missing plan", "missing observations", "wrong selection", "duplicate observation", "unreviewed ambiguity", "foreign storefront link"])
@@ -95,6 +105,38 @@ struct SavingsTests {
         #expect(try PriceVerification.listedPrices(in: html, plan: "RocketSim Yearly") == [Decimal(string: "29.99")!, Decimal(string: "69.99")!])
         #expect(throws: CatalogError.self) { try PriceVerification.listedPrices(in: html, plan: "Unknown") }
         #expect(throws: CatalogError.self) { try PriceVerification.listedPrices(in: html.replacingOccurrences(of: "$", with: "£"), plan: "RocketSim Yearly") }
+    }
+
+    @Test func structuredPricesMatchTheNamedUSDOfferWithoutUsingPromotionalText() throws {
+        let html = #"""
+        <p>Launch price $149. Team price $179.</p>
+        <script type="application/ld+json">{"@graph":[
+          {"@type":"Course","name":"Sample course","offers":[
+            {"price":"199","priceCurrency":"USD"},
+            {"price":199,"priceCurrency":"USD"},
+            {"price":"99","priceCurrency":"EUR"}]},
+          {"@type":"Course","name":"Other course","offers":{"price":"999","priceCurrency":"USD"}}
+        ]}</script>
+        """#
+        #expect(try PriceVerification.structuredPrices(in: html, productName: "Sample course") == [199])
+        #expect(throws: CatalogError.self) { try PriceVerification.structuredPrices(in: html, productName: "Missing course") }
+        #expect(throws: CatalogError.self) { try PriceVerification.structuredPrices(in: html.replacingOccurrences(of: "USD", with: "GBP"), productName: "Sample course") }
+        let conflicting = html.replacingOccurrences(of: #""price":199"#, with: #""price":249"#)
+        #expect(try PriceVerification.structuredPrices(in: conflicting, productName: "Sample course") == [199, 249])
+    }
+
+    @Test(arguments: ["invalid", "199 USD", "-199", "199.999"])
+    func structuredPricesRejectInvalidAmounts(price: String) throws {
+        let html = "<script type=\"application/ld+json\">{\"name\":\"Sample course\",\"offers\":{\"price\":\"\(price)\",\"priceCurrency\":\"USD\"}}</script>"
+        #expect(throws: CatalogError.self) { try PriceVerification.structuredPrices(in: html, productName: "Sample course") }
+    }
+
+    @Test func structuredSourcesRequireAnExactProductName() throws {
+        var catalog = CatalogFixture.make()
+        catalog.offers[0].savingEstimate?.sourceFormat = .schemaOrg
+        #expect(throws: CatalogError.self) { try catalog.validate() }
+        catalog.offers[0].savingEstimate?.sourceProductName = "Sample course"
+        try catalog.validate()
     }
 
     @Test(arguments: [true, false])
