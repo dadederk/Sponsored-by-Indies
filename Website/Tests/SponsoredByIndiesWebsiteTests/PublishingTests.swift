@@ -141,6 +141,18 @@ struct PublishingTests {
         #expect(home.contains("/favicon-shared-imprint-01.svg?v=\(assetVersion)"))
         #expect(home.contains("data-next-edition=\"sample-&quot;2027&quot;\""))
         let contribution = try page("participate/indies/index.html")
+        let directEmail = try #require(contribution.range(
+            of: "<a[^>]*href=\"([^\"]*)\"[^>]*>Express indie interest</a>", options: .regularExpression))
+        let buttonMarkup = String(contribution[directEmail])
+        let href = try #require(buttonMarkup.firstMatch(of: /href="([^"]*)"/)?.1)
+        let emailURL = try #require(URLComponents(string: String(href).replacingOccurrences(of: "&amp;", with: "&")))
+        #expect(emailURL.scheme == "mailto")
+        #expect(emailURL.path == "team&events@example.org")
+        #expect(emailURL.queryItems?.first { $0.name == "subject" }?.value == "Sponsored by Indies — indie contribution")
+        let emailBody = try #require(emailURL.queryItems?.first { $0.name == "body" }?.value)
+        for prompt in ["Name:", "Conference and year:", "Product name and link:", "What I’d like to offer:", "Anything else you’d like us to know (optional):"] {
+            #expect(emailBody.contains(prompt))
+        }
         for (attribute, expectedRole) in [
             ("data-add-offer", "btn-secondary"),
             ("data-remove-icon", "btn-secondary"),
@@ -286,6 +298,28 @@ struct PublishingTests {
             #expect(!lifetime.contains("Claim the yearly licence."))
             #expect(yearly.contains("Claim the yearly licence."))
             #expect(!yearly.contains(instructions))
+        }
+    }
+
+    @Test(arguments: [nil, "https://example.org/contact?source=indies&lang=en"] as [String?])
+    func indieInterestMatchesTheConfiguredContactRoute(contact: String?) async throws {
+        var catalog = CatalogFixture.make()
+        catalog.contactURL = contact
+        try catalog.validate()
+        let root = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        var site = IndiesSite(catalog: catalog, preview: true, url: try #require(URL(string: "https://example.org")))
+        try await site.generate(sourceDirectory: source, buildDirectory: root)
+        let html = try String(contentsOf: root.appending(path: "participate/indies/index.html"), encoding: .utf8)
+        #expect(!html.contains("id=\"contribution-form\""))
+        #expect(!html.contains("src=\"/contribution.mjs\""))
+        #expect(!html.contains("Opens an email draft."))
+        #expect(!html.contains("use the form below"))
+        #expect(html.contains("A contribution contact route will be available here soon.") == (contact == nil))
+        #expect(html.contains("Express indie interest") == (contact != nil))
+        if let contact {
+            #expect(html.contains("href=\"\(escaped(contact))\""))
+            #expect(html.contains("through our contact page."))
         }
     }
 

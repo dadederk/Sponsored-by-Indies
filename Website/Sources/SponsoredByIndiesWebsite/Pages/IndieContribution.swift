@@ -13,6 +13,14 @@ struct IndieContribution {
                 Text("Share an app, game, book, course, tool… with a conference community you care about.").class("lead")
                 Text("Help support an iOS, Swift or Apple developer conference. Contributions can be useful, playful or educational; they don’t have to be developer tools.")
                 Text("Solo makers and small independent teams are welcome. This is an initial proposal; we can work out the details together, and you’ll approve the final profile and offer before publication.")
+                if let contact = catalog.contactURL {
+                    Components.button("Express indie interest", href: interestURL(contact))
+                    if contact.hasPrefix("mailto:") {
+                        Text("Opens an email draft. Share your conference, product link and proposed offer, or use the form below.").class("contact-note")
+                    } else {
+                        Text("Share your conference, product link and proposed offer through our contact page.").class("contact-note")
+                    }
+                }
             }.class("container", "page-intro")
             Section {
                 if let contact = catalog.contactURL, let recipient = URLComponents(string: contact)?.path, contact.hasPrefix("mailto:") {
@@ -37,13 +45,19 @@ struct IndieContribution {
                     Tag("noscript") {
                         Text("The email builder needs JavaScript. You can email us directly with your name, chosen conference, product links, and proposed offers instead.")
                     }
-                    Text { "Prefer to write directly? "; Link(escaped(recipient), target: Components.interestURL(contact, subject: "Sponsored by Indies — indie contribution")) }
+                    Text { "Prefer to write directly? "; Link(escaped(recipient), target: interestURL(contact)) }
                     Script(file: "/contribution.mjs").attribute("type", "module")
-                } else {
+                } else if catalog.contactURL == nil {
                     Text("A contribution contact route will be available here soon.")
+                } else {
+                    Text("Use the contact page above to share your proposal.")
                 }
             }.class("container", "section-space")
         }
+    }
+
+    private func interestURL(_ contact: String) -> String {
+        Components.interestURL(contact, subject: "Sponsored by Indies — indie contribution", body: "Hi! I’d like to contribute to Sponsored by Indies.\r\n\r\nName:\r\nConference and year:\r\nProduct name and link:\r\nWhat I’d like to offer:\r\n\r\nMy connection to the conference (optional):\r\n\r\nAnything else you’d like us to know (optional):\r\n")
     }
 
     func contributionForm(recipient: String) -> some HTML {
@@ -77,7 +91,7 @@ struct IndieContribution {
                 }
             }
             resource
-            FormFields.actionButton("Add another contribution", icon: "plus-lg", role: .secondary).id("add-resource")
+            FormFields.actionButton("Add another app, game or other resource", icon: "plus-lg", role: .secondary).id("add-resource")
             Section("Prepare your email") {
                 Text("A rough proposal is enough. We’ll agree plans, prices, dates and redemption details together later. Please don’t include private redemption codes.")
                 Section {
