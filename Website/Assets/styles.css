@@ -136,7 +136,9 @@ input.form-control:focus-visible,textarea.form-control:focus-visible,select.form
    cards share a row height; Bootstrap’s alignment utility requires !important.
    Extra row height stays below the content when a neighbouring card opens. */
 .product-grid > .col { align-self: stretch !important; display: flex; }
-.product-card { --card-inset: var(--space-6); display: flex; flex-direction: column; gap: var(--space-4); width: 100%; }
+/* The terms target adds space below its text; use the shared smaller end inset
+   so the card's lower edge has comparable visual breathing room. */
+.product-card { --card-inset: var(--space-6); display: flex; flex-direction: column; gap: var(--space-4); width: 100%; padding-block-end: var(--space-4); }
 .product-card-heading a { gap: var(--space-4); text-decoration: none; }
 .product-card-heading img { flex: none; }
 .product-card-name { display: flex; flex-direction: column; gap: var(--space-1); min-width: 0; }
@@ -147,11 +149,10 @@ input.form-control:focus-visible,textarea.form-control:focus-visible,select.form
 .product-card-benefits li + li { margin-top: 0; }
 .product-card-maker { border-top: var(--border-width) solid var(--line); padding-top: var(--space-4); margin-top: 0; line-height: 1.5; }
 .product-card-maker p a { min-height: 0; display: inline; }
-.product-card-byline { display: flex; align-items: baseline; flex-wrap: wrap; column-gap: var(--space-3); }
 .product-card-terms { border: 0; margin: 0; padding: 0; max-width: 100%; }
-.product-card-terms[open] { flex-basis: 100%; }
-.product-card-terms summary { padding-block: var(--space-1); text-decoration: underline; text-underline-offset: var(--link-underline-offset); }
-.product-card-terms > p:last-child { margin-bottom: var(--space-4); }
+/* Centre the native marker and label within the shared touch target, without
+   adding an inset beyond the card's own padding. */
+.product-card-terms summary { padding: 0; line-height: var(--target-size); text-decoration: underline; text-underline-offset: var(--link-underline-offset); }
 
 /* Shared intrinsic rows align offers despite different title/description lengths.
    Ignite provides the grid markup; subgrid supplies alignment across card interiors. */

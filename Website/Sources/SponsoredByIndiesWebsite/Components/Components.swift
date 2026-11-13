@@ -148,28 +148,26 @@ enum Components {
                 }
             }.class("product-card-benefits").attribute("role", "list")
             Section {
-                Section {
-                    Text {
-                        Span(escaped(indie.name)).fontWeight(.semibold)
-                        if let website = indie.websiteURL {
-                            Span {
-                                " · "
-                                Link(escaped(indie.company ?? "Website"), target: website)
-                            }
-                        } else if let company = indie.company {
-                            Span(" · " + escaped(company))
+                Text {
+                    Span(escaped(indie.name)).fontWeight(.semibold)
+                    if let website = indie.websiteURL {
+                        Span {
+                            " · "
+                            Link(escaped(indie.company ?? "Website"), target: website)
                         }
-                    }.font(.small).margin(0)
-                    productTerms(product, offers: offers)
-                }.class("product-card-byline")
-                if let connection = participation.connection {
-                    Text(escaped(connection)).font(.small).margin(0)
-                }
+                    } else if let company = indie.company {
+                        Span(" · " + escaped(company))
+                    }
+                    if let connection = participation.connection {
+                        Span(" · " + escaped(connection))
+                    }
+                }.font(.small).margin(0)
                 if let quote = participation.quote {
                     Quote { Text("“" + escaped(quote) + "”").font(.small).margin(0) }
                         .margin(.top, .small).margin(.bottom, 0)
                 }
                 for social in indie.socials { Link(escaped(social.label), target: social.url).font(.small) }
+                productTerms(product, offers: offers)
             }.foregroundStyle(.secondary).class("product-card-maker")
         }.class("panel", "product-card")
     }
