@@ -52,9 +52,22 @@ struct PublishingTests {
         draft.productName = "UNAPPROVED PRODUCT"
         draft.publicationApproved = false
         catalog.offers.append(draft)
+        catalog.offers[0].productIconPath = "/app-icons/xarra.png"
+        var alternative = catalog.offers[0]
+        alternative.id = "tool-yearly"
+        alternative.benefit = "One year free."
+        catalog.offers.append(alternative)
+        var secondProduct = catalog.offers[0]
+        secondProduct.id = "game"
+        secondProduct.productName = "A racing game"
+        secondProduct.productURL = "https://example.org/game"
+        secondProduct.productIconPath = nil
+        secondProduct.benefit = "Free game."
+        catalog.offers.append(secondProduct)
         catalog.editions[0].valueSummary = ValueSummary(
             amountLabel: "€10", explanation: "A verified compatible saving.",
             verifiedOn: "2026-11-12", offerIDs: ["tool"])
+        catalog.editions[0].bundleNote = "We’re adding more to the bundle."
         try catalog.validate()
         let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: root) }
@@ -79,8 +92,40 @@ struct PublishingTests {
             }
             #expect(html.contains("A cool &amp; &lt;welcoming&gt; conference."))
             #expect(html.contains("For ticket holders."))
-            #expect(html.contains("A verified compatible saving."))
-            #expect(html.contains("id=\"makers\""))
+            let bundlePosition = try #require(html.range(of: "id=\"bundle\""))
+            let valuePosition = try #require(html.range(of: "id=\"value\""))
+            let accessPosition = try #require(html.range(of: "id=\"access\""))
+            #expect(bundlePosition.lowerBound < valuePosition.lowerBound)
+            #expect(valuePosition.lowerBound < accessPosition.lowerBound)
+            let bundleSection = String(html[bundlePosition.lowerBound..<valuePosition.lowerBound])
+            #expect(!bundleSection.contains("€10 in savings"))
+            #expect(!bundleSection.contains("We’re adding more to the bundle."))
+            let valueSection = String(html[valuePosition.lowerBound..<accessPosition.lowerBound])
+            let breakdown = try #require(valueSection.range(of: "<details[\\s\\S]*?</details>", options: .regularExpression))
+            #expect(valueSection[breakdown].contains("A verified compatible saving."))
+            #expect(valueSection[breakdown].contains("How we estimate the bundle’s value"))
+            let visibleValue = valueSection.replacingCharacters(in: breakdown, with: "")
+            #expect(!visibleValue.contains("Tool &amp; &lt;Kit&gt;"))
+            #expect(visibleValue.contains("€10 in savings"))
+            #expect(visibleValue.contains("We’re adding more to the bundle."))
+            let cards = html.matches(of: /<article class="panel product-card">[\s\S]*?<\/article>/).map { String($0.output) }
+            #expect(cards.count == 2)
+            let toolCard = try #require(cards.first { $0.contains("Tool &amp; &lt;Kit&gt;") })
+            #expect(toolCard.contains("One year free."))
+            #expect(toolCard.range(of: #"<a href="https://example.org/tool"[^>]*>\s*<img[^>]*src="/app-icons/xarra.png""#, options: .regularExpression) != nil)
+            #expect(!toolCard.contains("Free game."))
+            #expect(toolCard.components(separatedBy: "<details ").count == 2)
+            let gameCard = try #require(cards.first { $0.contains("A racing game") })
+            #expect(gameCard.contains("Free game."))
+            #expect(!gameCard.contains("One year free."))
+            #expect(gameCard.components(separatedBy: "<details ").count == 2)
+            for card in cards {
+                #expect(card.contains("A welcoming community."))
+                #expect(card.contains("A &amp; B &lt;Studio&gt;"))
+            }
+            #expect(html.components(separatedBy: "src=\"/app-icons/xarra.png\"").count == 2)
+            #expect(html.contains("One year free."))
+            #expect(html.contains("Sample Company"))
             #expect(html.contains("noindex, nofollow") == preview)
         }
         let home = try page("index.html")
@@ -96,6 +141,23 @@ struct PublishingTests {
         #expect(home.contains("/favicon-shared-imprint-01.svg?v=\(assetVersion)"))
         #expect(home.contains("data-next-edition=\"sample-&quot;2027&quot;\""))
         let contribution = try page("participate/indies/index.html")
+        for (attribute, expectedRole) in [
+            ("data-add-offer", "btn-secondary"),
+            ("data-remove-offer", "btn-danger"),
+            ("data-remove-resource", "btn-danger")
+        ] {
+            let range = try #require(contribution.range(
+                of: "<button[^>]*\(attribute)=\"true\"[^>]*>.*?</button>",
+                options: .regularExpression
+            ))
+            let button = String(contribution[range])
+            #expect(button.contains("type=\"button\""))
+            #expect(button.contains(expectedRole))
+            #expect(button.contains("aria-hidden=\"true\""))
+            #expect(button.contains("data-action-label=\"true\""))
+        }
+        #expect(contribution.contains("aria-label=\"Add another offer to resource 1\""))
+        #expect(contribution.contains("/css/bootstrap-icons.min.css"))
         #expect(contribution.contains("value=\"Sample &quot;North&quot; &amp;"))
         let suggestionsRange = try #require(contribution.range(of: "<datalist[^>]*id=\"conference-options\"[^>]*>.*?</datalist>", options: .regularExpression))
         let suggestions = String(contribution[suggestionsRange])
@@ -106,7 +168,8 @@ struct PublishingTests {
         #expect(!FileManager.default.fileExists(atPath: root.appendingPathComponent("conferences/sample/2024/index.html").path))
         #expect(contribution.contains("data-recipient=\"team&amp;events@example.org\""))
         let access = try page("conferences/sample/2027/access/index.html")
-        #expect(access.contains("Follow the attendee instructions."))
+        #expect(access.contains("Each product card includes its offer terms and redemption guidance."))
+        #expect(!access.contains("For ticket holders."))
         #expect(access.contains("https://example.org/attendees"))
         #expect(access.contains(preview ? "noindex, nofollow" : "noindex, follow"))
         for path in ["conferences/sample/2000/index.html", "conferences/another/index.html"] {
@@ -171,6 +234,36 @@ struct PublishingTests {
             #expect(sitemap.contains("<loc>https://custom.example.org/conferences/sample/\(year)/</loc>"))
             let edition = try String(contentsOf: root.appending(path: "conferences/sample/\(year)/index.html"), encoding: .utf8)
             #expect(edition.contains("href=\"https://custom.example.org/conferences/sample/\(year)/\" rel=\"canonical\""))
+        }
+    }
+
+    @Test(arguments: [true, false])
+    func groupedOffersKeepTheirRedemptionInstructions(shared: Bool) async throws {
+        var catalog = CatalogFixture.make()
+        catalog.offers[0].benefit = "Lifetime discount"
+        catalog.offers[0].redemptionInstructions = "Open the lifetime & member portal."
+        var alternative = catalog.offers[0]
+        alternative.id = "tool-yearly"
+        alternative.benefit = "Free year"
+        if !shared { alternative.redemptionInstructions = "Claim the yearly licence." }
+        catalog.offers.append(alternative)
+        try catalog.validate()
+        let root = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        var site = IndiesSite(catalog: catalog, preview: true, url: try #require(URL(string: "https://example.org")))
+        try await site.generate(sourceDirectory: source, buildDirectory: root)
+        let html = try String(contentsOf: root.appending(path: "conferences/sample/2027/index.html"), encoding: .utf8)
+        let card = try #require(html.firstMatch(of: /<article class="panel product-card">[\s\S]*?<\/article>/))
+        let instructions = "Open the lifetime &amp; member portal."
+        #expect(String(card.output).components(separatedBy: instructions).count == 2)
+        if !shared {
+            let sections = String(card.output).matches(of: /<div[^>]*>[\s\S]*?<\/div>/).map { String($0.output) }
+            let lifetime = try #require(sections.first { $0.contains("Lifetime discount") })
+            let yearly = try #require(sections.first { $0.contains("Free year") })
+            #expect(lifetime.contains(instructions))
+            #expect(!lifetime.contains("Claim the yearly licence."))
+            #expect(yearly.contains("Claim the yearly licence."))
+            #expect(!yearly.contains(instructions))
         }
     }
 

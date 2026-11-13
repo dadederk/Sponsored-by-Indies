@@ -25,6 +25,8 @@ struct BrandPalette: Sendable {
 
 enum DesignTokens {
     static let palette = BrandPalette()
+    static let productIconSize = 64
+    static let productIconRadius = 14
     static let brandAssetNames = ["logo.svg", "logo-inverse.svg", "favicon.svg", "favicon-shared-imprint-01.svg"]
 
     // Base scale, then semantic roles. Keep page composition free of repeated values.

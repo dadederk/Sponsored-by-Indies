@@ -59,4 +59,26 @@ struct Catalog: Decodable {
         }
     }
 
+    func visibleProductContributions(for edition: Edition) -> [ProductContribution] {
+        var products: [ProductContribution] = []
+        for offer in visibleOffers(for: edition) {
+            if let index = products.firstIndex(where: {
+                $0.product.indieID == offer.indieID && $0.product.productURL == offer.productURL
+            }) {
+                products[index].offers.append(offer)
+            } else {
+                products.append(ProductContribution(product: offer, offers: [offer]))
+            }
+        }
+        // Rank by the largest saving for one offer, never the sum of alternatives.
+        // Unknown values follow priced offers; stable ties avoid input-order bias.
+        return products.sorted {
+            let lhs = $0.maximumSavingUSD ?? -1
+            let rhs = $1.maximumSavingUSD ?? -1
+            if lhs != rhs { return lhs > rhs }
+            return ($0.product.productName.lowercased(), $0.product.indieID, $0.product.productURL) <
+                ($1.product.productName.lowercased(), $1.product.indieID, $1.product.productURL)
+        }
+    }
+
 }

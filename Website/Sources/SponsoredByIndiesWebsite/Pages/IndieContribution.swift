@@ -102,7 +102,9 @@ struct IndieContribution {
             FormFields.multiline("What does it do, and who is it for? (required)", id: "resource-1-description", required: true, limit: 500, resourceKey: "description")
             offer
             Section {
-                FormFields.actionButton("Add another offer", icon: "plus-lg", role: .secondary).customAttribute(name: "data-add-offer", value: "true")
+                FormFields.actionButton("Add another offer", icon: "plus-lg", role: .secondary)
+                    .customAttribute(name: "data-add-offer", value: "true")
+                    .customAttribute(name: "aria-label", value: "Add another offer to resource 1")
                 FormFields.actionButton("Remove resource 1", icon: "trash", role: .danger).customAttribute(name: "data-remove-resource", value: "true").customAttribute(name: "hidden", value: "hidden")
             }.class("actions")
         }

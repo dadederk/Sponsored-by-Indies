@@ -118,25 +118,57 @@ enum Components {
         }.class("conference-card")
     }
 
-    static func indieCard(_ indie: Indie, participation: Participation) -> some HTML {
-        Tag("article") {
-            Text(escaped(indie.name)).font(.title3)
-            if let company = indie.company { Text(escaped(company)) }
-            if let connection = participation.connection { Text(escaped(connection)).foregroundStyle(.secondary) }
-            if let quote = participation.quote { Quote { Text(escaped(quote)) } }
-            if let website = indie.websiteURL { Link("Visit \(escaped(indie.name))’s website", target: website) }
-            for social in indie.socials { Link(escaped(social.label), target: social.url) }
-        }.class("panel")
-    }
-
-    static func offerCard(_ offer: Offer, indie: Indie) -> some HTML {
-        Tag("article") {
-            eyebrow("By \(indie.name)")
-            Text { Link(escaped(offer.productName), target: offer.productURL) }.font(.title3)
-            Text(escaped(offer.description))
-            Text(escaped(offer.benefit)).fontWeight(.bold).foregroundStyle(Color(hex: DesignTokens.palette.accent))
-            disclosure("Offer terms for \(offer.productName)", text: offer.terms)
-        }.class("panel")
+    static func productCard(_ product: Offer, offers: [Offer], indie: Indie, participation: Participation) -> some HTML {
+        let sharedInstructions = Set(offers.map(\.redemptionInstructions)).count == 1 ? offers.first?.redemptionInstructions : nil
+        return Tag("article") {
+            Text {
+                Link(target: product.productURL) {
+                    if let icon = product.productIconPath {
+                        Image(decorative: icon)
+                            .frame(width: .px(DesignTokens.productIconSize), height: .px(DesignTokens.productIconSize))
+                            .cornerRadius(DesignTokens.productIconRadius)
+                    }
+                    Span(escaped(product.productName))
+                }
+            }.font(.title3).margin(0).class("product-card-heading")
+            Text(escaped(product.description)).margin(0)
+            List(offers) { offer in
+                ListItem { Text(escaped(offer.benefit)).fontWeight(.bold).margin(0) }
+            }.class("product-card-benefits")
+            Section {
+                Text {
+                    Span(escaped(indie.name)).fontWeight(.semibold)
+                    if let website = indie.websiteURL {
+                        Span {
+                            " · "
+                            Link(escaped(indie.company ?? "Website"), target: website)
+                        }
+                    } else if let company = indie.company {
+                        Span(" · " + escaped(company))
+                    }
+                }.font(.small).margin(0)
+                if let connection = participation.connection {
+                    Text(escaped(connection)).font(.small).margin(0)
+                }
+                if let quote = participation.quote {
+                    Quote { Text("“" + escaped(quote) + "”").font(.small).margin(0) }
+                        .margin(.top, .small).margin(.bottom, 0)
+                }
+                for social in indie.socials { Link(escaped(social.label), target: social.url).font(.small) }
+            }.foregroundStyle(.secondary).class("product-card-maker")
+            Tag("details") {
+                Tag("summary") { "Offer terms for " + escaped(product.productName) }
+                for offer in offers {
+                    Section {
+                        Text(escaped(offer.benefit)).fontWeight(.semibold).margin(.bottom, 0)
+                        Text(escaped(offer.terms))
+                        if sharedInstructions == nil { Text(escaped(offer.redemptionInstructions)) }
+                    }
+                }
+                // Shared redemption instructions only need to appear once per app.
+                if let sharedInstructions { Text(escaped(sharedInstructions)) }
+            }.class("product-card-terms")
+        }.class("panel", "product-card")
     }
 
     // Native details/summary supports keyboard and assistive technology without a script.

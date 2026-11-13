@@ -95,10 +95,29 @@ struct CatalogTests {
         #expect(throws: CatalogError.self) { try catalog.validate() }
     }
 
+    @Test(arguments: [nil, false, true] as [Bool?])
+    func valueSummaryPreservesTheEstimateFlagAndAcceptsOlderRecords(isEstimate: Bool?) throws {
+        var record: [String: Any] = [
+            "amountLabel": "US$10", "explanation": "One compatible saving.",
+            "verifiedOn": "2026-11-13", "offerIDs": ["tool"]
+        ]
+        if let isEstimate { record["isEstimate"] = isEstimate }
+        let data = try JSONSerialization.data(withJSONObject: record)
+        let summary = try JSONDecoder().decode(ValueSummary.self, from: data)
+        #expect(summary.isEstimate == (isEstimate ?? false))
+    }
+
     @Test(arguments: ["javascript:alert(1)", "https:///", "https://user:password@example.org", "https://example.org/a b"])
     func rejectsUnsafeURLs(value: String) throws {
         var catalog = CatalogFixture.make()
         catalog.conferences[0].websiteURL = value
+        #expect(throws: CatalogError.self) { try catalog.validate() }
+    }
+
+    @Test(arguments: ["https://example.org/icon.png", "/app-icons/../secret.png", "/app-icons/a\".png"])
+    func rejectsUnsafeIconPaths(path: String) throws {
+        var catalog = CatalogFixture.make()
+        catalog.offers[0].productIconPath = path
         #expect(throws: CatalogError.self) { try catalog.validate() }
     }
 
@@ -166,6 +185,57 @@ struct CatalogTests {
                 #expect(catalog.featuredEdition(for: catalog.conferences[0], on: today)?.id == expected)
             }
         }
+    }
+
+    @Test func productsRankByMaximumSavingRatherThanSumOrSubmissionOrder() throws {
+        var catalog = CatalogFixture.make()
+        let original = catalog.offers[0]
+        func offer(_ id: String, product: String, saving: Double?) -> Offer {
+            var result = original
+            result.id = id
+            result.productName = product
+            result.productURL = "https://example.org/" + product.lowercased()
+            result.savingEstimate = saving.map {
+                SavingEstimate(amountUSD: $0, verifiedOn: "2026-11-13", sourceURL: result.productURL)
+            }
+            return result
+        }
+        catalog.offers = [
+            offer("unknown", product: "Unknown", saving: nil),
+            offer("b-one", product: "Beta", saving: 8),
+            offer("b-two", product: "Beta", saving: 9),
+            offer("z", product: "Zulu", saving: 10),
+            offer("a", product: "Alpha", saving: 10)
+        ]
+        var draft = offer("draft", product: "Draft", saving: 1000)
+        draft.publicationApproved = false
+        catalog.offers.append(draft)
+        try catalog.validate()
+        for offers in [catalog.offers, catalog.offers.reversed().map { $0 }] {
+            catalog.offers = offers
+            let products = catalog.visibleProductContributions(for: catalog.editions[0])
+            #expect(products.map(\.product.productName) == ["Alpha", "Zulu", "Beta", "Unknown"])
+            #expect(products[2].offers.count == 2)
+            #expect(products[2].maximumSavingUSD == 9)
+        }
+    }
+
+    @Test(arguments: [-1.0, Double.infinity, Double.nan])
+    func rejectsInvalidSavings(amount: Double) throws {
+        var catalog = CatalogFixture.make()
+        catalog.offers[0].savingEstimate = SavingEstimate(
+            amountUSD: amount, verifiedOn: "2026-11-13", sourceURL: "https://example.org/price")
+        #expect(throws: CatalogError.self) { try catalog.validate() }
+    }
+
+    @Test func savingEstimatesNeedValidEvidence() throws {
+        var catalog = CatalogFixture.make()
+        catalog.offers[0].savingEstimate = SavingEstimate(
+            amountUSD: 10, verifiedOn: "2026-02-30", sourceURL: "https://example.org/price")
+        #expect(throws: CatalogError.self) { try catalog.validate() }
+        catalog.offers[0].savingEstimate?.verifiedOn = "2026-11-13"
+        catalog.offers[0].savingEstimate?.sourceURL = "javascript:alert(1)"
+        #expect(throws: CatalogError.self) { try catalog.validate() }
     }
 
     @Test func missingContentFailsInsteadOfPublishingEmptyPages() throws {

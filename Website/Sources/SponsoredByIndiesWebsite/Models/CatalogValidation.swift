@@ -58,6 +58,7 @@ extension Catalog {
             }
             try require(edition.startDate <= edition.endDate, "Edition \(edition.id) ends before it starts.")
             if let url = edition.accessURL { try Self.validateURL(url) }
+            if let note = edition.bundleNote { try nonempty([note], "bundle note for \(edition.id)") }
             if let value = edition.valueSummary {
                 let approved = Set(visibleOffers(for: edition).map(\.id))
                 try require(!value.offerIDs.isEmpty && Set(value.offerIDs).isSubset(of: approved),
@@ -87,6 +88,16 @@ extension Catalog {
                 $0.editionID == offer.editionID && $0.indieID == offer.indieID
             }, "Offer \(offer.id) has no participation in its edition.")
             try Self.validateURL(offer.productURL)
+            if let estimate = offer.savingEstimate {
+                try require(estimate.amountUSD.isFinite && estimate.amountUSD >= 0,
+                            "Savings must be finite, non-negative USD amounts.")
+                try require(validDate(estimate.verifiedOn), "Savings verification date must be YYYY-MM-DD.")
+                try Self.validateURL(estimate.sourceURL)
+            }
+            if let path = offer.productIconPath {
+                try require(path.range(of: "^/app-icons/[a-z0-9-]+\\.png$", options: .regularExpression) != nil,
+                            "Product icons must use a local PNG in /app-icons/.")
+            }
             if offer.publicationApproved {
                 try nonempty([offer.productName, offer.description, offer.benefit,
                               offer.terms, offer.redemptionInstructions], "approved offer \(offer.id)")

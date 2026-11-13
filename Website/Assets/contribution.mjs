@@ -111,6 +111,7 @@ function initialiseForm() {
       const button = fieldset.querySelector("[data-remove-resource]");
       button.querySelector("[data-action-label]").textContent = `Remove resource ${index + 1}`;
       button.hidden = fields.length === 1;
+      fieldset.querySelector("[data-add-offer]").setAttribute("aria-label", `Add another offer to resource ${index + 1}`);
       const entries = offers(fieldset);
       entries.forEach((offer, offerIndex) => {
         offer.querySelector("legend").textContent = `Offer ${offerIndex + 1}`;
@@ -156,7 +157,7 @@ function initialiseForm() {
       updateOffer(clone);
       renumberResources();
       clone.querySelector("select").focus();
-      status.textContent = "Offer added to this resource.";
+      status.textContent = `Offer ${offers(resource).length} added to resource ${resources().indexOf(resource) + 1}.`;
       return;
     }
     const removeOffer = event.target.closest("[data-remove-offer]");
@@ -164,19 +165,26 @@ function initialiseForm() {
       const resource = removeOffer.closest("[data-resource]");
       if (offers(resource).length === 1) return;
       invalidateDraft();
-      removeOffer.closest("[data-offer]").remove();
+      const offer = removeOffer.closest("[data-offer]");
+      const offerNumber = offers(resource).indexOf(offer) + 1;
+      const resourceNumber = resources().indexOf(resource) + 1;
+      offer.remove();
       renumberResources();
       resource.querySelector("[data-add-offer]").focus();
-      status.textContent = "Offer removed.";
+      const remaining = offers(resource).length;
+      status.textContent = `Offer ${offerNumber} removed from resource ${resourceNumber}. ${remaining} ${remaining === 1 ? "offer remains" : "offers remain"}.`;
       return;
     }
     const remove = event.target.closest("[data-remove-resource]");
     if (!remove || resources().length === 1) return;
     invalidateDraft();
-    remove.closest("fieldset[data-resource]").remove();
+    const resource = remove.closest("fieldset[data-resource]");
+    const resourceNumber = resources().indexOf(resource) + 1;
+    resource.remove();
     renumberResources();
     addButton.focus();
-    status.textContent = "Resource removed.";
+    const remaining = resources().length;
+    status.textContent = `Resource ${resourceNumber} removed. ${remaining} ${remaining === 1 ? "resource remains" : "resources remain"}.`;
   });
 
   function readFields(container, offerFields) {

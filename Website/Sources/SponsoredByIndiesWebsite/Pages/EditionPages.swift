@@ -7,6 +7,7 @@ extension Pages {
         let otherEditions = catalog.editions(for: conference).filter { $0.id != edition.id }
         let people = catalog.visibleParticipations(for: edition)
         let offers = catalog.visibleOffers(for: edition)
+        let products = catalog.visibleProductContributions(for: edition)
         return MarketingPage(
             path: path, title: "\(conference.name) \(edition.label)", description: edition.introduction,
             canonicalPath: edition.path(in: catalog)
@@ -33,9 +34,8 @@ extension Pages {
             }.class("conference-panel").attribute("style", conference.identityStyle)
             Tag("nav") {
                 Link("The bundle", target: "#bundle")
-                if !people.isEmpty { Link("The makers", target: "#makers") }
-                Link("Getting access", target: "#access")
                 Link("The value", target: "#value")
+                Link("Getting access", target: "#access")
                 if !otherEditions.isEmpty { Link("Other editions", target: "#other-editions") }
             }.class("container", "edition-nav").aria(.label, "This edition")
             Tag("section") {
@@ -49,41 +49,45 @@ extension Pages {
                         Link("Check attendee access", target: "#access")
                     }.class("panel")
                 } else {
-                    Grid(offers, alignment: .top, spacing: .none) { offer in
-                        Components.offerCard(offer, indie: catalog.indie(withID: offer.indieID))
-                    }.columns(2).class("g-3")
+                    Grid(products, alignment: .top, spacing: .none) { contribution in
+                        Section {
+                            if let participation = people.first(where: { $0.indieID == contribution.product.indieID }) {
+                                Components.productCard(
+                                    contribution.product, offers: contribution.offers,
+                                    indie: catalog.indie(withID: contribution.product.indieID), participation: participation)
+                            }
+                        }
+                    }.columns(2).class("g-3", "product-grid")
                 }
             }.id("bundle").class("container", "section-space").aria(.labelledBy, "bundle-title")
-            if !people.isEmpty {
-                Tag("section") {
-                    Components.heading("Meet the", "makers.", id: "makers-title")
-                    Grid(people, alignment: .top, spacing: .none) { participation in
-                        Components.indieCard(catalog.indie(withID: participation.indieID), participation: participation)
-                    }.columns(2).class("g-3")
-                }.id("makers").class("container", "section-space").aria(.labelledBy, "makers-title")
-            }
+            Tag("section") {
+                Components.heading("The bundle’s", "value.", id: "value-title")
+                if let summary = edition.valueSummary, !offers.isEmpty {
+                    Section {
+                        Text(escaped(summary.amountLabel) + (summary.isEstimate ? " in potential savings" : " in savings"))
+                            .font(.lead).fontWeight(.bold).margin(0)
+                        if let note = edition.bundleNote { Text(escaped(note)).margin(0) }
+                    }.class("bundle-summary")
+                    Text("The estimate reflects compatible offers in the current bundle. Your saving depends on eligibility and which offers you choose. US prices in USD are our baseline; local prices may vary.")
+                    Tag("details") {
+                        Tag("summary") { "How we estimate the bundle’s value" }
+                        Text(escaped(summary.explanation))
+                        Text("Prices checked \(escaped(summary.verifiedOn)). Individual offer terms apply.")
+                        for contribution in products {
+                            if let estimate = contribution.offers.first(where: { summary.offerIDs.contains($0.id) })?.savingEstimate {
+                                Text { Link("US price reference: " + escaped(contribution.product.productName), target: estimate.sourceURL) }
+                            }
+                        }
+                    }
+                } else {
+                    Text("We’ll share the maximum potential savings once the offers and their terms are confirmed.")
+                    if let note = edition.bundleNote { Text(escaped(note)) }
+                }
+            }.id("value").class("container", "section-space").aria(.labelledBy, "value-title")
             Tag("section") {
                 Components.heading("Getting", "access.", id: "access-title")
                 accessGuidance(edition)
             }.id("access").class("container", "section-space").aria(.labelledBy, "access-title")
-            Tag("section") {
-                if let summary = edition.valueSummary, !offers.isEmpty {
-                    Components.heading("Save up to", summary.amountLabel, id: "value-title")
-                    Text(escaped(summary.explanation))
-                    Text("Verified \(escaped(summary.verifiedOn)). Individual offer terms apply.")
-                } else {
-                    Components.heading("The bundle’s", "value.", id: "value-title")
-                    Text("We’ll share the maximum potential savings once the offers and their terms are confirmed.")
-                }
-                Text(
-                    "Any “up to” total describes savings from using all compatible offers. Your own saving depends on what you’re eligible for and choose to redeem."
-                )
-                Components.disclosure(
-                    "Do I need to use everything?",
-                    text:
-                        "No. Choose what’s useful to you. The maximum describes savings from compatible offers, rather than a guaranteed saving."
-                )
-            }.id("value").class("container", "section-space").aria(.labelledBy, "value-title")
             if !otherEditions.isEmpty {
                 Tag("section") {
                     Components.heading("Other", "editions.", id: "other-editions-title")
@@ -124,9 +128,7 @@ extension Pages {
                 text:
                     "Each indie chooses its own contribution. Redemption methods, eligibility, access periods, and expiry dates may differ. Check each offer’s terms."
             )
-            for offer in catalog.visibleOffers(for: edition) {
-                Components.disclosure("Redeeming \(offer.productName)", text: offer.redemptionInstructions + " " + offer.terms)
-            }
+            Text("Each product card includes its offer terms and redemption guidance.")
         }
     }
 

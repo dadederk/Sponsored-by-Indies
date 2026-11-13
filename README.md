@@ -34,6 +34,8 @@ Keep existing page addresses and add only approved conference and offer details.
 
 Read [AGENTS.md](AGENTS.md) for coding conventions and verification guidance.
 
+Bundle cards appear in descending order of their greatest potential saving, using US prices in USD as the shared baseline. Alternative offers for the same product are grouped and are not added together for ranking. Products without a verified estimate follow those with one; equal values use app name, maker ID and product URL for stable ordering. Record the price source and check date with each estimate. Bundle totals count compatible offers only, label estimates clearly and note that local prices may vary.
+
 ## Build and check
 
 For the full checks, also install [Node.js 22 or later](https://nodejs.org/) to test the code that runs in visitors’ browsers.

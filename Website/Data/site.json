@@ -2,7 +2,7 @@
   "contactURL": "mailto:hello@accessibilityUpTo11.com",
   "partnershipNote": "We’re piloting the idea with ARCTIC in 2027. We’d love to hear from other organisers as we learn what works.",
   "terms": {
-    "updatedOn": "2026-11-12",
+    "updatedOn": "2026-11-13",
     "introduction": "A little extra from the community, offered in good faith. These terms explain how Sponsored by Indies works and what attendees, independent makers and conference organisers can expect from one another.",
     "sections": [
       {
@@ -31,9 +31,16 @@
         ]
       },
       {
+        "heading": "Regional availability and compatibility",
+        "paragraphs": [
+          "Some apps, products or offers may not be available in the country or region configured for your app-store account, even if you are attending the conference in another country. Availability and redemption may also depend on your device, operating-system version, account eligibility, age or parental controls, and the provider’s or app store’s rules. Check the product listing and specific offer terms before relying on an offer or buying a ticket; ask the maker if you are unsure.",
+          "Sponsored by Indies does not control app-store availability, account restrictions, device compatibility, third-party service outages or changes imposed by platforms or law. We cannot promise that every attendee can access or redeem every contribution, or that these restrictions can be overridden. If you encounter a problem, contact the maker or relevant provider; we can help coordinate a conversation. This does not remove anyone’s existing commitments or your legal rights."
+        ]
+      },
+      {
         "heading": "For independent makers",
         "paragraphs": [
-          "Participation is voluntary. Please provide accurate product information, clear eligibility and redemption terms, and a support route. Confirm that you have permission to share any names, quotes, logos, images and links you submit. Proposing a contribution does not automatically approve it for publication.",
+          "Participation is voluntary. Please provide accurate product information, clear eligibility and redemption terms, and a support route. Include known regional, app-store, device, operating-system and account restrictions with your offer, and let us know if they change. Confirm that you have permission to share any names, quotes, logos, images and links you submit. Proposing a contribution does not automatically approve it for publication.",
           "Confirm publication permission and any delivery or support commitments directly with us for each edition. Reading this page or submitting an enquiry does not itself confirm participation or replace the arrangements agreed with you.",
           "We seek approval for each edition’s participation and offer before publication. Makers remain responsible for their products, licences, fulfilment, applicable legal obligations and promises to attendees. Please tell us promptly about errors, exhausted capacity or redemption problems so we can correct the listing and help coordinate a response.",
           "You retain ownership of your materials. Approval to publish permits us to display the approved materials to describe your participation in the relevant edition, including its historical page. Ask us to correct or remove them when needed; this permission does not transfer ownership or imply approval for unrelated use."

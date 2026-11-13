@@ -6,7 +6,11 @@
     "location": "Oulu, Finland",
     "websiteURL": "https://arcticonference.com/",
     "description": "The northernmost, and therefore coolest, Apple developer conference.",
-    "connectionEditions": ["2024", "2025", "2026"],
+    "connectionEditions": [
+      "2024",
+      "2025",
+      "2026"
+    ],
     "branding": {
       "background": "#1f1f24",
       "accent": "#5dd8ff",
@@ -27,9 +31,82 @@
       "introduction": "Indies connected to ARCTIC are putting together a bundle to add a little more to every attendee’s ticket. Hey Ho!",
       "accessIntroduction": "Redemption details are being arranged with the conference team. There is nothing to claim here yet. Once the bundle is ready, this page will explain how ticket holders receive their offers and how to redeem each one.",
       "accessURL": null,
-      "valueSummary": null
+      "valueSummary": {
+        "amountLabel": "About US$18",
+        "explanation": "An estimate using current US App Store prices: 50% of Xarra’s $29.99 lifetime price (about $15), plus RetroRapid’s $2.99 Unlimited Plays unlock. This assumes the free RetroRapid offer includes Unlimited Plays. The free year of Xarra Premium, normally $9.99, is an alternative and is not added to the total. Final offer pricing, eligibility, and redemption details are still being arranged.",
+        "verifiedOn": "2026-11-13",
+        "offerIDs": [
+          "xarra-lifetime",
+          "retrorapid-free"
+        ],
+        "isEstimate": true
+      },
+      "bundleNote": "We’re working on expanding the bundle and its value."
     }
   ],
-  "participations": [],
-  "offers": []
+  "participations": [
+    {
+      "editionID": "arctic-2027",
+      "indieID": "dani-devesa",
+      "connection": "Workshop speaker at the first ARCTIC in 2024.",
+      "quote": "I ran a workshop at the first ARCTIC in 2024. The quality, in every respect, took us by surprise for a first edition. Many of us came back the next year, and I’m planning to return for a third time!",
+      "publicationApproved": true
+    }
+  ],
+  "offers": [
+    {
+      "id": "xarra-lifetime",
+      "editionID": "arctic-2027",
+      "indieID": "dani-devesa",
+      "productName": "Xarra!",
+      "productURL": "https://accessibilityupto11.com/apps/xarra/",
+      "productIconPath": "/app-icons/xarra.png",
+      "description": "Turn articles, books, and documents into audio with synchronized highlighting. Read along, listen hands-free, or switch between the two.",
+      "benefit": "50% off lifetime Premium",
+      "terms": "A one-time purchase for lifetime Premium, at 50% off. Final pricing, eligibility, and redemption deadline will be published before redemption opens.",
+      "redemptionInstructions": "Redemption is not open yet. Instructions will be shared through the conference attendee access channel once arranged.",
+      "publicationApproved": true,
+      "savingEstimate": {
+        "amountUSD": 14.995,
+        "verifiedOn": "2026-11-13",
+        "sourceURL": "https://apps.apple.com/us/app/xarra/id6759402266"
+      }
+    },
+    {
+      "id": "xarra-yearly",
+      "editionID": "arctic-2027",
+      "indieID": "dani-devesa",
+      "productName": "Xarra!",
+      "productURL": "https://accessibilityupto11.com/apps/xarra/",
+      "productIconPath": "/app-icons/xarra.png",
+      "description": "Turn articles, books, and documents into audio with synchronized highlighting. Read along, listen hands-free, or switch between the two.",
+      "benefit": "1 year of Premium free",
+      "terms": "One free year on the yearly Premium subscription. Eligibility, renewal terms, and redemption deadline will be published before redemption opens.",
+      "redemptionInstructions": "Redemption is not open yet. Instructions will be shared through the conference attendee access channel once arranged.",
+      "publicationApproved": true,
+      "savingEstimate": {
+        "amountUSD": 9.99,
+        "verifiedOn": "2026-11-13",
+        "sourceURL": "https://apps.apple.com/us/app/xarra/id6759402266"
+      }
+    },
+    {
+      "id": "retrorapid-free",
+      "editionID": "arctic-2027",
+      "indieID": "dani-devesa",
+      "productName": "RetroRapid!",
+      "productURL": "https://accessibilityupto11.com/apps/retrorapid/",
+      "productIconPath": "/app-icons/retrorapid.png",
+      "description": "A little LCD nostalgia. Dodge traffic, chase a high score, or race a friend live with SharePlay. Released with love from ARCTIC in Oulu.",
+      "benefit": "RetroRapid! for free",
+      "terms": "Free access for eligible ticket holders. Redemption details, included access, and the deadline will be published before redemption opens.",
+      "redemptionInstructions": "Redemption is not open yet. Instructions will be shared through the conference attendee access channel once arranged.",
+      "publicationApproved": true,
+      "savingEstimate": {
+        "amountUSD": 2.99,
+        "verifiedOn": "2026-11-13",
+        "sourceURL": "https://apps.apple.com/us/app/retrorapid-retro-arcade-racer/id6758641625"
+      }
+    }
+  ]
 }
