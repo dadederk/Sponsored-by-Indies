@@ -10,20 +10,26 @@ enum FormFields {
     }
 
     // Ignite's Form cannot apply label placement through a native Tag boundary.
-    static func textInput(_ label: String, id: String, limit: Int = 160, resourceKey: String, helpID: String) -> some HTML {
-        Section {
+    static func textInput(
+        _ label: String, id: String, type: String = "text", autocomplete: String = "off",
+        limit: Int = 160, resourceKey: String? = nil, helpID: String? = nil, placeholder: String? = nil
+    ) -> some HTML {
+        var control = AnyHTML(Tag("input").id(id).attribute("name", id).attribute("type", type)
+            .attribute("maxlength", String(limit)).attribute("autocomplete", autocomplete)
+            .aria(.describedBy, helpID).class("form-control"))
+        if let resourceKey { control = AnyHTML(control.attribute("data-resource-field", resourceKey)) }
+        if let placeholder { control = AnyHTML(control.attribute("placeholder", escaped(placeholder))) }
+        return Section {
             Tag("label") { escaped(label) }.attribute("for", id).class("form-label")
-            Tag("input").id(id).attribute("name", id).attribute("type", "text")
-                .attribute("maxlength", String(limit)).attribute("data-resource-field", resourceKey)
-                .attribute("autocomplete", "off").aria(.describedBy, helpID).class("form-control")
+            control
         }.class("form-field")
     }
 
     static func field(
         _ label: String, id: String, type: TextField.TextType = .text, required: Bool = false, autocomplete: String = "off",
-        limit: Int = 160, list: String? = nil, resourceKey: String? = nil, helpID: String? = nil
+        limit: Int = 160, list: String? = nil, resourceKey: String? = nil, helpID: String? = nil, placeholder: String? = nil
     ) -> TextField {
-        var field = TextField(escaped(label + (required ? " (required)" : "")))
+        var field = TextField(escaped(label + (required ? " (required)" : "")), prompt: placeholder.map(escaped))
             .id(id).type(type)
             .customAttribute(name: "name", value: id)
             .customAttribute(name: "autocomplete", value: autocomplete)
@@ -37,7 +43,7 @@ enum FormFields {
 
     static func multiline(
         _ label: String, id: String, rows: Int = 3, required: Bool = false, readOnly: Bool = false, limit: Int = 20000,
-        resourceKey: String? = nil, helpID: String? = nil
+        resourceKey: String? = nil, helpID: String? = nil, placeholder: String? = nil
     ) -> some HTML {
         // Erase the control type locally so independent conditional modifiers compose.
         var control = AnyHTML(
@@ -48,6 +54,7 @@ enum FormFields {
         if required { control = AnyHTML(control.attribute("required")) }
         if readOnly { control = AnyHTML(control.attribute("readonly")) }
         if let resourceKey { control = AnyHTML(control.attribute("data-resource-field", resourceKey)) }
+        if let placeholder { control = AnyHTML(control.attribute("placeholder", escaped(placeholder))) }
         return Section {
             Tag("label") { escaped(label) }.attribute("for", id).class("form-label")
             control

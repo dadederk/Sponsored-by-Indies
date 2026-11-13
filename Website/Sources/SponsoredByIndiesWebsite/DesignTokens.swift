@@ -74,6 +74,7 @@ enum DesignTokens {
       --focus-halo: 6px;
       --focus-radius: 2px;
       --reading-width: 52rem;
+      --offer-heading-size: 1.125rem;
     """
 
     static func stylesheet(palette: BrandPalette = DesignTokens.palette) -> String {

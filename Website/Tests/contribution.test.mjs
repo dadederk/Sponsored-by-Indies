@@ -1,9 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { makeContributionEmail, makeEmailFile, LONG_EMAIL_HINT_LENGTH } from "../Assets/contribution.mjs";
+import { makeContributionEmail, makeEmailFile, LONG_EMAIL_HINT_LENGTH, validateIcons, validateIconSelections, makeIconAttachment } from "../Assets/contribution.mjs";
 
 const recipient = "hello@accessibilityUpTo11.com";
-const offer = overrides => ({kind:"Free", audience:"Every eligible attendee", ...overrides});
+const offer = overrides => ({proposal:"Free access to Example App: https://example.com/app", ...overrides});
 const proposal = overrides => ({
   name: "Alex Example", email: "alex@example.com", conference: "ARCTIC 2027",
   connection: "Past speaker", quote: "A lovely community.",
@@ -30,38 +30,34 @@ test("Unicode and multiline answers survive email preparation", () => {
   assert.ok(!body.replace(/\r\n/g, "").includes("\n"));
 });
 
-test("two resources retain their three distinct offers, prices, durations and deadlines", () => {
-  const input = proposal();
-  input.resources[0].offers = [offer({plan:"Annual",regularPrice:"USD 9.99/year",duration:"One year",validUntil:"2027-03-01"}),
-    offer({kind:"Percentage discount",discount:"50%",plan:"Lifetime",regularPrice:"USD 29.99",duration:"Lifetime",conditions:"Choose one offer."})];
-  input.resources.push({product:"Example Game",url:"https://example.com/game",category:"Game",description:"A game.",offers:[offer({regularPrice:"GBP 1.99"})]});
-  const body = makeContributionEmail(input, recipient).body;
-  const [first, second] = body.split("RESOURCE 2");
-  assert.ok(first.includes("Offer 1\r\nOffer type: Free\r\nAttendee price/discount: Free (0)"));
-  assert.ok(first.includes("Offer 2\r\nOffer type: Percentage discount\r\nAttendee price/discount: 50%"));
-  assert.ok(first.includes("Last day to claim: 2027-03-01"));
-  assert.ok(first.includes("Access duration: One year"));
-  assert.ok(first.includes("Usual price and currency: USD 29.99"));
-  assert.ok(second.includes("Name: Example Game"));
-  assert.ok(second.includes("Usual price and currency: GBP 1.99"));
-  assert.ok(!second.includes("Offer 2"));
+test("minimal proposals need no structured product or offer details", () => {
+  const body = makeContributionEmail(proposal({connection:"", quote:"", resources:[{offers:[offer()]}]}), recipient).body;
+  assert.ok(body.includes("Free access to Example App: https://example.com/app"));
+  assert.ok(!body.includes("My connection:"));
+  assert.ok(!body.includes("Offer type:"));
+  assert.ok(!body.includes("Usual price"));
 });
 
-test("free requires no manually entered zero and prize quantities stay with the prize offer", () => {
+test("multiple contributions keep distinct free-text offers and Markdown links", () => {
   const input = proposal();
-  input.resources[0].offers.push(offer({audience:"Limited prize licenses",quantity:"5"}));
+  input.resources[0].offers = [offer({proposal:"Get 30% off [Xarra!](https://example.com/?a=1&b=2)\nOne year, please."}),
+    offer({proposal:"Or five lifetime licenses as prizes."})];
+  input.resources.push({offers:[offer({proposal:"Free book: https://example.com/book"})]});
   const body = makeContributionEmail(input, recipient).body;
-  assert.equal(body.match(/Attendee price\/discount: Free \(0\)/g).length, 2);
-  assert.equal(body.match(/Prize licenses: 5/g).length, 1);
+  const [first, second] = body.split("CONTRIBUTION 2");
+  assert.ok(first.includes("1. Offer\r\nGet 30% off [Xarra!](https://example.com/?a=1&b=2)\r\nOne year, please."));
+  assert.ok(first.includes("2. Offer\r\nOr five lifetime licenses as prizes."));
+  assert.ok(second.includes("Free book: https://example.com/book"));
+  assert.ok(!second.includes("2. Offer"));
 });
 
 test("long responses keep the entire email body in the handoff", () => {
   const input = proposal();
-  input.resources[0].offers[0].conditions = "Detailed terms. ".repeat(500) + "LAST ANSWER";
+  input.resources[0].offers[0].proposal = "Detailed terms. ".repeat(500) + "LAST ANSWER";
   const draft = makeContributionEmail(input, recipient);
   assert.ok(draft.mailto.length > LONG_EMAIL_HINT_LENGTH);
   assert.equal(draft.isLong, true);
-  assert.ok(draft.body.includes(input.resources[0].offers[0].conditions));
+  assert.ok(draft.body.includes(input.resources[0].offers[0].proposal));
   assert.equal(new URL(draft.mailto).searchParams.get("body"), draft.body);
 });
 
@@ -84,7 +80,7 @@ test("recipient delimiters remain in the address", () => {
 
 test("email file preserves the recipient and Unicode subject/body, with safe MIME line lengths", () => {
   const input = proposal({name:"Álex 👋",quote:"Hello\nBcc: keep this in the body"});
-  input.resources[0].offers[0].conditions = "Terms € £ 👋 ".repeat(800) + "LAST ANSWER";
+  input.resources[0].offers[0].proposal = "Terms € £ 👋 ".repeat(800) + "LAST ANSWER";
   const draft = makeContributionEmail(input, recipient);
   const file = makeEmailFile(draft, recipient);
   const [headers, body] = file.split("\r\n\r\n");
@@ -95,4 +91,45 @@ test("email file preserves the recipient and Unicode subject/body, with safe MIM
   assert.ok(file.split("\r\n").every(line => line.length <= 78));
   assert.ok(!headers.includes("Bcc:"));
   assert.throws(() => makeEmailFile(draft, "hello@example.com\r\nBcc: other@example.com"));
+});
+
+test("image selection rejects unsupported files and individual or combined oversize", () => {
+  const image = size => ({type:"image/png", size});
+  assert.equal(validateIcons([]), "");
+  assert.equal(validateIcons([image(5 * 1024 * 1024), image(5 * 1024 * 1024)]), "");
+  assert.match(validateIcons([{type:"image/svg+xml",size:100}]), /PNG/);
+  assert.match(validateIcons([{type:"image/gif",size:100}]), /Choose a PNG, JPEG or WebP image/);
+  assert.equal(validateIcons(["image/png", "image/jpeg", "image/webp"].map(type => ({type, size:100}))), "");
+  assert.match(validateIcons([image(5 * 1024 * 1024 + 1)]), /5 MB/);
+  assert.match(validateIcons([image(4 * 1024 * 1024),image(4 * 1024 * 1024),image(4 * 1024 * 1024)]), /10 MB/);
+});
+
+test("image validation associates errors with the affected contribution and clears after removal", () => {
+  const valid = {type: "image/png", size: 1024};
+  const unsupported = {type: "text/plain", size: 1024};
+  const oversized = {type: "image/jpeg", size: 5 * 1024 * 1024 + 1};
+  assert.deepEqual(validateIconSelections([[valid], [unsupported], []]), ["", validateIcons([unsupported]), ""]);
+  assert.deepEqual(validateIconSelections([[], [valid], [oversized]]), ["", "", validateIcons([oversized])]);
+  const large = {type: "image/png", size: 4 * 1024 * 1024};
+  assert.deepEqual(validateIconSelections([[], [large], [large], [large]]),
+    ["", validateIcons([large, large, large]), "", ""]);
+  assert.deepEqual(validateIconSelections([[], [large], [], [large]]), ["", "", "", ""]);
+});
+
+test("email attachment preserves binary data and contribution association without filename injection", async () => {
+  const bytes = new Uint8Array([137,80,78,71,0,255,13,10]);
+  const file = new File([bytes], 'icon"\r\nBcc: example@example.com.png', {type:"image/png"});
+  const attachment = await makeIconAttachment(file, 2);
+  assert.equal(attachment.filename, "contribution-2-icon.png");
+  const draft = makeContributionEmail(proposal(), recipient);
+  const email = makeEmailFile(draft, recipient, [attachment]);
+  assert.match(email, /Content-Type: multipart\/mixed/);
+  const parts = email.split("--=_indie_contribution_images");
+  assert.equal(Buffer.from(parts[1].split("\r\n\r\n")[1].trim(), "base64").toString(), draft.body);
+  assert.match(parts[2], /filename="contribution-2-icon.png"/);
+  assert.deepEqual(new Uint8Array(Buffer.from(parts[2].split("\r\n\r\n")[1].trim(), "base64")), bytes);
+  assert.ok(!email.includes("Bcc:"));
+  assert.ok(email.split("\r\n").every(line => line.length <= 78));
+  assert.throws(() => makeEmailFile(draft, recipient, [{...attachment, type:"image/png\r\nBcc: x"}]));
+  assert.throws(() => makeEmailFile(draft, recipient, [{...attachment, type:"image/gif", filename:"contribution-2-icon.gif"}]));
 });

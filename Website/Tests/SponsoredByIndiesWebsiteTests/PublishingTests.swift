@@ -143,6 +143,7 @@ struct PublishingTests {
         let contribution = try page("participate/indies/index.html")
         for (attribute, expectedRole) in [
             ("data-add-offer", "btn-secondary"),
+            ("data-remove-icon", "btn-secondary"),
             ("data-remove-offer", "btn-danger"),
             ("data-remove-resource", "btn-danger")
         ] {
@@ -156,14 +157,35 @@ struct PublishingTests {
             #expect(button.contains("aria-hidden=\"true\""))
             #expect(button.contains("data-action-label=\"true\""))
         }
-        #expect(contribution.contains("aria-label=\"Add another offer to resource 1\""))
+        #expect(contribution.contains("aria-label=\"Add another offer to contribution 1\""))
+        #expect(contribution.contains("aria-label=\"Remove image from contribution 1\""))
+        // The initial proposal only needs identity, conference and one free-text offer.
+        let requiredControls = contribution.matches(of: /<(?:input|textarea|select)[^>]*required[^>]*>/).map { String($0.output) }
+        #expect(requiredControls.count == 4)
+        for id in ["maker-name", "maker-email", "conference", "resource-1-offer-1-proposal"] {
+            #expect(requiredControls.contains { $0.contains("id=\"\(id)\"") })
+        }
+        for summary in ["More about you (optional)", "Your connection and quote (optional)", "Product details and icon (optional)"] {
+            #expect(contribution.contains("<summary>\(summary)</summary>"))
+        }
+        #expect(contribution.contains("1. App, game or other resource"))
+        #expect(contribution.contains("1. Offer"))
+        #expect(contribution.contains("placeholder=\"Dani Devesa\""))
+        #expect(contribution.contains("placeholder=\"ARCTIC 2027\""))
+        #expect(contribution.contains("placeholder=\"Get 50% off lifetime Premium for Xarra!"))
+        #expect(contribution.contains("aria-describedby=\"connection-help\""))
+        #expect(!contribution.contains("RocketSim"))
+        #expect(!contribution.contains("<details open"))
+        #expect(contribution.contains("type=\"file\""))
+        #expect(contribution.contains("data-product-icon=\"true\""))
+        #expect(contribution.contains("accept=\"image/png,image/jpeg,image/webp\""))
         #expect(contribution.contains("/css/bootstrap-icons.min.css"))
         #expect(contribution.contains("value=\"Sample &quot;North&quot; &amp;"))
         let suggestionsRange = try #require(contribution.range(of: "<datalist[^>]*id=\"conference-options\"[^>]*>.*?</datalist>", options: .regularExpression))
         let suggestions = String(contribution[suggestionsRange])
-        #expect(suggestions.contains("2024"))
-        #expect(suggestions.contains("2025 &quot;friends&quot; &amp; crew"))
-        #expect(!suggestions.contains("2027"))
+        #expect(!suggestions.contains("2024"))
+        #expect(!suggestions.contains("2025 &quot;friends&quot; &amp; crew"))
+        #expect(suggestions.contains("2027"))
         #expect(!suggestions.contains("2000"))
         #expect(!FileManager.default.fileExists(atPath: root.appendingPathComponent("conferences/sample/2024/index.html").path))
         #expect(contribution.contains("data-recipient=\"team&amp;events@example.org\""))
@@ -223,8 +245,8 @@ struct PublishingTests {
         #expect(home.contains("content=\"https://custom.example.org/social-preview.png?v="))
         let directory = try String(contentsOf: root.appending(path: "conferences/index.html"), encoding: .utf8)
         let contribution = try String(contentsOf: root.appending(path: "participate/indies/index.html"), encoding: .utf8)
-        #expect(contribution.contains("value=\"Sample Conference 2027\""))
-        #expect(contribution.contains("value=\"Sample Conference 2028\""))
+        #expect(contribution.contains("value=\"Sample Conference 2027\"") == (day <= "2027-02-04"))
+        #expect(contribution.contains("value=\"Sample Conference 2028\"") == (day <= "2028-02-04"))
         #expect(directory.contains("href=\"/conferences/sample/\(expectedYear)/\""))
         let sitemap = try String(contentsOf: root.appending(path: "sitemap.xml"), encoding: .utf8)
         #expect(!sitemap.contains("<loc>https://custom.example.org/conferences/sample/</loc>"))

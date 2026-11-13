@@ -116,6 +116,9 @@ details > p { margin-top: var(--space-4); padding-inline: var(--space-1); }
 /* Preserve Bootstrap’s full-width floated legend so the divider stays above it. */
 .contribution-form legend { font-size: 1.5rem; font-weight: 650; letter-spacing: -.02em; }
 .contribution-form fieldset > div { margin-bottom: var(--space-5); }
+/* Nested offers share a smaller legend and a logical inset, including RTL layouts. */
+.contribution-form fieldset[data-offer] { border-top: 0; border-inline-start: var(--border-width) solid var(--rule); padding-inline-start: var(--space-4); margin-inline-start: var(--space-2); padding-block: var(--space-2); }
+.contribution-form fieldset[data-offer] > legend { font-size: var(--offer-heading-size); }
 .form-label { display: block; color: var(--ink); font-weight: 600; margin-top: var(--space-4); margin-bottom: var(--space-2); }
 .form-control,.form-select { min-height: var(--target-size); border: var(--border-width) solid var(--muted); border-radius: var(--radius-small); background-color: var(--surface); color: var(--ink); font-size: 1rem; padding: var(--control-inset-block) var(--control-inset-inline); }
 textarea.form-control { resize: vertical; }

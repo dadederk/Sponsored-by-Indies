@@ -15,16 +15,10 @@ export function makeContributionEmail(data, recipient) {
     line("My connection", data.connection), line("Conference quote", data.quote), ""
   ];
   data.resources.forEach((resource, index) => {
-    lines.push(`RESOURCE ${index + 1}`, line("Name", resource.product), line("URL", resource.url),
-      line("Type", resource.category), line("Description", resource.description), "");
+    lines.push(`CONTRIBUTION ${index + 1}`, line("Name", resource.product), line("URL", resource.url),
+      line("Description", resource.description), "");
     resource.offers.forEach((offer, offerIndex) => {
-      lines.push(`Offer ${offerIndex + 1}`, line("Offer type", offer.kind),
-        line("Attendee price/discount", offer.kind === "Free" ? "Free (0)" : offer.discount),
-        line("Available to", offer.audience));
-      if (offer.audience === "Limited prize licenses") lines.push(line("Prize licenses", offer.quantity));
-      lines.push(line("Product edition/plan", offer.plan), line("Usual price and currency", offer.regularPrice),
-        line("Access duration", offer.duration), line("Last day to claim", offer.validUntil),
-        line("Conditions and redemption", offer.conditions), "");
+      lines.push(`${offerIndex + 1}. Offer`, clean(offer.proposal), "");
     });
   });
   lines.push("This is an initial proposal. Final offers and public profile details are still to be agreed.");
@@ -34,17 +28,65 @@ export function makeContributionEmail(data, recipient) {
   return { subject, body, mailto, isLong: mailto.length > LONG_EMAIL_HINT_LENGTH };
 }
 
+function encodeBytes(bytes) {
+  let binary = "";
+  for (let offset = 0; offset < bytes.length; offset += 8192) {
+    binary += String.fromCharCode(...bytes.subarray(offset, offset + 8192));
+  }
+  return btoa(binary);
+}
+
 function base64(text) {
-  return btoa(Array.from(new TextEncoder().encode(text), byte => String.fromCharCode(byte)).join(""));
+  return encodeBytes(new TextEncoder().encode(text));
+}
+
+const imageExtensions = { "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp" };
+export function validateIcons(files) {
+  if (files.some(file => !imageExtensions[file.type])) return "Choose a PNG, JPEG or WebP image.";
+  if (files.some(file => file.size > 5 * 1024 * 1024)) return "Each image must be 5 MB or smaller.";
+  if (files.reduce((total, file) => total + file.size, 0) > 10 * 1024 * 1024) return "Choose images totalling 10 MB or less.";
+  return "";
+}
+
+export function validateIconSelections(selections) {
+  const errors = selections.map(validateIcons);
+  if (errors.some(Boolean)) return errors;
+  const combinedError = validateIcons(selections.flat());
+  if (combinedError) {
+    // The combined limit has no single offending file; focus the first selection.
+    errors[selections.findIndex(files => files.length)] = combinedError;
+  }
+  return errors;
+}
+
+export async function makeIconAttachment(file, contributionNumber) {
+  const error = validateIcons([file]);
+  if (error) throw new Error(error);
+  return {
+    filename: `contribution-${contributionNumber}-icon.${imageExtensions[file.type]}`,
+    type: file.type,
+    content: encodeBytes(new Uint8Array(await file.arrayBuffer()))
+  };
 }
 
 // MIME encoding keeps Unicode, long answers and header-like body text intact.
-export function makeEmailFile(draft, recipient) {
+export function makeEmailFile(draft, recipient, attachments = []) {
   if (/[\r\n<>]/.test(recipient)) throw new Error("Invalid email recipient");
   const subject = Array.from(draft.subject.matchAll(/.{1,10}/gu), match => `=?UTF-8?B?${base64(match[0])}?=`).join(`${newline} `);
   const body = base64(draft.body).match(/.{1,76}/g)?.join(newline) ?? "";
-  return ["X-Unsent: 1", `To: ${recipient}`, `Subject: ${subject}`, "MIME-Version: 1.0",
-    'Content-Type: text/plain; charset="UTF-8"', "Content-Transfer-Encoding: base64", "", body, ""].join(newline);
+  const headers = ["X-Unsent: 1", `To: ${recipient}`, `Subject: ${subject}`, "MIME-Version: 1.0"];
+  const textPart = ['Content-Type: text/plain; charset="UTF-8"', "Content-Transfer-Encoding: base64", "", body, ""].join(newline);
+  if (!attachments.length) return [...headers, textPart].join(newline);
+  // Base64 payloads cannot contain this boundary. Filenames are generated locally.
+  const boundary = "=_indie_contribution_images";
+  const parts = attachments.map(attachment => {
+    if (!imageExtensions[attachment.type] || !/^contribution-[1-9][0-9]*-icon\.(png|jpg|webp)$/.test(attachment.filename)
+      || !/^[A-Za-z0-9+/]*={0,2}$/.test(attachment.content)) throw new Error("Invalid image attachment");
+    return [`Content-Type: ${attachment.type}`, `Content-Disposition: attachment; filename="${attachment.filename}"`,
+      "Content-Transfer-Encoding: base64", "", attachment.content.match(/.{1,76}/g)?.join(newline) ?? "", ""].join(newline);
+  });
+  return [...headers, `Content-Type: multipart/mixed; boundary="${boundary}"`, "",
+    `--${boundary}`, textPart, ...parts.flatMap(part => [`--${boundary}`, part]), `--${boundary}--`, ""].join(newline);
 }
 
 function initialiseForm() {
@@ -63,8 +105,10 @@ function initialiseForm() {
   let offerID = 1;
   let currentDraft;
   let downloadURL;
+  let revision = 0;
 
   function invalidateDraft() {
+    revision++;
     if (!currentDraft) return;
     currentDraft = undefined;
     preview.hidden = true;
@@ -76,48 +120,47 @@ function initialiseForm() {
   }
   form.addEventListener("input", invalidateDraft);
   form.addEventListener("invalid", event => {
-    // Optional details may have been collapsed after entering an invalid date.
+    // Reveal invalid optional fields before the browser tries to focus them.
     let details = event.target.closest("details");
     while (details) {
       details.open = true;
       details = details.parentElement.closest("details");
     }
   }, true);
-  form.addEventListener("change", event => {
+  form.addEventListener("change", () => {
     invalidateDraft();
-    const offer = event.target.closest("[data-offer]");
-    if (offer) updateOffer(offer);
+    validateImageFields();
   });
 
   const resources = () => [...form.querySelectorAll("fieldset[data-resource]")];
   const offers = resource => [...resource.querySelectorAll("fieldset[data-offer]")];
-  function updateOffer(offer) {
-    const free = offer.querySelector('[data-resource-field="kind"]').value === "Free";
-    const discount = offer.querySelector("[data-discount-details]");
-    discount.hidden = free;
-    discount.querySelector("input").disabled = free;
-    discount.querySelector("input").required = !free;
-    const prize = offer.querySelector('[data-resource-field="audience"]').value === "Limited prize licenses";
-    const quantity = offer.querySelector("[data-prize-details]");
-    quantity.hidden = !prize;
-    quantity.querySelector("input").disabled = !prize;
-    quantity.querySelector("input").required = prize;
+  const iconFields = () => [...form.querySelectorAll("[data-product-icon]")];
+  function validateImageFields() {
+    const fields = iconFields();
+    const errors = validateIconSelections(fields.map(field => [...field.files]));
+    fields.forEach((field, index) => {
+      field.setCustomValidity(errors[index]);
+      field.parentElement.querySelector("[data-remove-icon]").hidden = !field.files.length;
+    });
+    document.getElementById("prepare-draft").textContent = fields.some(field => field.files.length) ? "Prepare draft with images" : "Open email draft";
+    return !errors.some(Boolean);
   }
 
   function renumberResources() {
     const fields = resources();
     fields.forEach((fieldset, index) => {
-      fieldset.querySelector("legend").textContent = `Resource ${index + 1}`;
+      fieldset.querySelector("legend").textContent = `${index + 1}. App, game or other resource`;
       const button = fieldset.querySelector("[data-remove-resource]");
-      button.querySelector("[data-action-label]").textContent = `Remove resource ${index + 1}`;
+      button.querySelector("[data-action-label]").textContent = `Remove contribution ${index + 1}`;
       button.hidden = fields.length === 1;
-      fieldset.querySelector("[data-add-offer]").setAttribute("aria-label", `Add another offer to resource ${index + 1}`);
+      fieldset.querySelector("[data-remove-icon]").setAttribute("aria-label", `Remove image from contribution ${index + 1}`);
+      fieldset.querySelector("[data-add-offer]").setAttribute("aria-label", `Add another offer to contribution ${index + 1}`);
       const entries = offers(fieldset);
       entries.forEach((offer, offerIndex) => {
-        offer.querySelector("legend").textContent = `Offer ${offerIndex + 1}`;
+        offer.querySelector("legend").textContent = `${offerIndex + 1}. Offer`;
         const remove = offer.querySelector("[data-remove-offer]");
         remove.querySelector("[data-action-label]").textContent = `Remove offer ${offerIndex + 1}`;
-        remove.setAttribute("aria-label", `Remove offer ${offerIndex + 1} from resource ${index + 1}`);
+        remove.setAttribute("aria-label", `Remove offer ${offerIndex + 1} from contribution ${index + 1}`);
         remove.hidden = entries.length === 1;
       });
     });
@@ -141,23 +184,32 @@ function initialiseForm() {
     invalidateDraft();
     const clone = cloneFields(resourceTemplate, `resource-${++resourceID}`);
     resources().at(-1).after(clone);
-    offers(clone).forEach(updateOffer);
     renumberResources();
-    clone.querySelector("input").focus();
-    status.textContent = `Resource ${resources().length} added.`;
+    clone.querySelector("textarea[required]").focus();
+    status.textContent = `Contribution ${resources().length} added.`;
   });
 
   form.addEventListener("click", event => {
+    const removeIcon = event.target.closest("[data-remove-icon]");
+    if (removeIcon) {
+      invalidateDraft();
+      const field = removeIcon.parentElement.querySelector("[data-product-icon]");
+      const contributionNumber = resources().indexOf(field.closest("[data-resource]")) + 1;
+      field.value = "";
+      validateImageFields();
+      field.focus();
+      status.textContent = `Image removed from contribution ${contributionNumber}.`;
+      return;
+    }
     const addOffer = event.target.closest("[data-add-offer]");
     if (addOffer) {
       invalidateDraft();
       const resource = addOffer.closest("[data-resource]");
       const clone = cloneFields(offerTemplate, `${resource.id}-offer-${++offerID}`);
       offers(resource).at(-1).after(clone);
-      updateOffer(clone);
       renumberResources();
-      clone.querySelector("select").focus();
-      status.textContent = `Offer ${offers(resource).length} added to resource ${resources().indexOf(resource) + 1}.`;
+      clone.querySelector("textarea").focus();
+      status.textContent = `Offer ${offers(resource).length} added to contribution ${resources().indexOf(resource) + 1}.`;
       return;
     }
     const removeOffer = event.target.closest("[data-remove-offer]");
@@ -172,7 +224,7 @@ function initialiseForm() {
       renumberResources();
       resource.querySelector("[data-add-offer]").focus();
       const remaining = offers(resource).length;
-      status.textContent = `Offer ${offerNumber} removed from resource ${resourceNumber}. ${remaining} ${remaining === 1 ? "offer remains" : "offers remain"}.`;
+      status.textContent = `Offer ${offerNumber} removed from contribution ${resourceNumber}. ${remaining} ${remaining === 1 ? "offer remains" : "offers remain"}.`;
       return;
     }
     const remove = event.target.closest("[data-remove-resource]");
@@ -181,10 +233,11 @@ function initialiseForm() {
     const resource = remove.closest("fieldset[data-resource]");
     const resourceNumber = resources().indexOf(resource) + 1;
     resource.remove();
+    validateImageFields();
     renumberResources();
     addButton.focus();
     const remaining = resources().length;
-    status.textContent = `Resource ${resourceNumber} removed. ${remaining} ${remaining === 1 ? "resource remains" : "resources remain"}.`;
+    status.textContent = `Contribution ${resourceNumber} removed. ${remaining} ${remaining === 1 ? "contribution remains" : "contributions remain"}.`;
   });
 
   function readFields(container, offerFields) {
@@ -204,24 +257,47 @@ function initialiseForm() {
     };
   }
 
-  form.addEventListener("submit", event => {
+  form.addEventListener("submit", async event => {
     event.preventDefault();
+    validateImageFields();
     if (!form.reportValidity()) return;
+    const draftRevision = ++revision;
+    const draft = makeContributionEmail(readForm(), form.dataset.recipient);
+    const selected = resources().flatMap((resource, index) => {
+      const file = resource.querySelector("[data-product-icon]").files[0];
+      return file ? [{ file, number: index + 1 }] : [];
+    });
+    let attachments;
+    try {
+      attachments = await Promise.all(selected.map(({ file, number }) => makeIconAttachment(file, number)));
+    } catch {
+      if (revision !== draftRevision) return;
+      status.textContent = "An image could not be read. Choose the image again, or remove it and attach it in your email app.";
+      return;
+    }
+    // Edits or another submission while reading files must not resurrect an old draft.
+    if (revision !== draftRevision) return;
     if (downloadURL) URL.revokeObjectURL(downloadURL);
-    currentDraft = makeContributionEmail(readForm(), form.dataset.recipient);
-    subjectField.value = currentDraft.subject;
-    bodyField.value = currentDraft.body;
-    emailLink.href = currentDraft.mailto;
-    downloadURL = URL.createObjectURL(new Blob([makeEmailFile(currentDraft, form.dataset.recipient)], { type: "message/rfc822" }));
+    currentDraft = draft;
+    subjectField.value = draft.subject;
+    bodyField.value = draft.body;
+    emailLink.href = draft.mailto;
+    downloadURL = URL.createObjectURL(new Blob([makeEmailFile(draft, form.dataset.recipient, attachments)], { type: "message/rfc822" }));
     downloadLink.href = downloadURL;
+    emailLink.textContent = attachments.length ? "Open email app (text only)" : "Open email app";
+    document.getElementById("draft-attachment-note").textContent = attachments.length
+      ? `${attachments.length} image(s) included in the email file. Download it to send your images, or attach them yourself after opening the text draft.` : "";
     preview.hidden = false;
-    const longHint = currentDraft.isLong ? " If your app cannot open this long draft, download the complete email file below or use Copy email text." : "";
-    if (event.submitter?.value === "preview") {
+    const longHint = draft.isLong ? " If your app cannot open this long draft, download the complete email file below or use Copy email text." : "";
+    if (attachments.length) {
+      status.textContent = "Your draft with images is ready. Download the email file below and open it in your email app to review and send. Nothing has been sent.";
+      downloadLink.focus();
+    } else if (event.submitter?.value === "preview") {
       status.textContent = `Your email preview is ready. Nothing has been sent.${longHint}`;
       bodyField.focus();
     } else {
       status.textContent = `Opening your email app with the recipient, subject and complete text. Nothing has been sent by this website.${longHint}`;
-      window.location.assign(currentDraft.mailto);
+      window.location.assign(draft.mailto);
     }
   });
 
@@ -237,7 +313,6 @@ function initialiseForm() {
     }
   });
 
-  offers(resources()[0]).forEach(updateOffer);
   renumberResources();
   form.hidden = false;
 }
