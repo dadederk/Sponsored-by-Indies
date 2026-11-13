@@ -58,6 +58,7 @@ extension Pages {
                             }
                         }
                     }.columns(2).class("g-3", "product-grid")
+                    Script(file: "/offer-terms.mjs").attribute("type", "module")
                 }
             }.id("bundle").class("container", "section-space").aria(.labelledBy, "bundle-title")
             Tag("section") {

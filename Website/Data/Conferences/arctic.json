@@ -33,6 +33,8 @@
       "valueSummary": {
         "explanation": "The total counts one compatible offer per app. Xarra’s free yearly subscription and discounted lifetime purchase are alternatives, so only the larger saving is counted. RetroRapid’s contribution is assumed to include Unlimited Plays. Final offer pricing, eligibility, and redemption details are still being arranged.",
         "offerIDs": [
+          "dee-yearly",
+          "rocketsim-yearly",
           "xarra-lifetime",
           "retrorapid-free"
         ]
@@ -44,8 +46,22 @@
     {
       "editionID": "arctic-2027",
       "indieID": "dani-devesa",
-      "connection": "Workshop speaker at ARCTIC in 2025.",
+      "connection": "Workshop ARCTIC 2025",
       "quote": "I ran a workshop at the first ARCTIC edition. The quality, in every respect, took us by surprise for a first edition. Many of us came back the next year, and I’m planning to return for a third time!",
+      "publicationApproved": true
+    },
+    {
+      "editionID": "arctic-2027",
+      "indieID": "noam-efergan",
+      "connection": "Speaker ARCTIC 2026",
+      "quote": null,
+      "publicationApproved": true
+    },
+    {
+      "editionID": "arctic-2027",
+      "indieID": "antoine-van-der-lee",
+      "connection": "Speaker ARCTIC 2027",
+      "quote": null,
       "publicationApproved": true
     }
   ],
@@ -132,6 +148,63 @@
         "review": "unambiguous",
         "verifiedOn": "2026-11-13",
         "sourceURL": "https://apps.apple.com/us/app/retrorapid-retro-arcade-racer/id6758641625"
+      }
+    },
+    {
+      "id": "dee-yearly",
+      "editionID": "arctic-2027",
+      "indieID": "noam-efergan",
+      "productName": "Dee: Muay Thai Coach",
+      "productURL": "https://dee.training/",
+      "productIconPath": "/app-icons/dee.png",
+      "description": "A Muay Thai training companion. Build a plan around your goals, time, and equipment, then follow rounds with spoken cues, a timer, and haptics.",
+      "benefit": "1 year of Dee Pro free",
+      "terms": "Yearly App Store subscription; renewal terms to be confirmed.",
+      "redemptionInstructions": "Not open yet. Eligibility and deadline to be confirmed; instructions will come through the conference.",
+      "publicationApproved": true,
+      "savingEstimate": {
+        "regularPriceUSD": 29.99,
+        "discountPercent": 100,
+        "plan": "Dee Pro Yearly",
+        "period": "year",
+        "discountedPeriods": 1,
+        "currency": "USD",
+        "storefront": "US",
+        "observedPricesUSD": [
+          29.99
+        ],
+        "review": "unambiguous",
+        "verifiedOn": "2026-11-13",
+        "sourceURL": "https://apps.apple.com/us/app/dee-muay-thai-coach/id6788483296"
+      }
+    },
+    {
+      "id": "rocketsim-yearly",
+      "editionID": "arctic-2027",
+      "indieID": "antoine-van-der-lee",
+      "productName": "RocketSim for Xcode",
+      "productURL": "https://www.rocketsim.app/",
+      "productIconPath": "/app-icons/rocketsim.png",
+      "description": "An Xcode Simulator companion for Mac. Capture screenshots and videos, inspect network traffic, test app behaviour, and compare designs without leaving your development flow.",
+      "benefit": "30% off your first year",
+      "terms": "Individual annual plan; first year only. Renewal price to be confirmed.",
+      "redemptionInstructions": "Not open yet. Eligibility and deadline to be confirmed; instructions will come through the conference.",
+      "publicationApproved": true,
+      "savingEstimate": {
+        "regularPriceUSD": 69.99,
+        "discountPercent": 30,
+        "plan": "RocketSim Yearly",
+        "period": "year",
+        "discountedPeriods": 1,
+        "currency": "USD",
+        "storefront": "US",
+        "observedPricesUSD": [
+          29.99,
+          69.99
+        ],
+        "review": "provisional",
+        "verifiedOn": "2026-11-13",
+        "sourceURL": "https://apps.apple.com/us/app/rocketsim-for-xcode-simulator/id1504940162"
       }
     }
   ]

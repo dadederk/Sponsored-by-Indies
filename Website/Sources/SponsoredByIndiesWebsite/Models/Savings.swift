@@ -56,7 +56,7 @@ struct BundleValue {
     var explanation: String
     var totalUSD: Decimal { offers.reduce(0) { $0 + ($1.savingEstimate?.amountUSD ?? 0) } }
     var amountLabel: String {
-        "About US$" + totalUSD.formatted(.number.precision(.fractionLength(0)).rounded(rule: .down).locale(Locale(identifier: "en_US")))
+        "US$" + totalUSD.formatted(.number.precision(.fractionLength(0)).rounded(rule: .down).locale(Locale(identifier: "en_US")))
     }
     var verifiedOn: String { offers.compactMap { $0.savingEstimate?.verifiedOn }.min() ?? "" }
 }

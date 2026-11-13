@@ -20,7 +20,7 @@ struct SavingsTests {
         catalog.editions[0].valueSummary = ValueSummary(explanation: "Compatible offers only.", offerIDs: ["tool"])
         try catalog.validate()
         #expect(catalog.bundleValue(for: catalog.editions[0])?.totalUSD == Decimal(string: "14.99"))
-        #expect(catalog.bundleValue(for: catalog.editions[0])?.amountLabel == "About US$14")
+        #expect(catalog.bundleValue(for: catalog.editions[0])?.amountLabel == "US$14")
         catalog.editions[0].valueSummary?.offerIDs = ["tool", "year"]
         #expect(throws: CatalogError.self) { try catalog.validate() }
         catalog.editions[0].valueSummary?.offerIDs = ["year"]
@@ -36,11 +36,12 @@ struct SavingsTests {
         let catalog = try Catalog.load(from: directory)
         let edition = try #require(catalog.editions.first { $0.id == "arctic-2027" })
         let products = catalog.visibleProductContributions(for: edition)
-        #expect(products.map(\.product.productName) == ["Xarra!", "RetroRapid!"])
+        #expect(products.map(\.product.productName) == ["Dee: Muay Thai Coach", "RocketSim for Xcode", "Xarra!", "RetroRapid!"])
         let value = try #require(catalog.bundleValue(for: edition))
         #expect(value.totalUSD == products.reduce(0) { $0 + ($1.maximumSavingUSD ?? 0) })
-        #expect(value.totalUSD == Decimal(string: "17.98"))
-        #expect(value.amountLabel == "About US$17")
+        #expect(value.totalUSD == Decimal(string: "68.96"))
+        #expect(value.amountLabel == "US$68")
+        #expect(value.offers.first { $0.id == "rocketsim-yearly" }?.savingEstimate?.review == .provisional)
     }
 
     @Test(arguments: ["currency", "storefront", "percentage zero", "percentage too large", "duration", "missing plan", "missing observations", "wrong selection", "duplicate observation", "unreviewed ambiguity", "foreign storefront link"])
@@ -86,14 +87,14 @@ struct SavingsTests {
 
     @Test func sourceParsingDeduplicatesButPreservesConflictingPrices() throws {
         let html = """
-        <div class="text-pair svelte-123"><span>Example Yearly</span> <span>$69.99</span></div>
-        <div class="text-pair svelte-123"><span>Example Monthly</span> <span>$9.99</span></div>
-        <div class="text-pair svelte-123"><span>Example Yearly</span> <span>$69.99</span></div>
-        <div class="text-pair svelte-123"><span>Example Yearly</span> <span>$29.99</span></div>
+        <div class="text-pair svelte-123"><span>RocketSim Yearly</span> <span>$69.99</span></div>
+        <div class="text-pair svelte-123"><span>RocketSim Monthly</span> <span>$9.99</span></div>
+        <div class="text-pair svelte-123"><span>RocketSim Yearly</span> <span>$69.99</span></div>
+        <div class="text-pair svelte-123"><span>RocketSim Yearly</span> <span>$29.99</span></div>
         """
-        #expect(try PriceVerification.listedPrices(in: html, plan: "Example Yearly") == [Decimal(string: "29.99")!, Decimal(string: "69.99")!])
+        #expect(try PriceVerification.listedPrices(in: html, plan: "RocketSim Yearly") == [Decimal(string: "29.99")!, Decimal(string: "69.99")!])
         #expect(throws: CatalogError.self) { try PriceVerification.listedPrices(in: html, plan: "Unknown") }
-        #expect(throws: CatalogError.self) { try PriceVerification.listedPrices(in: html.replacingOccurrences(of: "$", with: "£"), plan: "Example Yearly") }
+        #expect(throws: CatalogError.self) { try PriceVerification.listedPrices(in: html.replacingOccurrences(of: "$", with: "£"), plan: "RocketSim Yearly") }
     }
 
     @Test(arguments: [true, false])

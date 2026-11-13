@@ -1,10 +1,26 @@
 [
   {
     "id": "dani-devesa",
-    "name": "Dani Devesa Derksen-Staats",
+    "name": "Dani Devesa",
     "company": "Accessibility up to 11!",
     "websiteURL": "https://accessibilityupto11.com/",
     "socials": [],
     "initials": "DD"
+  },
+  {
+    "id": "noam-efergan",
+    "name": "Noam Efergan",
+    "company": "Dee Training",
+    "websiteURL": "https://dee.training/",
+    "socials": [],
+    "initials": "NE"
+  },
+  {
+    "id": "antoine-van-der-lee",
+    "name": "Antoine van der Lee",
+    "company": "SwiftLee",
+    "websiteURL": "https://www.avanderlee.com/",
+    "socials": [],
+    "initials": "AL"
   }
 ]

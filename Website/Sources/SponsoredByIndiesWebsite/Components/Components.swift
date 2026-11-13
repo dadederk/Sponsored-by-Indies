@@ -119,6 +119,8 @@ enum Components {
     }
 
     static func productCard(_ product: Offer, offers: [Offer], indie: Indie, participation: Participation) -> some HTML {
+        // Hex-encoded IDs stay unique and safe as selectors even when editorial IDs contain punctuation.
+        let termsID = "offer-terms-" + product.id.utf8.map { String(("0" + String($0, radix: 16)).suffix(2)) }.joined()
         return Tag("article") {
             Text {
                 Link(target: product.productURL) {
@@ -148,6 +150,10 @@ enum Components {
                 }
             }.class("product-card-benefits").attribute("role", "list")
             Section {
+                if let quote = participation.quote {
+                    Quote { Text("“" + escaped(quote) + "”").font(.small).margin(0) }
+                        .margin(.top, 0).margin(.bottom, .small)
+                }
                 Text {
                     Span(escaped(indie.name)).fontWeight(.semibold)
                     if let website = indie.websiteURL {
@@ -161,24 +167,43 @@ enum Components {
                     if let connection = participation.connection {
                         Span(" · " + escaped(connection))
                     }
+                    Span {
+                        " · "
+                        // Bootstrap's data API restores focus to this link when the modal closes.
+                        Link(target: "#" + termsID) {
+                            "Offer terms"
+                            Span(" for " + escaped(product.productName)).class("visually-hidden")
+                        }.attribute("data-bs-toggle", "modal")
+                            .class("offer-terms-link")
+                            .aria(.hasPopup, "dialog").aria(.controls, termsID)
+                    }.attribute("data-offer-terms-trigger", "true").attribute("hidden")
                 }.font(.small).margin(0)
-                if let quote = participation.quote {
-                    Quote { Text("“" + escaped(quote) + "”").font(.small).margin(0) }
-                        .margin(.top, .small).margin(.bottom, 0)
-                }
                 for social in indie.socials { Link(escaped(social.label), target: social.url).font(.small) }
-                productTerms(product, offers: offers)
+                productTerms(product, offers: offers, id: termsID)
             }.foregroundStyle(.secondary).class("product-card-maker")
         }.class("panel", "product-card")
     }
 
-    private static func productTerms(_ product: Offer, offers: [Offer]) -> some HTML {
+    private static func productTerms(_ product: Offer, offers: [Offer], id: String) -> some HTML {
+        Group {
+            Modal(id: id) {
+                productTermsContent(offers)
+            } header: {
+                Text("Offer terms for " + escaped(product.productName))
+                    .font(.title3).margin(0).id(id + "-title")
+                Button().role(.close).attribute("data-bs-dismiss", "modal")
+            }
+            .size(.large).scrollableContent(true).animated(false)
+            Tag("details") {
+                Tag("summary") { "Offer terms for " + escaped(product.productName) }
+                productTermsContent(offers)
+            }.id(id + "-fallback").attribute("data-offer-terms-fallback", "true").font(.small)
+        }
+    }
+
+    private static func productTermsContent(_ offers: [Offer]) -> some HTML {
         let sharedInstructions = Set(offers.map(\.redemptionInstructions)).count == 1 ? offers.first?.redemptionInstructions : nil
-        return Tag("details") {
-            Tag("summary") {
-                "Offer terms"
-                Span(" for " + escaped(product.productName)).class("visually-hidden")
-            }.fontWeight(.regular)
+        return Group {
             for offer in offers {
                 Section {
                     Text(escaped(offer.benefit)).fontWeight(.semibold).margin(.bottom, 0)
@@ -200,7 +225,7 @@ enum Components {
                     escaped(sharedInstructions)
                 }.margin(.bottom, 0)
             }
-        }.font(.small).class("product-card-terms")
+        }
     }
 
     // Native details/summary supports keyboard and assistive technology without a script.
