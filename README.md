@@ -34,7 +34,17 @@ Keep existing page addresses and add only approved conference and offer details.
 
 Read [AGENTS.md](AGENTS.md) for coding conventions and verification guidance.
 
-Bundle cards appear in descending order of their greatest potential saving, using US prices in USD as the shared baseline. Alternative offers for the same product are grouped and are not added together for ranking. Products without a verified estimate follow those with one; equal values use app name, maker ID and product URL for stable ordering. Record the price source and check date with each estimate. Bundle totals count compatible offers only, label estimates clearly and note that local prices may vary.
+Bundle cards appear in descending order of potential saving, using US prices in USD as the shared baseline. Each price record identifies the exact store plan, regular price, discount percentage, eligible period, source, observed prices and check date. Savings use decimal arithmetic and round down to cents; both ranking and bundle totals use that same calculation. Alternative offers for one product are not added together. Equal savings use app name, maker ID and product URL for stable ordering.
+
+Bundle totals are generated from the explicitly reviewed compatible offer IDs. Validation rejects duplicate products, missing evidence, a lower-value alternative, invalid percentages, mismatched currency or storefront, and fractional-cent reference prices. The headline rounds the computed total down to whole dollars and labels it as approximate. Each card’s terms show the exact reference price, plan and source. Keep internal price-review notes and contributor follow-ups in private planning; the repository check rejects price-review note fields in conference data. Check dates appear in the bundle’s calculation details. Final checkout prices and eligibility can differ.
+
+For current and upcoming editions, builds reject future-dated evidence and prices checked more than 30 days ago. Historical editions retain their original evidence. Routine builds stay offline. To check the public sources explicitly, run:
+
+```sh
+swift run --package-path Website --force-resolved-versions SponsoredByIndiesWebsite --verify-prices
+```
+
+This read-only command checks approved offers for current and upcoming editions, leaving archived evidence intact. It compares exact plan labels and all distinct listed USD prices against the recorded observations. Missing or changed prices fail the check; it never picks the first or largest price, changes content, or refreshes dates automatically. Multiple prices under one plan name require an explicitly marked provisional selection. Record the reasoning and any maker-confirmation task in private planning, outside the website repository. Matching a public listing does not confirm which price a particular customer or offer is eligible for; confirm ambiguous plans with the maker. After reviewing a successful check, update the evidence and check date together. Use `--verify-prices` and `--validate-only` separately; validation stays offline.
 
 ## Build and check
 

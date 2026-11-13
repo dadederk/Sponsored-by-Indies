@@ -63,9 +63,18 @@ extension Catalog {
                 let approved = Set(visibleOffers(for: edition).map(\.id))
                 try require(!value.offerIDs.isEmpty && Set(value.offerIDs).isSubset(of: approved),
                             "Value summary must reference approved offers for \(edition.id)")
-                try require(validDate(value.verifiedOn), "Value verification date must be YYYY-MM-DD.")
                 try unique(value.offerIDs, "value summary offer ID")
-                try nonempty([value.amountLabel, value.explanation], "value summary for \(edition.id)")
+                try nonempty([value.explanation], "value summary for \(edition.id)")
+                let selected = offers.filter { value.offerIDs.contains($0.id) }
+                try require(selected.allSatisfy { $0.savingEstimate != nil }, "Every counted offer needs price evidence.")
+                try unique(selected.map { "\($0.indieID)|\($0.productURL)" }, "alternative product in bundle value")
+                for offer in selected {
+                    let alternatives = visibleOffers(for: edition).filter {
+                        $0.indieID == offer.indieID && $0.productURL == offer.productURL
+                    }
+                    try require(offer.savingEstimate?.amountUSD == alternatives.compactMap { $0.savingEstimate?.amountUSD }.max(),
+                                "Bundle value must select the largest saving per product.")
+                }
             }
         }
         for indie in indies {
@@ -89,8 +98,28 @@ extension Catalog {
             }, "Offer \(offer.id) has no participation in its edition.")
             try Self.validateURL(offer.productURL)
             if let estimate = offer.savingEstimate {
-                try require(estimate.amountUSD.isFinite && estimate.amountUSD >= 0,
-                            "Savings must be finite, non-negative USD amounts.")
+                func money(_ value: Decimal) -> Bool {
+                    guard !value.isNaN, value >= 0 else { return false }
+                    var original = value
+                    var cents = Decimal()
+                    NSDecimalRound(&cents, &original, 2, .plain)
+                    return value == cents
+                }
+                try require(money(estimate.regularPriceUSD), "Reference prices need non-negative USD amounts with at most two decimals.")
+                try require((1...100).contains(estimate.discountPercent), "Discount percentage must be between 1 and 100.")
+                try require(!estimate.amountUSD.isNaN, "Savings calculation overflowed.")
+                try require(estimate.discountedPeriods == 1, "Savings count exactly one eligible purchase or first annual period.")
+                try require(estimate.currency == "USD" && estimate.storefront == "US", "Reference prices must use the US/USD baseline.")
+                try nonempty([estimate.plan], "price plan for \(offer.id)")
+                try require(!estimate.observedPricesUSD.isEmpty && estimate.observedPricesUSD.allSatisfy(money), "Record the observed reference prices.")
+                try require(Set(estimate.observedPricesUSD).count == estimate.observedPricesUSD.count, "Observed prices must be distinct.")
+                try require(estimate.observedPricesUSD.contains(estimate.regularPriceUSD), "Selected price must occur in the source evidence.")
+                if estimate.observedPricesUSD.count > 1 {
+                    try require(estimate.review == .provisional, "Conflicting prices must be marked provisional.")
+                }
+                if URL(string: estimate.sourceURL)?.host == "apps.apple.com" {
+                    try require(URL(string: estimate.sourceURL)?.path.hasPrefix("/us/app/") == true, "App Store price evidence must link to the US storefront.")
+                }
                 try require(validDate(estimate.verifiedOn), "Savings verification date must be YYYY-MM-DD.")
                 try Self.validateURL(estimate.sourceURL)
             }

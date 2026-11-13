@@ -85,26 +85,13 @@ struct CatalogTests {
     @Test func valueRequiresApprovedCompatibleOffersAndVerification() throws {
         var catalog = CatalogFixture.make()
         catalog.editions[0].valueSummary = ValueSummary(
-            amountLabel: "€10", explanation: "EUR, one tool, verified price.",
-            verifiedOn: "2026-11-12", offerIDs: ["tool"])
+            explanation: "One compatible saving.", offerIDs: ["tool"])
         try catalog.validate()
         catalog.editions[0].valueSummary?.offerIDs = ["unknown"]
         #expect(throws: CatalogError.self) { try catalog.validate() }
         catalog.editions[0].valueSummary?.offerIDs = ["tool"]
-        catalog.editions[0].valueSummary?.verifiedOn = "not a date"
+        catalog.offers[0].savingEstimate?.verifiedOn = "not a date"
         #expect(throws: CatalogError.self) { try catalog.validate() }
-    }
-
-    @Test(arguments: [nil, false, true] as [Bool?])
-    func valueSummaryPreservesTheEstimateFlagAndAcceptsOlderRecords(isEstimate: Bool?) throws {
-        var record: [String: Any] = [
-            "amountLabel": "US$10", "explanation": "One compatible saving.",
-            "verifiedOn": "2026-11-13", "offerIDs": ["tool"]
-        ]
-        if let isEstimate { record["isEstimate"] = isEstimate }
-        let data = try JSONSerialization.data(withJSONObject: record)
-        let summary = try JSONDecoder().decode(ValueSummary.self, from: data)
-        #expect(summary.isEstimate == (isEstimate ?? false))
     }
 
     @Test(arguments: ["javascript:alert(1)", "https:///", "https://user:password@example.org", "https://example.org/a b"])
@@ -190,13 +177,13 @@ struct CatalogTests {
     @Test func productsRankByMaximumSavingRatherThanSumOrSubmissionOrder() throws {
         var catalog = CatalogFixture.make()
         let original = catalog.offers[0]
-        func offer(_ id: String, product: String, saving: Double?) -> Offer {
+        func offer(_ id: String, product: String, saving: Decimal?) -> Offer {
             var result = original
             result.id = id
             result.productName = product
             result.productURL = "https://example.org/" + product.lowercased()
             result.savingEstimate = saving.map {
-                SavingEstimate(amountUSD: $0, verifiedOn: "2026-11-13", sourceURL: result.productURL)
+                CatalogFixture.saving(price: $0)
             }
             return result
         }
@@ -220,18 +207,16 @@ struct CatalogTests {
         }
     }
 
-    @Test(arguments: [-1.0, Double.infinity, Double.nan])
-    func rejectsInvalidSavings(amount: Double) throws {
+    @Test(arguments: [Decimal(-1), Decimal.nan, Decimal(string: "10.001")!])
+    func rejectsInvalidSavings(amount: Decimal) throws {
         var catalog = CatalogFixture.make()
-        catalog.offers[0].savingEstimate = SavingEstimate(
-            amountUSD: amount, verifiedOn: "2026-11-13", sourceURL: "https://example.org/price")
+        catalog.offers[0].savingEstimate = CatalogFixture.saving(price: amount)
         #expect(throws: CatalogError.self) { try catalog.validate() }
     }
 
     @Test func savingEstimatesNeedValidEvidence() throws {
         var catalog = CatalogFixture.make()
-        catalog.offers[0].savingEstimate = SavingEstimate(
-            amountUSD: 10, verifiedOn: "2026-02-30", sourceURL: "https://example.org/price")
+        catalog.offers[0].savingEstimate?.verifiedOn = "2026-02-30"
         #expect(throws: CatalogError.self) { try catalog.validate() }
         catalog.offers[0].savingEstimate?.verifiedOn = "2026-11-13"
         catalog.offers[0].savingEstimate?.sourceURL = "javascript:alert(1)"

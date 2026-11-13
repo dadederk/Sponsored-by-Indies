@@ -284,6 +284,11 @@ function initialiseForm() {
     emailLink.href = draft.mailto;
     downloadURL = URL.createObjectURL(new Blob([makeEmailFile(draft, form.dataset.recipient, attachments)], { type: "message/rfc822" }));
     downloadLink.href = downloadURL;
+    const hasImages = attachments.length > 0;
+    emailLink.classList.toggle("btn-primary", !hasImages);
+    emailLink.classList.toggle("btn-secondary", hasImages);
+    downloadLink.classList.toggle("btn-primary", hasImages);
+    downloadLink.classList.toggle("btn-secondary", !hasImages);
     emailLink.textContent = attachments.length ? "Open email app (text only)" : "Open email app";
     document.getElementById("draft-attachment-note").textContent = attachments.length
       ? `${attachments.length} image(s) included in the email file. Download it to send your images, or attach them yourself after opening the text draft.` : "";

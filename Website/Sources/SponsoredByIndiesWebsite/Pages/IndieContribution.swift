@@ -33,9 +33,11 @@ struct IndieContribution {
                         Tag("input").id("draft-subject").attribute("type", "text").attribute("readonly").class("form-control")
                         FormFields.multiline("Email text", id: "draft-body", rows: 16, readOnly: true)
                         Section {
+                            Link("Open email app", target: contact).linkStyle(.button).role(.primary).id("draft-email-link")
                             Button("Copy email text").type(.plain).role(.secondary).id("copy-draft")
-                            Link("Open email app", target: contact).id("draft-email-link")
-                            Tag("a") { "Download email file (.eml)" }.id("download-draft").attribute("download", "indie-contribution.eml")
+                            // The browser supplies the download URL after preparing the file.
+                            Tag("a") { "Download email file (.eml)" }.id("download-draft")
+                                .attribute("download", "indie-contribution.eml").class("btn", "btn-secondary")
                         }.class("actions")
                         Text("Open the downloaded file in your email app. Depending on the app, you may need to choose Edit as new or Forward before sending.").class("field-help")
                         Text("").id("draft-attachment-note").class("field-help")

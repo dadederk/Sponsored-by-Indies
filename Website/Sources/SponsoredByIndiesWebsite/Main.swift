@@ -10,6 +10,11 @@ struct SponsoredByIndiesWebsite {
         let source = URL(fileURLWithPath: #filePath)
             .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
         let catalog = try Catalog.load(from: source.appendingPathComponent("Data"))
+        if options.verifyPrices {
+            try await PriceVerification.verify(catalog)
+            return
+        }
+        try catalog.validatePriceFreshness(on: .now)
         if options.validateOnly {
             print("Catalogue valid: \(catalog.conferences.count) conference(s), \(catalog.editions.count) edition(s).")
             return

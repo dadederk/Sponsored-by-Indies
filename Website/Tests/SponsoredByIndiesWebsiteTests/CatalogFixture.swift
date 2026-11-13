@@ -27,12 +27,13 @@ enum CatalogFixture {
             editionID: edition.id, indieID: indie.id,
             connection: "A returning speaker.", quote: "A welcoming community.",
             publicationApproved: true)
-        let offer = Offer(
+        var offer = Offer(
             id: "tool", editionID: edition.id, indieID: indie.id, productName: "Tool & <Kit>",
             productURL: "https://example.org/tool", description: "An indie tool.", benefit: "Free access.",
             terms: "For ticket holders.", redemptionInstructions: "Follow the attendee instructions.",
             publicationApproved: true
         )
+        offer.savingEstimate = saving()
         return Catalog(
             conferences: [conference], editions: [edition], indies: [indie],
             participations: [participation], offers: [offer], contactURL: "mailto:hello@example.org",
@@ -40,4 +41,11 @@ enum CatalogFixture {
             terms: CommunityTerms(updatedOn: "2026-11-12", introduction: "Community & <care>.",
                                   sections: [.init(heading: "Shared <responsibilities>", paragraphs: ["A & B act independently."])]))
     }
+    static func saving(price: Decimal = 10, percent: Int = 100, plan: String = "Sample plan") -> SavingEstimate {
+        SavingEstimate(regularPriceUSD: price, discountPercent: percent, plan: plan,
+                       period: .year, discountedPeriods: 1, currency: "USD", storefront: "US",
+                       observedPricesUSD: [price], review: .unambiguous,
+                       verifiedOn: "2026-11-13", sourceURL: "https://example.org/price")
+    }
+
 }

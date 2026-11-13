@@ -52,29 +52,10 @@ struct Edition: Decodable {
     func path(in catalog: Catalog) -> String { catalog.conference(for: self).path + slug + "/" }
 }
 
-/// This is an editorially verified compatible total, not a sum of advertised discounts.
+/// Explicitly reviewed compatible offers; monetary amounts are computed from evidence.
 struct ValueSummary: Decodable {
-    var amountLabel: String
     var explanation: String
-    var verifiedOn: String
     var offerIDs: [String]
-    var isEstimate: Bool = false
-}
-
-extension ValueSummary {
-    private enum CodingKeys: String, CodingKey {
-        case amountLabel, explanation, verifiedOn, offerIDs, isEstimate
-    }
-
-    init(from decoder: any Decoder) throws {
-        let values = try decoder.container(keyedBy: CodingKeys.self)
-        amountLabel = try values.decode(String.self, forKey: .amountLabel)
-        explanation = try values.decode(String.self, forKey: .explanation)
-        verifiedOn = try values.decode(String.self, forKey: .verifiedOn)
-        offerIDs = try values.decode([String].self, forKey: .offerIDs)
-        // Existing records predate the estimate flag and retain their original label.
-        isEstimate = try values.decodeIfPresent(Bool.self, forKey: .isEstimate) ?? false
-    }
 }
 
 struct Indie: Decodable {
@@ -114,18 +95,10 @@ struct Offer: Decodable {
     var publicationApproved: Bool
 }
 
-/// Compare every contribution against US App Store prices in USD, regardless
-/// of the conference location. Estimates record their public price reference.
-struct SavingEstimate: Decodable {
-    var amountUSD: Double
-    var verifiedOn: String
-    var sourceURL: String
-}
-
 struct ProductContribution {
     var product: Offer
     var offers: [Offer]
-    var maximumSavingUSD: Double? { offers.compactMap { $0.savingEstimate?.amountUSD }.max() }
+    var maximumSavingUSD: Decimal? { offers.compactMap { $0.savingEstimate?.amountUSD }.max() }
 }
 
 enum CatalogError: Error, CustomStringConvertible {

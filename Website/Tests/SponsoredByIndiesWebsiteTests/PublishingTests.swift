@@ -65,8 +65,7 @@ struct PublishingTests {
         secondProduct.benefit = "Free game."
         catalog.offers.append(secondProduct)
         catalog.editions[0].valueSummary = ValueSummary(
-            amountLabel: "€10", explanation: "A verified compatible saving.",
-            verifiedOn: "2026-11-12", offerIDs: ["tool"])
+            explanation: "A verified compatible saving.", offerIDs: ["tool"])
         catalog.editions[0].bundleNote = "We’re adding more to the bundle."
         try catalog.validate()
         let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
@@ -98,25 +97,39 @@ struct PublishingTests {
             #expect(bundlePosition.lowerBound < valuePosition.lowerBound)
             #expect(valuePosition.lowerBound < accessPosition.lowerBound)
             let bundleSection = String(html[bundlePosition.lowerBound..<valuePosition.lowerBound])
-            #expect(!bundleSection.contains("€10 in savings"))
+            #expect(!bundleSection.contains("About US$10 in savings"))
             #expect(!bundleSection.contains("We’re adding more to the bundle."))
             let valueSection = String(html[valuePosition.lowerBound..<accessPosition.lowerBound])
             let breakdown = try #require(valueSection.range(of: "<details[\\s\\S]*?</details>", options: .regularExpression))
             #expect(valueSection[breakdown].contains("A verified compatible saving."))
             #expect(valueSection[breakdown].contains("How we estimate the bundle’s value"))
+            #expect(valueSection[breakdown].contains("US$10.00 × 100% = US$10.00"))
             let visibleValue = valueSection.replacingCharacters(in: breakdown, with: "")
             #expect(!visibleValue.contains("Tool &amp; &lt;Kit&gt;"))
-            #expect(visibleValue.contains("€10 in savings"))
+            #expect(visibleValue.contains("Potential value:"))
+            #expect(visibleValue.components(separatedBy: "About US$10").count == 2)
+            #expect(!visibleValue.contains("About US$10 in savings"))
             #expect(visibleValue.contains("We’re adding more to the bundle."))
+            #expect(visibleValue.contains("get in touch"))
+            #expect(visibleValue.contains("href=\"/participate/indies/\""))
             let cards = html.matches(of: /<article class="panel product-card">[\s\S]*?<\/article>/).map { String($0.output) }
             #expect(cards.count == 2)
             let toolCard = try #require(cards.first { $0.contains("Tool &amp; &lt;Kit&gt;") })
+            let deals = try #require(toolCard.firstMatch(of: /<ul[^>]*class="product-card-benefits"[^>]*>/))
+            #expect(String(deals.output).contains("role=\"list\""))
             #expect(toolCard.contains("One year free."))
+            #expect(toolCard.contains("US reference price:"))
+            #expect(toolCard.contains("for Tool &amp; &lt;Kit&gt;"))
+            #expect(toolCard.contains("US$10.00 per year"))
+            #expect(toolCard.contains("Sample plan"))
+            #expect(!toolCard.contains("2026-11-13"))
+            #expect(toolCard.contains("href=\"https://example.org/price\""))
             #expect(toolCard.range(of: #"<a href="https://example.org/tool"[^>]*>\s*<img[^>]*src="/app-icons/xarra.png""#, options: .regularExpression) != nil)
             #expect(!toolCard.contains("Free game."))
             #expect(toolCard.components(separatedBy: "<details ").count == 2)
             let gameCard = try #require(cards.first { $0.contains("A racing game") })
             #expect(gameCard.contains("Free game."))
+            #expect(gameCard.contains("for A racing game"))
             #expect(!gameCard.contains("One year free."))
             #expect(gameCard.components(separatedBy: "<details ").count == 2)
             for card in cards {
@@ -291,7 +304,8 @@ struct PublishingTests {
         let instructions = "Open the lifetime &amp; member portal."
         #expect(String(card.output).components(separatedBy: instructions).count == 2)
         if !shared {
-            let sections = String(card.output).matches(of: /<div[^>]*>[\s\S]*?<\/div>/).map { String($0.output) }
+            let terms = try #require(String(card.output).firstMatch(of: /<details[\s\S]*?<\/details>/))
+            let sections = String(terms.output).matches(of: /<div[^>]*>[\s\S]*?<\/div>/).map { String($0.output) }
             let lifetime = try #require(sections.first { $0.contains("Lifetime discount") })
             let yearly = try #require(sections.first { $0.contains("Free year") })
             #expect(lifetime.contains(instructions))

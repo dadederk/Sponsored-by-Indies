@@ -119,7 +119,6 @@ enum Components {
     }
 
     static func productCard(_ product: Offer, offers: [Offer], indie: Indie, participation: Participation) -> some HTML {
-        let sharedInstructions = Set(offers.map(\.redemptionInstructions)).count == 1 ? offers.first?.redemptionInstructions : nil
         return Tag("article") {
             Text {
                 Link(target: product.productURL) {
@@ -128,25 +127,41 @@ enum Components {
                             .frame(width: .px(DesignTokens.productIconSize), height: .px(DesignTokens.productIconSize))
                             .cornerRadius(DesignTokens.productIconRadius)
                     }
-                    Span(escaped(product.productName))
+                    Span {
+                        Span(escaped(product.productName)).class("product-card-title")
+                        if let host = URL(string: product.productURL)?.host {
+                            Span(escaped(host)).font(.small).fontWeight(.regular)
+                                .foregroundStyle(.secondary).class("product-card-url")
+                        }
+                    }.class("product-card-name")
                 }
             }.font(.title3).margin(0).class("product-card-heading")
             Text(escaped(product.description)).margin(0)
+            // Safari otherwise removes list semantics when CSS hides the markers.
             List(offers) { offer in
-                ListItem { Text(escaped(offer.benefit)).fontWeight(.bold).margin(0) }
-            }.class("product-card-benefits")
+                ListItem {
+                    Badge(escaped(offer.benefit))
+                        .foregroundStyle(Color(hex: DesignTokens.palette.blue))
+                        .background(Color(hex: DesignTokens.palette.tint))
+                        .fontWeight(.semibold)
+                        .padding(.vertical, .small).padding(.horizontal, .medium)
+                }
+            }.class("product-card-benefits").attribute("role", "list")
             Section {
-                Text {
-                    Span(escaped(indie.name)).fontWeight(.semibold)
-                    if let website = indie.websiteURL {
-                        Span {
-                            " · "
-                            Link(escaped(indie.company ?? "Website"), target: website)
+                Section {
+                    Text {
+                        Span(escaped(indie.name)).fontWeight(.semibold)
+                        if let website = indie.websiteURL {
+                            Span {
+                                " · "
+                                Link(escaped(indie.company ?? "Website"), target: website)
+                            }
+                        } else if let company = indie.company {
+                            Span(" · " + escaped(company))
                         }
-                    } else if let company = indie.company {
-                        Span(" · " + escaped(company))
-                    }
-                }.font(.small).margin(0)
+                    }.font(.small).margin(0)
+                    productTerms(product, offers: offers)
+                }.class("product-card-byline")
                 if let connection = participation.connection {
                     Text(escaped(connection)).font(.small).margin(0)
                 }
@@ -156,19 +171,38 @@ enum Components {
                 }
                 for social in indie.socials { Link(escaped(social.label), target: social.url).font(.small) }
             }.foregroundStyle(.secondary).class("product-card-maker")
-            Tag("details") {
-                Tag("summary") { "Offer terms for " + escaped(product.productName) }
-                for offer in offers {
-                    Section {
-                        Text(escaped(offer.benefit)).fontWeight(.semibold).margin(.bottom, 0)
-                        Text(escaped(offer.terms))
-                        if sharedInstructions == nil { Text(escaped(offer.redemptionInstructions)) }
-                    }
-                }
-                // Shared redemption instructions only need to appear once per app.
-                if let sharedInstructions { Text(escaped(sharedInstructions)) }
-            }.class("product-card-terms")
         }.class("panel", "product-card")
+    }
+
+    private static func productTerms(_ product: Offer, offers: [Offer]) -> some HTML {
+        let sharedInstructions = Set(offers.map(\.redemptionInstructions)).count == 1 ? offers.first?.redemptionInstructions : nil
+        return Tag("details") {
+            Tag("summary") {
+                "Offer terms"
+                Span(" for " + escaped(product.productName)).class("visually-hidden")
+            }.fontWeight(.regular)
+            for offer in offers {
+                Section {
+                    Text(escaped(offer.benefit)).fontWeight(.semibold).margin(.bottom, 0)
+                    if let estimate = offer.savingEstimate {
+                        Text {
+                            Span("US reference price: ").fontWeight(.semibold)
+                            Link(escaped(estimate.referencePriceLabel), target: estimate.sourceURL)
+                            Span(" · " + escaped(estimate.plan))
+                        }.margin(.bottom, 0)
+                    }
+                    Text(escaped(offer.terms)).margin(.bottom, 0)
+                    if sharedInstructions == nil { Text(escaped(offer.redemptionInstructions)) }
+                }.margin(.bottom, .small)
+            }
+            // Shared redemption instructions only need to appear once per app.
+            if let sharedInstructions {
+                Text {
+                    Span("Redemption: ").fontWeight(.semibold)
+                    escaped(sharedInstructions)
+                }.margin(.bottom, 0)
+            }
+        }.font(.small).class("product-card-terms")
     }
 
     // Native details/summary supports keyboard and assistive technology without a script.

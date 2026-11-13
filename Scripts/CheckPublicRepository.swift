@@ -1,4 +1,5 @@
 import Foundation
+import CoreFoundation
 
 func fail(_ message: String) -> Never {
     FileHandle.standardError.write(Data((message + "\n").utf8))
@@ -24,8 +25,18 @@ func checkApprovals(_ data: Data, context: String) throws {
         guard let entries = record?[key] as? [[String: Any]] else {
             fail("Missing \(key) in \(context).")
         }
-        guard entries.allSatisfy({ ($0["publicationApproved"] as? Bool) == true }) else {
+        // JSONSerialization also bridges the number 1 to Bool; approval requires JSON true.
+        guard entries.allSatisfy({ entry in
+            guard let approval = entry["publicationApproved"] as? NSNumber,
+                  CFGetTypeID(approval) == CFBooleanGetTypeID() else { return false }
+            return approval.boolValue
+        }) else {
             fail("Unapproved \(key) in \(context) must stay in private planning, outside public source.")
+        }
+        if key == "offers", entries.contains(where: {
+            ($0["savingEstimate"] as? [String: Any])?.keys.contains("selectionNote") == true
+        }) {
+            fail("Price review notes in \(context) must stay in private planning, outside public source.")
         }
     }
 }

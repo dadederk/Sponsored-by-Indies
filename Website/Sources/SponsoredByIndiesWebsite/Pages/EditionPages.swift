@@ -61,27 +61,33 @@ extension Pages {
                 }
             }.id("bundle").class("container", "section-space").aria(.labelledBy, "bundle-title")
             Tag("section") {
-                Components.heading("The bundle’s", "value.", id: "value-title")
-                if let summary = edition.valueSummary, !offers.isEmpty {
-                    Section {
-                        Text(escaped(summary.amountLabel) + (summary.isEstimate ? " in potential savings" : " in savings"))
-                            .font(.lead).fontWeight(.bold).margin(0)
-                        if let note = edition.bundleNote { Text(escaped(note)).margin(0) }
-                    }.class("bundle-summary")
+                if let summary = catalog.bundleValue(for: edition), !offers.isEmpty {
+                    Components.heading("Potential value:", summary.amountLabel, id: "value-title")
                     Text("The estimate reflects compatible offers in the current bundle. Your saving depends on eligibility and which offers you choose. US prices in USD are our baseline; local prices may vary.")
                     Tag("details") {
                         Tag("summary") { "How we estimate the bundle’s value" }
                         Text(escaped(summary.explanation))
                         Text("Prices checked \(escaped(summary.verifiedOn)). Individual offer terms apply.")
-                        for contribution in products {
-                            if let estimate = contribution.offers.first(where: { summary.offerIDs.contains($0.id) })?.savingEstimate {
-                                Text { Link("US price reference: " + escaped(contribution.product.productName), target: estimate.sourceURL) }
+                        for offer in summary.offers {
+                            if let estimate = offer.savingEstimate {
+                                Section {
+                                    Text(escaped(offer.productName + " — " + estimate.calculationDescription))
+                                    Text { Link("US price reference: " + escaped(offer.productName), target: estimate.sourceURL) }
+                                }
                             }
                         }
+                        Text("Savings are rounded down to cents before adding compatible offers. The headline then rounds down to whole US dollars. Final checkout prices may differ.")
                     }
                 } else {
+                    Components.heading("The bundle’s", "value.", id: "value-title")
                     Text("We’ll share the maximum potential savings once the offers and their terms are confirmed.")
-                    if let note = edition.bundleNote { Text(escaped(note)) }
+                }
+                if let note = edition.bundleNote {
+                    Text {
+                        escaped(note) + " If you’d like to share something from your indie project, "
+                        Link("get in touch", target: "/participate/indies/")
+                        "."
+                    }
                 }
             }.id("value").class("container", "section-space").aria(.labelledBy, "value-title")
             Tag("section") {

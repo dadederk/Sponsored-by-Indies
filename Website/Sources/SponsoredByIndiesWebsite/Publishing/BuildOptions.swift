@@ -4,17 +4,20 @@ import Foundation
 struct BuildOptions {
     let isPublic: Bool
     let validateOnly: Bool
+    let verifyPrices: Bool
     let siteURL: URL
 
     init(arguments: [String]) throws {
         var isPublic = false
         var validateOnly = false
+        var verifyPrices = false
         var providedURL: String?
         var remaining = arguments.makeIterator()
         while let argument = remaining.next() {
             switch argument {
             case "--public": isPublic = true
             case "--validate-only": validateOnly = true
+            case "--verify-prices": verifyPrices = true
             case "--site-url":
                 guard providedURL == nil, let value = remaining.next(), !value.hasPrefix("--") else {
                     throw CatalogError.invalid("--site-url requires one URL.")
@@ -22,6 +25,9 @@ struct BuildOptions {
                 providedURL = value
             default: throw CatalogError.invalid("Unknown argument: \(argument)")
             }
+        }
+        guard !(verifyPrices && validateOnly) else {
+            throw CatalogError.invalid("Choose either --verify-prices or --validate-only.")
         }
         guard !isPublic || validateOnly || providedURL != nil else {
             throw CatalogError.invalid("Public builds require --site-url https://your-chosen-domain.")
@@ -37,6 +43,7 @@ struct BuildOptions {
         }
         self.isPublic = isPublic
         self.validateOnly = validateOnly
+        self.verifyPrices = verifyPrices
         self.siteURL = url
     }
 }

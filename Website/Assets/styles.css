@@ -16,7 +16,7 @@ h3 { font-size: 1.5rem; margin-bottom: var(--space-4); }
 p,li { max-width: 70ch; overflow-wrap: anywhere; }
 span { overflow-wrap: anywhere; }
 li + li { margin-top: var(--space-3); }
-a { color: inherit; text-underline-offset: .23em; min-height: var(--target-size); min-width: var(--target-size); display: inline-flex; align-items: center; overflow-wrap: anywhere; }
+a { color: inherit; text-underline-offset: var(--link-underline-offset); min-height: var(--target-size); min-width: var(--target-size); display: inline-flex; align-items: center; overflow-wrap: anywhere; }
 a:hover { color: var(--accent); text-decoration-thickness: 2px; }
 /* Match Bootstrap’s button specificity; two colours keep focus visible on light and dark surfaces. */
 :focus-visible,.btn:focus-visible { outline: var(--focus-width) solid var(--ink); outline-offset: var(--focus-offset); box-shadow: 0 0 0 var(--focus-halo) var(--paper); border-radius: var(--focus-radius); }
@@ -137,15 +137,29 @@ input.form-control:focus-visible,textarea.form-control:focus-visible,select.form
    Extra row height stays below the content when a neighbouring card opens. */
 .product-grid > .col { align-self: stretch !important; display: flex; }
 .product-card { --card-inset: var(--space-6); display: flex; flex-direction: column; gap: var(--space-4); width: 100%; }
-.product-card-heading a { gap: var(--space-4); }
+.product-card-heading a { gap: var(--space-4); text-decoration: none; }
 .product-card-heading img { flex: none; }
-.product-card-benefits { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-8); padding-left: var(--space-5); margin: 0; color: var(--accent); }
+.product-card-name { display: flex; flex-direction: column; gap: var(--space-1); min-width: 0; }
+.product-card-url { text-decoration: underline; }
+.product-card-name .small { letter-spacing: normal; line-height: 1.5; }
+.product-card-benefits { display: flex; flex-wrap: wrap; align-content: start; align-items: flex-start; gap: var(--space-2); padding: 0; margin: 0; list-style: none; }
+.product-card-benefits .badge { white-space: normal; text-align: left; line-height: inherit; font-size: inherit; }
 .product-card-benefits li + li { margin-top: 0; }
 .product-card-maker { border-top: var(--border-width) solid var(--line); padding-top: var(--space-4); margin-top: 0; line-height: 1.5; }
 .product-card-maker p a { min-height: 0; display: inline; }
-.product-card-terms { margin: 0; padding-block: 0; font-size: inherit; }
-.product-card-terms summary { padding-block: var(--space-2); }
+.product-card-byline { display: flex; align-items: baseline; flex-wrap: wrap; column-gap: var(--space-3); }
+.product-card-terms { border: 0; margin: 0; padding: 0; max-width: 100%; }
+.product-card-terms[open] { flex-basis: 100%; }
+.product-card-terms summary { padding-block: var(--space-1); text-decoration: underline; text-underline-offset: var(--link-underline-offset); }
 .product-card-terms > p:last-child { margin-bottom: var(--space-4); }
 
-/* The estimate and editorial growth note wrap together without squeezing on phones. */
-.bundle-summary { display: flex; align-items: baseline; flex-wrap: wrap; gap: var(--space-2) var(--space-6); margin-bottom: var(--space-6); }
+/* Shared intrinsic rows align offers despite different title/description lengths.
+   Ignite provides the grid markup; subgrid supplies alignment across card interiors. */
+@supports (grid-template-rows: subgrid) {
+  .product-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-4); margin: 0; }
+  .product-grid > .col { display: grid; grid-template-rows: subgrid; grid-row: span 4; width: auto; min-width: 0; padding: 0; margin: 0; }
+  .product-card { display: grid; grid-template-rows: subgrid; grid-row: span 4; }
+  @media (min-width: 768px) {
+    .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+}

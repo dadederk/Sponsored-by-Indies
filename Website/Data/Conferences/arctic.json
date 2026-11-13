@@ -7,7 +7,6 @@
     "websiteURL": "https://arcticonference.com/",
     "description": "The northernmost, and therefore coolest, Apple developer conference.",
     "connectionEditions": [
-      "2024",
       "2025",
       "2026"
     ],
@@ -32,14 +31,11 @@
       "accessIntroduction": "Redemption details are being arranged with the conference team. There is nothing to claim here yet. Once the bundle is ready, this page will explain how ticket holders receive their offers and how to redeem each one.",
       "accessURL": null,
       "valueSummary": {
-        "amountLabel": "About US$18",
-        "explanation": "An estimate using current US App Store prices: 50% of Xarra’s $29.99 lifetime price (about $15), plus RetroRapid’s $2.99 Unlimited Plays unlock. This assumes the free RetroRapid offer includes Unlimited Plays. The free year of Xarra Premium, normally $9.99, is an alternative and is not added to the total. Final offer pricing, eligibility, and redemption details are still being arranged.",
-        "verifiedOn": "2026-11-13",
+        "explanation": "The total counts one compatible offer per app. Xarra’s free yearly subscription and discounted lifetime purchase are alternatives, so only the larger saving is counted. RetroRapid’s contribution is assumed to include Unlimited Plays. Final offer pricing, eligibility, and redemption details are still being arranged.",
         "offerIDs": [
           "xarra-lifetime",
           "retrorapid-free"
-        ],
-        "isEstimate": true
+        ]
       },
       "bundleNote": "We’re working on expanding the bundle and its value."
     }
@@ -48,8 +44,8 @@
     {
       "editionID": "arctic-2027",
       "indieID": "dani-devesa",
-      "connection": "Workshop speaker at the first ARCTIC in 2024.",
-      "quote": "I ran a workshop at the first ARCTIC in 2024. The quality, in every respect, took us by surprise for a first edition. Many of us came back the next year, and I’m planning to return for a third time!",
+      "connection": "Workshop speaker at ARCTIC in 2025.",
+      "quote": "I ran a workshop at the first ARCTIC edition. The quality, in every respect, took us by surprise for a first edition. Many of us came back the next year, and I’m planning to return for a third time!",
       "publicationApproved": true
     }
   ],
@@ -63,11 +59,21 @@
       "productIconPath": "/app-icons/xarra.png",
       "description": "Turn articles, books, and documents into audio with synchronized highlighting. Read along, listen hands-free, or switch between the two.",
       "benefit": "50% off lifetime Premium",
-      "terms": "A one-time purchase for lifetime Premium, at 50% off. Final pricing, eligibility, and redemption deadline will be published before redemption opens.",
-      "redemptionInstructions": "Redemption is not open yet. Instructions will be shared through the conference attendee access channel once arranged.",
+      "terms": "One-time purchase. Choose this or the free year.",
+      "redemptionInstructions": "Not open yet. Eligibility and deadline to be confirmed; instructions will come through the conference.",
       "publicationApproved": true,
       "savingEstimate": {
-        "amountUSD": 14.995,
+        "regularPriceUSD": 29.99,
+        "discountPercent": 50,
+        "plan": "Lifetime Access",
+        "period": "lifetime",
+        "discountedPeriods": 1,
+        "currency": "USD",
+        "storefront": "US",
+        "observedPricesUSD": [
+          29.99
+        ],
+        "review": "unambiguous",
         "verifiedOn": "2026-11-13",
         "sourceURL": "https://apps.apple.com/us/app/xarra/id6759402266"
       }
@@ -81,11 +87,21 @@
       "productIconPath": "/app-icons/xarra.png",
       "description": "Turn articles, books, and documents into audio with synchronized highlighting. Read along, listen hands-free, or switch between the two.",
       "benefit": "1 year of Premium free",
-      "terms": "One free year on the yearly Premium subscription. Eligibility, renewal terms, and redemption deadline will be published before redemption opens.",
-      "redemptionInstructions": "Redemption is not open yet. Instructions will be shared through the conference attendee access channel once arranged.",
+      "terms": "Yearly subscription; renewal terms to be confirmed. An alternative to the lifetime discount.",
+      "redemptionInstructions": "Not open yet. Eligibility and deadline to be confirmed; instructions will come through the conference.",
       "publicationApproved": true,
       "savingEstimate": {
-        "amountUSD": 9.99,
+        "regularPriceUSD": 9.99,
+        "discountPercent": 100,
+        "plan": "Yearly Subscription",
+        "period": "year",
+        "discountedPeriods": 1,
+        "currency": "USD",
+        "storefront": "US",
+        "observedPricesUSD": [
+          9.99
+        ],
+        "review": "unambiguous",
         "verifiedOn": "2026-11-13",
         "sourceURL": "https://apps.apple.com/us/app/xarra/id6759402266"
       }
@@ -98,12 +114,22 @@
       "productURL": "https://accessibilityupto11.com/apps/retrorapid/",
       "productIconPath": "/app-icons/retrorapid.png",
       "description": "A little LCD nostalgia. Dodge traffic, chase a high score, or race a friend live with SharePlay. Released with love from ARCTIC in Oulu.",
-      "benefit": "RetroRapid! for free",
-      "terms": "Free access for eligible ticket holders. Redemption details, included access, and the deadline will be published before redemption opens.",
-      "redemptionInstructions": "Redemption is not open yet. Instructions will be shared through the conference attendee access channel once arranged.",
+      "benefit": "RetroRapid! Unlimited for free",
+      "terms": "Unlimited Plays is assumed to be included; confirmation pending.",
+      "redemptionInstructions": "Not open yet. Eligibility and deadline to be confirmed; instructions will come through the conference.",
       "publicationApproved": true,
       "savingEstimate": {
-        "amountUSD": 2.99,
+        "regularPriceUSD": 2.99,
+        "discountPercent": 100,
+        "plan": "Unlimited Plays",
+        "period": "oneTime",
+        "discountedPeriods": 1,
+        "currency": "USD",
+        "storefront": "US",
+        "observedPricesUSD": [
+          2.99
+        ],
+        "review": "unambiguous",
         "verifiedOn": "2026-11-13",
         "sourceURL": "https://apps.apple.com/us/app/retrorapid-retro-arcade-racer/id6758641625"
       }

@@ -2,8 +2,12 @@ import Foundation
 import Testing
 
 struct PublicRepositoryTests {
-    @Test(arguments: ["participations", "offers"])
-    func approvalsAreCheckedInBothIndexAndWorkingCopy(key: String) throws {
+    @Test(arguments: [
+        ("participations", "unapproved"), ("offers", "unapproved"),
+        ("participations", "numeric approval"), ("offers", "numeric approval"),
+        ("offers", "price note"), ("offers", "null price note")
+    ])
+    func approvalsAndPrivateNotesAreCheckedInBothIndexAndWorkingCopy(key: String, invalidContent: String) throws {
         let files = FileManager.default
         let root = files.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? files.removeItem(at: root) }
@@ -33,28 +37,38 @@ struct PublicRepositoryTests {
             let result = try run("/usr/bin/git", arguments)
             try #require(result.status == 0, "\(result.output)")
         }
-        func writeRecord(approved: Bool) throws {
-            let data = try JSONSerialization.data(withJSONObject: [
-                key: [["publicationApproved": approved]], key == "offers" ? "participations" : "offers": []
-            ])
-            try data.write(to: record)
+        func writeRecord(allowed: Bool) throws {
+            var entry: [String: Any] = ["publicationApproved": allowed]
+            if invalidContent.contains("price note") {
+                entry["publicationApproved"] = true
+                if !allowed {
+                    let note: Any = invalidContent == "null price note" ? NSNull() : "Internal follow-up"
+                    entry["savingEstimate"] = ["selectionNote": note]
+                }
+            } else if !allowed && invalidContent == "numeric approval" {
+                entry["publicationApproved"] = 1
+            }
+            let record: [String: Any] = [key: [entry], key == "offers" ? "participations" : "offers": []]
+            let data = try JSONSerialization.data(withJSONObject: record)
+            try data.write(to: root.appendingPathComponent(relativePath))
         }
 
         try git(["init", "-q"])
-        try writeRecord(approved: false)
+        try writeRecord(allowed: false)
         try git(["add", relativePath])
-        try writeRecord(approved: true)
+        try writeRecord(allowed: true)
         let stagedFailure = try run("/usr/bin/swift", [script.path])
         #expect(stagedFailure.status != 0)
-        #expect(stagedFailure.output.contains("Unapproved \(key) in staged"))
+        let failureLabel = invalidContent.contains("price note") ? "Price review notes" : "Unapproved \(key)"
+        #expect(stagedFailure.output.contains("\(failureLabel) in staged"))
 
         try git(["add", relativePath])
-        try writeRecord(approved: false)
+        try writeRecord(allowed: false)
         let workingFailure = try run("/usr/bin/swift", [script.path])
         #expect(workingFailure.status != 0)
-        #expect(workingFailure.output.contains("Unapproved \(key) in working copy"))
+        #expect(workingFailure.output.contains("\(failureLabel) in working copy"))
 
-        try writeRecord(approved: true)
+        try writeRecord(allowed: true)
         let success = try run("/usr/bin/swift", [script.path])
         #expect(success.status == 0)
         #expect(success.output.contains("checks passed"))

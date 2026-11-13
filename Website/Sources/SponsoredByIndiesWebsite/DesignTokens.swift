@@ -67,6 +67,7 @@ enum DesignTokens {
       --radius-small: .3rem;
       --radius-card: .5rem;
       --target-size: 44px;
+      --link-underline-offset: .23em;
       --border-width: 1px;
       --control-border-width: 2px;
       --focus-width: 3px;
