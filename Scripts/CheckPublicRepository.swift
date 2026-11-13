@@ -46,7 +46,8 @@ let data = try gitOutput(["ls-files", "-z"])
 
 let paths = String(decoding: data, as: UTF8.self).split(separator: "\0").map(String.init)
 let rootFiles = Set(["README.md", "AGENTS.md", ".gitignore", ".github/workflows/pages.yml", "Scripts/CheckPublicRepository.swift", "Images/readme-banner.png"])
-let websiteFiles = Set(["Website/Package.swift", "Website/Package.resolved"])
+let websiteFiles = Set(["Website/Package.swift", "Website/Package.resolved", "Website/package.json",
+                        "Website/package-lock.json", "Website/playwright.config.mjs"])
 let websiteFolders = ["Website/Sources/", "Website/Tests/", "Website/Assets/", "Website/Data/"]
 let unexpected = paths.filter { path in
     if rootFiles.contains(path) { return false }

@@ -1,4 +1,5 @@
 import Foundation
+import CoreFoundation
 
 /// A read-only check of public price references. It never updates approved
 /// content or chooses one of several prices automatically.
@@ -34,7 +35,15 @@ enum PriceVerification {
             for product in records(try JSONSerialization.jsonObject(with: data)) where product["name"] as? String == productName {
                 guard let offers = product["offers"] else { continue }
                 for offer in records(offers) where offer["priceCurrency"] as? String == "USD" {
-                    let price = offer["price"] as? String ?? (offer["price"] as? NSNumber)?.stringValue
+                    let price: String?
+                    if let text = offer["price"] as? String {
+                        price = text
+                    } else if let number = offer["price"] as? NSNumber,
+                              CFGetTypeID(number) != CFBooleanGetTypeID() {
+                        price = number.stringValue
+                    } else {
+                        price = nil
+                    }
                     guard let price, price.range(of: #"^[0-9]+(?:\.[0-9]{1,2})?$"#, options: .regularExpression) != nil,
                           let amount = Decimal(string: price, locale: Locale(identifier: "en_US_POSIX")), !amount.isNaN, amount >= 0 else {
                         throw CatalogError.invalid("Invalid structured USD price for ‘\(productName)’.")

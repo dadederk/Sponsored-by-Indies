@@ -108,6 +108,45 @@ struct CatalogTests {
         #expect(throws: CatalogError.self) { try catalog.validate() }
     }
 
+    @Test(arguments: ["name", "description", "icon"])
+    func alternativesMustShareProductDetails(field: String) throws {
+        var catalog = CatalogFixture.make()
+        var alternative = catalog.offers[0]
+        alternative.id = "tool-alternative"
+        switch field {
+        case "name": alternative.productName = "A different product name"
+        case "description": alternative.description = "A conflicting description."
+        default: alternative.productIconPath = "/app-icons/different.png"
+        }
+        catalog.offers.append(alternative)
+        #expect(throws: CatalogError.self) { try catalog.validate() }
+        catalog.offers[1].publicationApproved = false
+        try catalog.validate()
+    }
+
+    @Test func productDetailsCanEvolveBetweenEditions() throws {
+        var catalog = CatalogFixture.make()
+        var edition = catalog.editions[0]
+        edition.id = "sample-2028"
+        edition.slug = "2028"
+        edition.label = "2028"
+        edition.startDate = "2028-02-02"
+        edition.endDate = "2028-02-04"
+        catalog.editions.append(edition)
+        var participation = catalog.participations[0]
+        participation.editionID = edition.id
+        catalog.participations.append(participation)
+        var product = catalog.offers[0]
+        product.id = "tool-2028"
+        product.editionID = edition.id
+        product.productName = "The renamed tool"
+        product.description = "Updated for the new edition."
+        catalog.offers.append(product)
+        try catalog.validate()
+        #expect(catalog.visibleProductContributions(for: catalog.editions[0])[0].product.productName == "Tool & <Kit>")
+        #expect(catalog.visibleProductContributions(for: edition)[0].product.productName == "The renamed tool")
+    }
+
     @Test func rejectsCSSInBranding() throws {
         var catalog = CatalogFixture.make()
         catalog.conferences[0].branding?.accent = "red; display:none"

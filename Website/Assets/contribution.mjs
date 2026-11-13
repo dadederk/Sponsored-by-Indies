@@ -122,10 +122,17 @@ function initialiseForm() {
   form.addEventListener("invalid", event => {
     // Reveal invalid optional fields before the browser tries to focus them.
     let details = event.target.closest("details");
+    let revealed = false;
     while (details) {
-      details.open = true;
+      if (!details.open) {
+        details.open = true;
+        revealed = true;
+      }
       details = details.parentElement.closest("details");
     }
+    // WebKit needs layout to catch up after opening a collapsed section.
+    // Keep the first invalid field first, even when several controls are invalid.
+    if (revealed) requestAnimationFrame(() => form.querySelector("input:invalid, select:invalid, textarea:invalid")?.focus());
   }, true);
   form.addEventListener("change", () => {
     invalidateDraft();

@@ -95,6 +95,20 @@ struct SavingsTests {
         try catalog.validatePriceFreshness(on: Date("2027-01-01", strategy: Edition.dayStyle))
     }
 
+    @Test func maintenanceWarnsAWeekBeforeExpiryWithoutChangingPublicationRules() throws {
+        var catalog = CatalogFixture.make()
+        let beforeNotice = try Date("2026-12-06", strategy: Edition.dayStyle)
+        let notice = try Date("2026-12-07", strategy: Edition.dayStyle)
+        try catalog.validatePriceFreshness(on: beforeNotice, daysNotice: 7)
+        #expect(throws: CatalogError.self) { try catalog.validatePriceFreshness(on: notice, daysNotice: 7) }
+        try catalog.validatePriceFreshness(on: notice)
+        // A day is a UTC calendar day, independent of the build's time of day.
+        let lastDay = try Date("2026-12-13T23:59:59Z", strategy: .iso8601)
+        try catalog.validatePriceFreshness(on: lastDay)
+        catalog.editions[0].endDate = "2026-12-06"
+        try catalog.validatePriceFreshness(on: notice, daysNotice: 7)
+    }
+
     @Test func sourceParsingDeduplicatesButPreservesConflictingPrices() throws {
         let html = """
         <div class="text-pair svelte-123"><span>RocketSim Yearly</span> <span>$69.99</span></div>
@@ -128,6 +142,12 @@ struct SavingsTests {
     @Test(arguments: ["invalid", "199 USD", "-199", "199.999"])
     func structuredPricesRejectInvalidAmounts(price: String) throws {
         let html = "<script type=\"application/ld+json\">{\"name\":\"Sample course\",\"offers\":{\"price\":\"\(price)\",\"priceCurrency\":\"USD\"}}</script>"
+        #expect(throws: CatalogError.self) { try PriceVerification.structuredPrices(in: html, productName: "Sample course") }
+    }
+
+    @Test(arguments: ["true", "false", "null", "[]", "{}"])
+    func structuredPricesRejectNonPriceJSONValues(value: String) throws {
+        let html = "<script type=\"application/ld+json\">{\"name\":\"Sample course\",\"offers\":{\"price\":\(value),\"priceCurrency\":\"USD\"}}</script>"
         #expect(throws: CatalogError.self) { try PriceVerification.structuredPrices(in: html, productName: "Sample course") }
     }
 

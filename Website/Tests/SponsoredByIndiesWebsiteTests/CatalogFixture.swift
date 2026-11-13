@@ -15,7 +15,7 @@ enum CatalogFixture {
         let edition = Edition(
             id: "sample-2027", conferenceID: conference.id, slug: "2027", label: "2027",
             dateLabel: "2–4 February 2027", startDate: "2027-02-02", endDate: "2027-02-04",
-            status: "Confirmed", introduction: "Independent products for attendees.",
+            introduction: "Independent products for attendees.",
             accessIntroduction: "Use the conference attendee portal.", accessURL: "https://example.org/attendees",
             valueSummary: nil
         )

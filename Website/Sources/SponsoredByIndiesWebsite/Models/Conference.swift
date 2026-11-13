@@ -37,7 +37,6 @@ struct Edition: Decodable {
     var dateLabel: String
     var startDate: String
     var endDate: String
-    var status: String
     var introduction: String
     var accessIntroduction: String
     var accessURL: String?

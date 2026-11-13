@@ -9,7 +9,8 @@ struct BuildOptionsTests {
         ["--site-url", "https://example.org?query=1"],
         ["--site-url", "https://user:password@example.org"],
         ["--site-url", "https://example.org", "--site-url", "https://other.org"],
-        ["--validate-only", "--verify-prices"], ["--verify-prices", "--validate-only"]
+        ["--validate-only", "--verify-prices"], ["--verify-prices", "--validate-only"],
+        ["--check-maintenance", "--validate-only"], ["--verify-prices", "--check-maintenance"]
     ])
     func rejectsInvalidArguments(arguments: [String]) {
         #expect(throws: CatalogError.self) { try BuildOptions(arguments: arguments) }
@@ -22,5 +23,6 @@ struct BuildOptionsTests {
         #expect(!options.validateOnly)
         #expect(try BuildOptions(arguments: ["--public", "--validate-only"]).validateOnly)
         #expect(try BuildOptions(arguments: ["--verify-prices"]).verifyPrices)
+        #expect(try BuildOptions(arguments: ["--check-maintenance"]).checkMaintenance)
     }
 }

@@ -19,7 +19,6 @@ extension Pages {
             }
             Tag("section") {
                 Section {
-                    Components.eyebrow(edition.status)
                     Text("\(escaped(conference.name)) \(escaped(edition.label))").font(.title1)
                     Text {
                         escaped(edition.dateLabel) + " · "
@@ -39,7 +38,7 @@ extension Pages {
                 if !otherEditions.isEmpty { Link("Other editions", target: "#other-editions") }
             }.class("container", "edition-nav").aria(.label, "This edition")
             Tag("section") {
-                Components.heading("Included with", "your ticket.", id: "bundle-title")
+                Components.heading("Included with your", "\(conference.name) ticket.", id: "bundle-title")
                 if offers.isEmpty {
                     Section {
                         Text("Good things are taking shape.").font(.title3)

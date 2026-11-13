@@ -100,7 +100,6 @@ enum Components {
     {
         Tag("article") {
             Section {
-                eyebrow(edition?.status ?? "Participating conference")
                 Text { Link(escaped(conference.name), target: edition?.path(in: catalog) ?? conference.path) }.font(headingLevel)
                 Text(escaped(conference.location)).class("conference-location")
                 if let edition { Text(escaped(edition.dateLabel)) }

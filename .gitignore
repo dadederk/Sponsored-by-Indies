@@ -5,6 +5,9 @@ Website/Build/
 Website/BuildPublic/
 Website/.cache/
 Website/.ignite/
+Website/node_modules/
+Website/playwright-report/
+Website/test-results/
 
 # Working notes belong in the separate private planning repository.
 /docs/

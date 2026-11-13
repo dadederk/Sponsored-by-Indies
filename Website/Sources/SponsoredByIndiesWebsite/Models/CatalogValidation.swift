@@ -48,7 +48,7 @@ extension Catalog {
             }
         }
         for edition in editions {
-            try nonempty([edition.id, edition.label, edition.dateLabel, edition.status,
+            try nonempty([edition.id, edition.label, edition.dateLabel,
                           edition.introduction, edition.accessIntroduction], edition.id)
             try require(slug(edition.slug), "Invalid edition slug: \(edition.slug)")
             try require(conferences.contains { $0.id == edition.conferenceID }, "Unknown conference for \(edition.id)")
@@ -59,6 +59,13 @@ extension Catalog {
             try require(edition.startDate <= edition.endDate, "Edition \(edition.id) ends before it starts.")
             if let url = edition.accessURL { try Self.validateURL(url) }
             if let note = edition.bundleNote { try nonempty([note], "bundle note for \(edition.id)") }
+            for contribution in visibleProductContributions(for: edition) {
+                let product = contribution.product
+                try require(contribution.offers.allSatisfy {
+                    $0.productName == product.productName && $0.description == product.description &&
+                        $0.productIconPath == product.productIconPath
+                }, "Alternative offers for \(product.productName) in \(edition.id) must share the same product name, description and icon.")
+            }
             if let value = edition.valueSummary {
                 let approved = Set(visibleOffers(for: edition).map(\.id))
                 try require(!value.offerIDs.isEmpty && Set(value.offerIDs).isSubset(of: approved),

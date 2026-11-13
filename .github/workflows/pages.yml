@@ -19,6 +19,9 @@ on:
       - Scripts/**
       - .github/workflows/pages.yml
   workflow_dispatch:
+  schedule:
+    # Refresh date-dependent pages daily, including when no content has changed.
+    - cron: '37 5 * * *'
 
 permissions:
   contents: read
@@ -43,6 +46,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: npm
+          cache-dependency-path: Website/package-lock.json
+      - name: Install browser checks
+        working-directory: Website
+        run: npm ci --ignore-scripts
+      - name: Install test browsers
+        working-directory: Website
+        run: npx playwright install chromium webkit
       - name: Test website
         run: swift test --package-path Website --force-resolved-versions
       - name: Generate preview
@@ -51,11 +62,38 @@ jobs:
         run: swift run --package-path Website --force-resolved-versions SponsoredByIndiesWebsite --public --site-url "$PUBLIC_SITE_URL"
       - name: Check browser modules and generated pages
         run: node --test Website/Tests/*.test.mjs
+      - name: Check browser journeys and accessibility
+        working-directory: Website
+        run: npm run test:browser
+      - name: Save failed browser check reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-checks
+          path: |
+            Website/playwright-report/
+            Website/test-results/
+          retention-days: 7
+          if-no-files-found: ignore
       - name: Upload public website only
         if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v4
         with:
           path: Website/BuildPublic
+
+  price-review:
+    # Live sources can be unavailable independently of date-only page rebuilds.
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: macos-15
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@v6
+      - name: Check evidence dates with seven days of notice
+        run: swift run --package-path Website --force-resolved-versions SponsoredByIndiesWebsite --check-maintenance
+      - name: Compare current public price sources
+        if: '!cancelled()'
+        run: swift run --package-path Website --force-resolved-versions SponsoredByIndiesWebsite --verify-prices
 
   deploy:
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
