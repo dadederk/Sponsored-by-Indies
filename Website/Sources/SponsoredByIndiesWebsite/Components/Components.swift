@@ -242,22 +242,4 @@ enum Components {
         return url.string ?? contact
     }
 
-    static var joinCalls: some HTML {
-        Tag("section") {
-            heading("Small contributions.", "Shared joy.", id: "join-title")
-            Grid(alignment: .top, spacing: .none) {
-                Section {
-                    Text("For conference organisers").font(.title3)
-                    Text("Give attendees a bundle of useful indie products and another reason to book their ticket.")
-                    button("Express conference interest", href: "/participate/conferences/", style: .secondary)
-                }
-                Section {
-                    Text("For independent makers").font(.title3)
-                    Text("Share an app, game, book, course, tool… with a conference community you care about.")
-                    button("Contribute as an indie", href: "/participate/indies/", style: .tertiary)
-                }
-            }.columns(2).class("g-3")
-            Text("See how the partnership works, or tell us what you’d like to contribute.").class("contact-note")
-        }.class("container", "section-space", "join-section").aria(.labelledBy, "join-title")
-    }
 }

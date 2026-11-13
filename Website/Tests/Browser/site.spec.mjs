@@ -21,6 +21,9 @@ test.beforeEach(async ({ page }) => {
 });
 
 async function fillProposal(page) {
+  if (await page.locator('#interest-form').getAttribute('open') === null) {
+    await page.locator('#interest-form > summary').press('Enter');
+  }
   await page.getByLabel('Name (required)', { exact: true }).fill('Example Maker');
   await page.getByLabel('Contact email (required)', { exact: true }).fill('maker@example.org');
   await page.getByLabel('Conference you’d like to contribute to (required)', { exact: true }).fill('Example Conference 2027');
@@ -82,6 +85,7 @@ for (const script of ['bootstrap.bundle.min.js', 'offer-terms.mjs']) {
 
 test('invalid optional fields are revealed and focused before a draft is prepared', async ({ page }) => {
   await page.goto(formPath);
+  await page.locator('#interest-form > summary').press('Enter');
   await page.getByRole('button', { name: 'Preview email first' }).click();
   await expect(page.getByLabel('Name (required)', { exact: true })).toBeFocused();
   await fillProposal(page);
@@ -170,6 +174,58 @@ test('an image draft downloads as an email file with its attachment', async ({ p
   expect(email.replace(/\r\n/g, '')).toContain(png.toString('base64'));
 });
 
+test('conference enquiries disclose, validate, preview and invalidate without losing answers', async ({ page }) => {
+  await page.goto('/participate/conferences/');
+  const disclosure = page.locator('#interest-form');
+  await expect(disclosure).not.toHaveAttribute('open', '');
+  await disclosure.locator('summary').press('Enter');
+  await page.getByRole('button', { name: 'Preview email first' }).click();
+  await expect(page.getByLabel('Name (required)', { exact: true })).toBeFocused();
+  await page.getByLabel('Name (required)', { exact: true }).fill('Example Organiser');
+  await page.getByLabel('Contact email (required)', { exact: true }).fill('organiser@example.org');
+  await page.getByLabel('Conference name (required)', { exact: true }).fill('ExampleConf');
+  await page.getByRole('button', { name: 'Preview email first' }).click();
+  const body = page.getByLabel('Email text', { exact: true });
+  await expect(body).toBeFocused();
+  await expect(body).toHaveValue(/Example Organiser[\s\S]*ExampleConf/);
+  const minimal = await body.inputValue();
+  expect(minimal).not.toContain('Approximate attendee numbers:');
+  const handoff = new URL(await page.getByRole('link', { name: 'Open email app', exact: true }).getAttribute('href'));
+  expect(handoff.protocol).toBe('mailto:');
+  expect(handoff.searchParams.get('body').replace(/\r\n/g, '\n')).toBe(minimal);
+  await expectAccessible(page);
+  await page.getByLabel('Next edition and dates (optional)', { exact: true }).fill('February 2027, dates to be confirmed');
+  await expect(body).toBeHidden();
+  await expect(page.getByRole('status')).toContainText('Your answers changed');
+  await page.getByLabel('Approximate attendee numbers (optional)', { exact: true }).fill('150–200');
+  const website = page.getByLabel('Website (optional)', { exact: true });
+  await website.fill('not a URL');
+  await page.getByRole('button', { name: 'Preview email first' }).click();
+  await expect(website).toBeFocused();
+  await website.fill('https://example.org/?a=1&b=2');
+  await page.getByRole('button', { name: 'Preview email first' }).click();
+  await expect(body).toHaveValue(/dates to be confirmed[\s\S]*150–200/);
+  const downloading = page.waitForEvent('download');
+  await page.getByRole('link', { name: 'Download email file (.eml)', exact: true }).click();
+  const download = await downloading;
+  expect(download.suggestedFilename()).toBe('conference-interest.eml');
+  const file = await readFile(await download.path(), 'utf8');
+  expect(file).toContain('X-Unsent: 1');
+  const decoded = Buffer.from(file.split('\r\n\r\n')[1].replace(/\s/g, ''), 'base64').toString('utf8');
+  expect(decoded.replace(/\r\n/g, '\n')).toBe(await body.inputValue());
+});
+
+for (const [path, form] of [[formPath, '#contribution-form'], ['/participate/conferences/', '#conference-interest-form']]) {
+  test(`email remains available when shared draft tools fail: ${path}`, async ({ page }) => {
+    await page.route('**/email-draft.mjs*', route => route.abort());
+    await page.goto(path);
+    await page.locator('#interest-form > summary').press('Enter');
+    await expect(page.locator(form)).toBeHidden();
+    await expect(page.locator('#form-fallback')).toBeVisible();
+    await expect(page.getByRole('link', { name: /Express (indie|conference) interest/ })).toHaveAttribute('href', /^mailto:/);
+  });
+}
+
 test('direct email and native terms work without JavaScript', async ({ browser, baseURL }, testInfo) => {
   const context = await browser.newContext({ javaScriptEnabled: false, baseURL, viewport: testInfo.project.use.viewport });
   try {
@@ -177,6 +233,13 @@ test('direct email and native terms work without JavaScript', async ({ browser, 
     await page.goto(formPath);
     await expect(page.locator('#contribution-form')).toBeHidden();
     await expect(page.getByRole('link', { name: 'Express indie interest', exact: true })).toHaveAttribute('href', /^mailto:/);
+    await page.locator('#interest-form > summary').press('Enter');
+    await expect(page.locator('#form-fallback')).toBeVisible();
+    await page.goto('/participate/conferences/');
+    await expect(page.locator('#conference-interest-form')).toBeHidden();
+    await expect(page.getByRole('link', { name: 'Express conference interest', exact: true })).toHaveAttribute('href', /^mailto:/);
+    await page.locator('#interest-form > summary').press('Enter');
+    await expect(page.locator('#form-fallback')).toBeVisible();
     await page.goto(bundlePath);
     const fallback = page.locator('.product-card details').filter({ has: page.getByText(termsName, { exact: true }) });
     await fallback.locator('summary').press('Enter');

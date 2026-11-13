@@ -1,11 +1,10 @@
-const newline = "\r\n";
-// An advisory only: email apps have different URL limits. Always offer the full link.
-export const LONG_EMAIL_HINT_LENGTH = 1900;
+import { newline, makeEmailDraft, encodeBytes, imageExtensions, createEmailDraftController } from "./email-draft.mjs";
+export { makeEmailFile, LONG_EMAIL_HINT_LENGTH } from "./email-draft.mjs";
 
 export function makeContributionEmail(data, recipient) {
   const clean = value => String(value ?? "").trim();
   const line = (label, value) => clean(value) ? `${label}: ${clean(value)}` : null;
-  const subject = Array.from(`Indie contribution — ${clean(data.conference)} — ${clean(data.name)}`.replace(/[\r\n]+/g, " ")).slice(0, 100).join("");
+  const subject = `Indie contribution — ${clean(data.conference)} — ${clean(data.name)}`;
   const lines = [
     "Hi! I’d like to contribute to Sponsored by Indies.", "",
     "ABOUT ME", line("Name", data.name), line("Contact email", data.email),
@@ -22,25 +21,10 @@ export function makeContributionEmail(data, recipient) {
     });
   });
   lines.push("This is an initial proposal. Final offers and public profile details are still to be agreed.");
-  const body = lines.filter(line => line !== null).join(newline).replace(/\r\n|\r|\n/g, newline);
-  const address = encodeURIComponent(recipient).replace(/%40/g, "@");
-  const mailto = `mailto:${address}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  return { subject, body, mailto, isLong: mailto.length > LONG_EMAIL_HINT_LENGTH };
+  const body = lines.filter(line => line !== null).join(newline);
+  return makeEmailDraft(subject, body, recipient);
 }
 
-function encodeBytes(bytes) {
-  let binary = "";
-  for (let offset = 0; offset < bytes.length; offset += 8192) {
-    binary += String.fromCharCode(...bytes.subarray(offset, offset + 8192));
-  }
-  return btoa(binary);
-}
-
-function base64(text) {
-  return encodeBytes(new TextEncoder().encode(text));
-}
-
-const imageExtensions = { "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp" };
 export function validateIcons(files) {
   if (files.some(file => !imageExtensions[file.type])) return "Choose a PNG, JPEG or WebP image.";
   if (files.some(file => file.size > 5 * 1024 * 1024)) return "Each image must be 5 MB or smaller.";
@@ -69,75 +53,18 @@ export async function makeIconAttachment(file, contributionNumber) {
   };
 }
 
-// MIME encoding keeps Unicode, long answers and header-like body text intact.
-export function makeEmailFile(draft, recipient, attachments = []) {
-  if (/[\r\n<>]/.test(recipient)) throw new Error("Invalid email recipient");
-  const subject = Array.from(draft.subject.matchAll(/.{1,10}/gu), match => `=?UTF-8?B?${base64(match[0])}?=`).join(`${newline} `);
-  const body = base64(draft.body).match(/.{1,76}/g)?.join(newline) ?? "";
-  const headers = ["X-Unsent: 1", `To: ${recipient}`, `Subject: ${subject}`, "MIME-Version: 1.0"];
-  const textPart = ['Content-Type: text/plain; charset="UTF-8"', "Content-Transfer-Encoding: base64", "", body, ""].join(newline);
-  if (!attachments.length) return [...headers, textPart].join(newline);
-  // Base64 payloads cannot contain this boundary. Filenames are generated locally.
-  const boundary = "=_indie_contribution_images";
-  const parts = attachments.map(attachment => {
-    if (!imageExtensions[attachment.type] || !/^contribution-[1-9][0-9]*-icon\.(png|jpg|webp)$/.test(attachment.filename)
-      || !/^[A-Za-z0-9+/]*={0,2}$/.test(attachment.content)) throw new Error("Invalid image attachment");
-    return [`Content-Type: ${attachment.type}`, `Content-Disposition: attachment; filename="${attachment.filename}"`,
-      "Content-Transfer-Encoding: base64", "", attachment.content.match(/.{1,76}/g)?.join(newline) ?? "", ""].join(newline);
-  });
-  return [...headers, `Content-Type: multipart/mixed; boundary="${boundary}"`, "",
-    `--${boundary}`, textPart, ...parts.flatMap(part => [`--${boundary}`, part]), `--${boundary}--`, ""].join(newline);
-}
-
 function initialiseForm() {
   const form = document.getElementById("contribution-form");
   if (!form) return;
-  const status = document.getElementById("form-status");
-  const preview = document.getElementById("draft-preview");
-  const bodyField = document.getElementById("draft-body");
-  const subjectField = document.getElementById("draft-subject");
-  const emailLink = document.getElementById("draft-email-link");
-  const downloadLink = document.getElementById("download-draft");
+  const draftView = createEmailDraftController(form);
+  const { status } = draftView;
+  const invalidateDraft = () => draftView.invalidate();
   const addButton = document.getElementById("add-resource");
   const resourceTemplate = form.querySelector("[data-resource]").cloneNode(true);
   const offerTemplate = resourceTemplate.querySelector("[data-offer]").cloneNode(true);
   let resourceID = 1;
   let offerID = 1;
-  let currentDraft;
-  let downloadURL;
-  let revision = 0;
-
-  function invalidateDraft() {
-    revision++;
-    if (!currentDraft) return;
-    currentDraft = undefined;
-    preview.hidden = true;
-    if (downloadURL) URL.revokeObjectURL(downloadURL);
-    downloadURL = undefined;
-    downloadLink.removeAttribute("href");
-    emailLink.removeAttribute("href");
-    status.textContent = "Your answers changed. Prepare a new draft to include the changes.";
-  }
-  form.addEventListener("input", invalidateDraft);
-  form.addEventListener("invalid", event => {
-    // Reveal invalid optional fields before the browser tries to focus them.
-    let details = event.target.closest("details");
-    let revealed = false;
-    while (details) {
-      if (!details.open) {
-        details.open = true;
-        revealed = true;
-      }
-      details = details.parentElement.closest("details");
-    }
-    // WebKit needs layout to catch up after opening a collapsed section.
-    // Keep the first invalid field first, even when several controls are invalid.
-    if (revealed) requestAnimationFrame(() => form.querySelector("input:invalid, select:invalid, textarea:invalid")?.focus());
-  }, true);
-  form.addEventListener("change", () => {
-    invalidateDraft();
-    validateImageFields();
-  });
+  form.addEventListener("change", validateImageFields);
 
   const resources = () => [...form.querySelectorAll("fieldset[data-resource]")];
   const offers = resource => [...resource.querySelectorAll("fieldset[data-offer]")];
@@ -268,7 +195,7 @@ function initialiseForm() {
     event.preventDefault();
     validateImageFields();
     if (!form.reportValidity()) return;
-    const draftRevision = ++revision;
+    const draftRevision = draftView.begin();
     const draft = makeContributionEmail(readForm(), form.dataset.recipient);
     const selected = resources().flatMap((resource, index) => {
       const file = resource.querySelector("[data-product-icon]").files[0];
@@ -278,55 +205,17 @@ function initialiseForm() {
     try {
       attachments = await Promise.all(selected.map(({ file, number }) => makeIconAttachment(file, number)));
     } catch {
-      if (revision !== draftRevision) return;
+      if (!draftView.isCurrent(draftRevision)) return;
       status.textContent = "An image could not be read. Choose the image again, or remove it and attach it in your email app.";
       return;
     }
     // Edits or another submission while reading files must not resurrect an old draft.
-    if (revision !== draftRevision) return;
-    if (downloadURL) URL.revokeObjectURL(downloadURL);
-    currentDraft = draft;
-    subjectField.value = draft.subject;
-    bodyField.value = draft.body;
-    emailLink.href = draft.mailto;
-    downloadURL = URL.createObjectURL(new Blob([makeEmailFile(draft, form.dataset.recipient, attachments)], { type: "message/rfc822" }));
-    downloadLink.href = downloadURL;
-    const hasImages = attachments.length > 0;
-    emailLink.classList.toggle("btn-primary", !hasImages);
-    emailLink.classList.toggle("btn-secondary", hasImages);
-    downloadLink.classList.toggle("btn-primary", hasImages);
-    downloadLink.classList.toggle("btn-secondary", !hasImages);
-    emailLink.textContent = attachments.length ? "Open email app (text only)" : "Open email app";
-    document.getElementById("draft-attachment-note").textContent = attachments.length
-      ? `${attachments.length} image(s) included in the email file. Download it to send your images, or attach them yourself after opening the text draft.` : "";
-    preview.hidden = false;
-    const longHint = draft.isLong ? " If your app cannot open this long draft, download the complete email file below or use Copy email text." : "";
-    if (attachments.length) {
-      status.textContent = "Your draft with images is ready. Download the email file below and open it in your email app to review and send. Nothing has been sent.";
-      downloadLink.focus();
-    } else if (event.submitter?.value === "preview") {
-      status.textContent = `Your email preview is ready. Nothing has been sent.${longHint}`;
-      bodyField.focus();
-    } else {
-      status.textContent = `Opening your email app with the recipient, subject and complete text. Nothing has been sent by this website.${longHint}`;
-      window.location.assign(draft.mailto);
-    }
-  });
-
-  document.getElementById("copy-draft").addEventListener("click", async () => {
-    if (!currentDraft) return;
-    try {
-      await navigator.clipboard.writeText(currentDraft.body);
-      status.textContent = "Email text copied. Open your email draft, paste the text if needed, then review and send it.";
-    } catch {
-      bodyField.focus();
-      bodyField.select();
-      status.textContent = "Automatic copying is unavailable. The email text is selected; copy it, then paste it into your email draft.";
-    }
+    if (!draftView.isCurrent(draftRevision)) return;
+    draftView.show(draft, { attachments, previewOnly: event.submitter?.value === "preview" });
   });
 
   renumberResources();
-  form.hidden = false;
+  draftView.reveal();
 }
 
 if (typeof document !== "undefined") initialiseForm();

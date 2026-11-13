@@ -13,7 +13,7 @@ extension Pages {
                     Components.conferenceCard(conference, edition: catalog.featuredEdition(for: conference, on: date), catalog: catalog, headingLevel: .title2)
                 }
             }.class("container", "section-space")
-            Components.joinCalls
+            Components.audienceBenefits(for: [.conferences, .indies], title: "Get", emphasis: "involved.")
         }
     }
 

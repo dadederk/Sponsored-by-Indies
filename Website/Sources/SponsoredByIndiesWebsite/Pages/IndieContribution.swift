@@ -11,8 +11,7 @@ struct IndieContribution {
             Tag("section") {
                 Components.title("A little of", emphasis: "what you make.")
                 Text("Share an app, game, book, course, tool… with a conference community you care about.").class("lead")
-                Text("Help support an iOS, Swift or Apple developer conference. Contributions can be useful, playful or educational; they don’t have to be developer tools.")
-                Text("Solo makers and small independent teams are welcome. This is an initial proposal; we can work out the details together, and you’ll approve the final profile and offer before publication.")
+                Text("Solo makers and small independent teams are welcome. Help support an iOS, Swift or Apple developer conference with something useful, playful or educational.")
                 if let contact = catalog.contactURL {
                     Components.button("Express indie interest", href: interestURL(contact))
                     if contact.hasPrefix("mailto:") {
@@ -22,32 +21,30 @@ struct IndieContribution {
                     }
                 }
             }.class("container", "page-intro")
+            Components.participationPanels {
+                Components.participationPanel("What you", emphasis: "bring.", id: "bring-title") {
+                    Text("Share an app, game, book, course, tool… Choose the free access or discount that works for you. We really appreciate you giving back to the community and supporting our beloved conferences.")
+                }
+            } second: {
+                Components.participationPanel("What you", emphasis: "get.", id: "benefits-title") {
+                    Text("A little more visibility for your projects. Introduce what you make to a conference community you care about, with your projects, offers and links featured in its bundle.")
+                }
+            }
+            Components.processSection("How we", emphasis: "put it together.", id: "process-title", steps: [
+                ("Share your contribution.", "Tell us which conference you’d like to support, the products you’d like to share and your proposed offers. You can also include a quote about what makes that conference special to you."),
+                ("Review your preview.", "We’ll prepare a preview of how your projects and offers will look in the conference bundle. We’ll work through any changes together until you’re happy."),
+                ("You’re in the bundle. Thank you!", "Once you approve it, we publish your contribution as part of the bundle. Then we work with the conference to get your offer codes or access instructions to attendees."),
+            ])
             Section {
                 if let contact = catalog.contactURL, let recipient = URLComponents(string: contact)?.path, contact.hasPrefix("mailto:") {
-                    Text("Fill in the form to prepare an email, then review and send it in your email app.").id("form-help")
-                    contributionForm(recipient: recipient).class("reading-width")
-                    Tag("section") {
-                        Text("Your email draft").font(.title2).id("draft-title")
-                        Text("The email link includes your answers as text. To include selected images, download the email file instead. You can also copy the text and attach images yourself.")
-                        Tag("label") { "Subject" }.attribute("for", "draft-subject").class("form-label")
-                        Tag("input").id("draft-subject").attribute("type", "text").attribute("readonly").class("form-control")
-                        FormFields.multiline("Email text", id: "draft-body", rows: 16, readOnly: true)
-                        Section {
-                            Link("Open email app", target: contact).linkStyle(.button).role(.primary).id("draft-email-link")
-                            Button("Copy email text").type(.plain).role(.secondary).id("copy-draft")
-                            // The browser supplies the download URL after preparing the file.
-                            Tag("a") { "Download email file (.eml)" }.id("download-draft")
-                                .attribute("download", "indie-contribution.eml").class("btn", "btn-secondary")
-                        }.class("actions")
-                        Text("Open the downloaded file in your email app. Depending on the app, you may need to choose Edit as new or Forward before sending.").class("field-help")
-                        Text("").id("draft-attachment-note").class("field-help")
-                        Text("Nothing has been sent. You choose when to send the email in your email app.").class("contact-note")
-                    }.id("draft-preview").class("reading-width").attribute("hidden").aria(.labelledBy, "draft-title")
-                    Tag("p") { "" }.id("form-status").attribute("role", "status").aria(.live, "polite")
-                    Tag("noscript") {
-                        Text("The email builder needs JavaScript. You can email us directly with your name, chosen conference, product links, and proposed offers instead.")
-                    }
-                    Text { "Prefer to write directly? "; Link(escaped(recipient), target: interestURL(contact)) }
+                    Tag("details") {
+                        Tag("summary") { "Prefer a form?" }
+                        Text("Fill in the form to prepare an email, then review and send it in your email app.").id("form-help")
+                        Components.emailFormFallback
+                        contributionForm(recipient: recipient).class("reading-width")
+                        Components.emailDraftPreview(contact: contact, filename: "indie-contribution.eml", includesImages: true)
+                        Components.emailFormStatus
+                    }.id("interest-form").class("participation-form")
                     Script(file: "/contribution.mjs").attribute("type", "module")
                 } else if catalog.contactURL == nil {
                     Text("A contribution contact route will be available here soon.")
@@ -96,10 +93,7 @@ struct IndieContribution {
             FormFields.actionButton("Add another app, game or other resource", icon: "plus-lg", role: .secondary).id("add-resource")
             Section("Prepare your email") {
                 Text("A rough proposal is enough. We’ll agree plans, prices, dates and redemption details together later. Please don’t include private redemption codes.")
-                Section {
-                    Button("Open email draft").id("prepare-draft").type(.submit).role(.primary).customAttribute(name: "name", value: "draft-action").customAttribute(name: "value", value: "email")
-                    Button("Preview email first").type(.submit).role(.secondary).customAttribute(name: "name", value: "draft-action").customAttribute(name: "value", value: "preview")
-                }.class("actions")
+                Components.emailDraftActions
             }
         }
         .labelStyle(.top)

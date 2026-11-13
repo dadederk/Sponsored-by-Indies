@@ -164,6 +164,33 @@ struct PublishingTests {
             #expect(html.contains("noindex, nofollow") == preview)
         }
         let home = try page("index.html")
+        let directory = try page("conferences/index.html")
+        #expect(home.contains("What’s in it"))
+        #expect(!directory.contains("What’s in it"))
+        #expect(directory.contains("id=\"benefits-title\""))
+        #expect(directory.contains("Get <span class=\"title-accent\">involved.</span>"))
+        func audienceCards(in html: String) -> [String] {
+            html.matches(of: /<article class="panel">[\s\S]*?<\/article>/).map { String($0.output) }
+        }
+        let homeCards = audienceCards(in: home)
+        let directoryCards = audienceCards(in: directory)
+        let participationCards = audienceCards(in: try page("participate/index.html"))
+        #expect(homeCards.count == 3)
+        #expect(directoryCards.count == 2)
+        #expect(participationCards.count == 3)
+        for (card, audience) in zip(participationCards, ["For conference organisers", "For independent makers", "For attendees"]) {
+            #expect(card.contains(audience))
+            #expect(card.contains("<h2 "))
+            let nestedCard = card.replacingOccurrences(of: "<h2 ", with: "<h3 ")
+                .replacingOccurrences(of: "</h2>", with: "</h3>")
+            #expect(homeCards.contains(nestedCard))
+        }
+        #expect(!directoryCards.contains { $0.contains("For attendees") })
+        for audience in ["For conference organisers", "For independent makers"] {
+            let homeCard = try #require(homeCards.first { $0.contains(audience) })
+            let directoryCard = try #require(directoryCards.first { $0.contains(audience) })
+            #expect(homeCard == directoryCard)
+        }
         let terms = try page("terms/index.html")
         #expect(terms.contains("Community &amp; &lt;care&gt;."))
         #expect(terms.contains("Shared &lt;responsibilities&gt;"))
@@ -176,6 +203,20 @@ struct PublishingTests {
         #expect(home.contains("/favicon-shared-imprint-01.svg?v=\(assetVersion)"))
         #expect(home.contains("data-next-edition=\"sample-&quot;2027&quot;\""))
         let contribution = try page("participate/indies/index.html")
+        let conferenceInterest = try page("participate/conferences/index.html")
+        for html in [contribution, conferenceInterest] {
+            let disclosure = try #require(html.firstMatch(of: /<details[^>]*id="interest-form"[^>]*>/))
+            #expect(!String(disclosure.output).contains(" open"))
+            #expect(html.contains("<summary>Prefer a form?</summary>"))
+            #expect(html.contains("id=\"form-fallback\""))
+        }
+        let conferenceRequired = conferenceInterest.matches(of: /<(?:input|textarea|select)[^>]*required[^>]*>/).map { String($0.output) }
+        #expect(conferenceRequired.count == 3)
+        for id in ["organiser-name", "organiser-email", "conference-name"] {
+            #expect(conferenceRequired.contains { $0.contains("id=\"\(id)\"") })
+        }
+        #expect(conferenceInterest.contains("src=\"/conference-interest.mjs\""))
+        #expect(!conferenceInterest.contains(">Tell us about your conference</a>"))
         let directEmail = try #require(contribution.range(
             of: "<a[^>]*href=\"([^\"]*)\"[^>]*>Express indie interest</a>", options: .regularExpression))
         let buttonMarkup = String(contribution[directEmail])
@@ -340,7 +381,7 @@ struct PublishingTests {
     }
 
     @Test(arguments: [nil, "https://example.org/contact?source=indies&lang=en"] as [String?])
-    func indieInterestMatchesTheConfiguredContactRoute(contact: String?) async throws {
+    func participationInterestMatchesTheConfiguredContactRoute(contact: String?) async throws {
         var catalog = CatalogFixture.make()
         catalog.contactURL = contact
         try catalog.validate()
@@ -359,6 +400,14 @@ struct PublishingTests {
             #expect(html.contains("href=\"\(escaped(contact))\""))
             #expect(html.contains("through our contact page."))
         }
+        let conference = try String(contentsOf: root.appending(path: "participate/conferences/index.html"), encoding: .utf8)
+        #expect(!conference.contains("id=\"conference-interest-form\""))
+        #expect(!conference.contains("src=\"/conference-interest.mjs\""))
+        #expect(!conference.contains("Prefer a form?"))
+        #expect(!conference.contains("Opens an email draft."))
+        #expect(conference.contains("A conference contact route will be available here soon.") == (contact == nil))
+        #expect(conference.contains("Express conference interest") == (contact != nil))
+        if let contact { #expect(conference.contains("href=\"\(escaped(contact))\"")) }
     }
 
     @Test func textareaOptionsComposeIndependently() async throws {
