@@ -102,7 +102,6 @@ summary { cursor: pointer; padding: var(--space-3) var(--space-1); min-height: v
 details > p { margin-top: var(--space-4); padding-inline: var(--space-1); }
 @media (max-width: 767px) {
   .steps { grid-template-columns: 1fr; }
-  .site-header { align-items: flex-start; }
   .site-header nav { gap: var(--space-2) var(--space-4); }
   .conference-panel { padding: var(--conference-inset-small); }
   .row > * { min-width: 0; }
@@ -140,10 +139,13 @@ input.form-control:focus-visible,textarea.form-control:focus-visible,select.form
    cards share a row height; Bootstrap’s alignment utility requires !important.
    Extra row height stays below the content when a neighbouring card opens. */
 .product-grid > .col { align-self: stretch !important; display: flex; }
-.product-card { --card-inset: var(--space-6); display: flex; flex-direction: column; gap: var(--space-4); width: 100%; }
-.product-card-heading a { gap: var(--space-4); text-decoration: none; }
+.product-card,.showcase-card { --card-inset: min(var(--space-6), 5vw); display: flex; flex-direction: column; width: 100%; }
+.product-card { gap: var(--space-4); }
+/* Intrinsic wrapping keeps enlarged text readable beside fixed-size artwork.
+   Ignite has no wrapping/basis modifiers; descendants share a text-space token. */
+.product-card-heading a { gap: var(--space-4); text-decoration: none; flex-wrap: wrap; }
 .product-card-heading img { flex: none; }
-.product-card-name { display: flex; flex-direction: column; gap: var(--space-1); min-width: 0; }
+.product-card-name { display: flex; flex-direction: column; gap: var(--space-1); min-width: 0; flex: 1 1 min(100%, var(--card-text-basis)); }
 .product-card-url { text-decoration: underline; }
 .product-card-name .small { letter-spacing: normal; line-height: 1.5; }
 .product-card-benefits { display: flex; flex-wrap: wrap; align-content: start; align-items: flex-start; gap: var(--space-2); padding: 0; margin: 0; list-style: none; }
@@ -152,11 +154,37 @@ input.form-control:focus-visible,textarea.form-control:focus-visible,select.form
 .product-card-maker { border-top: var(--border-width) solid var(--line); padding-top: var(--space-4); margin-top: 0; line-height: 1.5; }
 .product-card-maker p a { min-height: 0; display: inline; }
 .offer-terms-link { white-space: nowrap; }
+/* Keep the heading flexible while reserving a full touch target for the small utility icon. */
+.product-card-header > .product-card-heading { flex: 1; min-width: 0; }
+.offer-share-action { flex: none; }
+.offer-share-control,.btn.offer-share-control { display: inline-flex; align-items: center; justify-content: center; width: var(--target-size); height: var(--target-size); padding: 0; border: 0; background: transparent; color: var(--utility-icon); font-size: var(--utility-icon-size); line-height: 1; text-decoration: none; }
+.offer-share-control:hover,.btn.offer-share-control:hover { color: var(--ink); }
+.offer-share-control .title-accent { color: inherit; }
+.product-grid > :target .product-card { outline: var(--control-border-width) solid var(--accent); outline-offset: var(--focus-offset); }
 .product-card .modal { --bs-modal-color: var(--ink); --bs-modal-bg: var(--surface); --bs-modal-border-color: var(--line); --bs-modal-border-radius: var(--radius-card); --bs-modal-padding: var(--space-6); --bs-modal-header-padding: var(--space-4) var(--space-6); }
 .product-card .modal-header { align-items: flex-start; gap: var(--space-4); }
 .product-card .modal-header h3 { align-self: center; }
 .product-card .modal .btn-close { width: var(--target-size); height: var(--target-size); min-width: var(--target-size); min-height: var(--target-size); padding: 0; margin: 0; margin-inline-start: auto; flex-shrink: 0; border: var(--border-width) solid var(--rule); border-radius: 50%; background-color: var(--tint); opacity: 1; }
 .product-card .modal .btn-close:hover { background-color: var(--line); }
+
+/* Separate showcase rows support longer bios and multi-person teams without
+   inheriting the offer grid's four-row subgrid. Shared selectors style descendants. */
+.showcase-grid > .col { align-self: stretch !important; display: flex; }
+.showcase-card { gap: var(--space-6); }
+.showcase-project-title { font-size: var(--project-heading-size); max-width: none; }
+.showcase-builders h3 { font-size: var(--builder-heading-size); }
+.showcase-builders,.showcase-contributions { border-top: var(--border-width) solid var(--line); padding-top: var(--space-4); }
+.showcase-contributions { margin-top: auto; }
+.builder-row + .builder-row { margin-top: var(--space-4); }
+.builder-row { flex-wrap: wrap; }
+.builder-row > :first-child { flex: none; }
+.builder-row > :last-child { min-width: 0; flex: 1 1 min(100%, var(--card-text-basis)); }
+.builder-portrait { object-fit: cover; }
+.builder-initials { display: flex; align-items: center; justify-content: center; }
+.builder-links { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-4); }
+.showcase-bundles { padding-inline-start: var(--space-5); }
+.showcase-bundles li + li { margin-top: var(--space-1); }
+.discovery-resource { border-top: var(--border-width) solid var(--line); padding-block: var(--space-6); }
 
 /* Shared intrinsic rows align offers despite different title/description lengths.
    Ignite provides the grid markup; subgrid supplies alignment across card interiors. */

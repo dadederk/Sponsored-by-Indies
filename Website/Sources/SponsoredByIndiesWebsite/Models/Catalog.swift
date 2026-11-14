@@ -1,7 +1,7 @@
 import Foundation
 
 /// Validate once at the loading boundary, before resolving references or rendering.
-struct Catalog: Decodable {
+struct Catalog {
     var conferences: [Conference]
     var editions: [Edition]
     var indies: [Indie]
@@ -10,6 +10,26 @@ struct Catalog: Decodable {
     var contactURL: String?
     var partnershipNote: String?
     var terms: CommunityTerms
+    var projects: [Project] = []
+    var discoveryResources: [DiscoveryResource] = []
+
+    /// A project remains discoverable after an edition ends, but only an approved
+    /// contribution in that exact edition can establish its inclusion.
+    var showcaseProjects: [Project] {
+        projects.filter { project in
+            editions.contains { edition in
+                visibleOffers(for: edition).contains { $0.projectID == project.id }
+            }
+        }.sorted {
+            ($0.name.lowercased(), $0.id) < ($1.name.lowercased(), $1.id)
+        }
+    }
+
+    func contributingEditions(for project: Project) -> [Edition] {
+        editionsByDate.filter { edition in
+            visibleOffers(for: edition).contains { $0.projectID == project.id }
+        }
+    }
 
     func conference(for edition: Edition) -> Conference {
         guard let conference = conferences.first(where: { $0.id == edition.conferenceID }) else {

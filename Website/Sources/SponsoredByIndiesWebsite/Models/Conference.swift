@@ -70,11 +70,44 @@ struct Indie: Decodable {
 struct IndiePerson: Decodable {
     var name: String
     var websiteURL: String?
+    var bio: String? = nil
+    var portraitPath: String? = nil
+    var socials: [SocialLink]? = nil
+
+    var initials: String {
+        name.split(separator: " ").prefix(2).compactMap(\.first).map(String.init).joined()
+    }
+
+    var showcaseLinks: [SocialLink] {
+        let order = ["Mastodon": 0, "Bluesky": 1, "Twitter": 2, "GitHub": 3]
+        let profiles = (socials ?? []).sorted {
+            (order[$0.label] ?? 4, $0.label, $0.url) < (order[$1.label] ?? 4, $1.label, $1.url)
+        }
+        return (websiteURL.map { [SocialLink(label: "Website", url: $0)] } ?? []) + profiles
+    }
+}
+
+struct Project: Decodable {
+    var id: String
+    var indieID: String
+    var name: String
+    var websiteURL: String
+    var iconPath: String?
+    var description: String
+    var showcaseDescription: String
+
+    var bundleAnchor: String { "project-" + id }
 }
 
 struct SocialLink: Decodable {
     var label: String
     var url: String
+}
+
+struct DiscoveryResource: Decodable {
+    var name: String
+    var url: String
+    var description: String
 }
 
 struct Participation: Decodable {
@@ -91,7 +124,8 @@ struct QuoteAttribution: Decodable {
     var sourceURL: String
 }
 
-struct Offer: Decodable {
+/// Resolved snapshot for rendering. Editorial product details live in projects.json.
+struct Offer {
     var id: String
     var editionID: String
     var indieID: String
@@ -104,6 +138,11 @@ struct Offer: Decodable {
     var terms: String
     var redemptionInstructions: String
     var publicationApproved: Bool
+    var projectID: String? = nil
+
+    var bundleAnchor: String {
+        projectID.map { "project-" + $0 } ?? "offer-" + id.utf8.map { String($0, radix: 16) }.joined(separator: "-")
+    }
 }
 
 struct ProductContribution {

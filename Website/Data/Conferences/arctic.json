@@ -70,11 +70,6 @@
     {
       "id": "xarra-lifetime",
       "editionID": "arctic-2027",
-      "indieID": "dani-devesa",
-      "productName": "Xarra!",
-      "productURL": "https://accessibilityupto11.com/apps/xarra/",
-      "productIconPath": "/app-icons/xarra.png",
-      "description": "Turn articles, books, and documents into audio with synchronized highlighting. Read along, listen hands-free, or switch between the two.",
       "benefit": "50% off lifetime Premium",
       "terms": "One-time purchase. Choose this or the free year.",
       "redemptionInstructions": "Not open yet. Eligibility and deadline to be confirmed; instructions will come through the conference.",
@@ -93,16 +88,12 @@
         "review": "unambiguous",
         "verifiedOn": "2026-11-13",
         "sourceURL": "https://apps.apple.com/us/app/xarra/id6759402266"
-      }
+      },
+      "projectID": "xarra"
     },
     {
       "id": "xarra-yearly",
       "editionID": "arctic-2027",
-      "indieID": "dani-devesa",
-      "productName": "Xarra!",
-      "productURL": "https://accessibilityupto11.com/apps/xarra/",
-      "productIconPath": "/app-icons/xarra.png",
-      "description": "Turn articles, books, and documents into audio with synchronized highlighting. Read along, listen hands-free, or switch between the two.",
       "benefit": "1 year of Premium free",
       "terms": "Yearly subscription; renewal terms to be confirmed. An alternative to the lifetime discount.",
       "redemptionInstructions": "Not open yet. Eligibility and deadline to be confirmed; instructions will come through the conference.",
@@ -121,16 +112,12 @@
         "review": "unambiguous",
         "verifiedOn": "2026-11-13",
         "sourceURL": "https://apps.apple.com/us/app/xarra/id6759402266"
-      }
+      },
+      "projectID": "xarra"
     },
     {
       "id": "retrorapid-free",
       "editionID": "arctic-2027",
-      "indieID": "dani-devesa",
-      "productName": "RetroRapid!",
-      "productURL": "https://accessibilityupto11.com/apps/retrorapid/",
-      "productIconPath": "/app-icons/retrorapid.png",
-      "description": "A little LCD nostalgia. Dodge traffic, chase a high score, or race a friend live with SharePlay. Released with love from ARCTIC in Oulu.",
       "benefit": "RetroRapid! Unlimited for free",
       "terms": "Unlimited Plays is assumed to be included; confirmation pending.",
       "redemptionInstructions": "Not open yet. Eligibility and deadline to be confirmed; instructions will come through the conference.",
@@ -149,16 +136,12 @@
         "review": "unambiguous",
         "verifiedOn": "2026-11-13",
         "sourceURL": "https://apps.apple.com/us/app/retrorapid-retro-arcade-racer/id6758641625"
-      }
+      },
+      "projectID": "retrorapid"
     },
     {
       "id": "dee-yearly",
       "editionID": "arctic-2027",
-      "indieID": "noam-efergan",
-      "productName": "Dee: Muay Thai Coach",
-      "productURL": "https://dee.training/",
-      "productIconPath": "/app-icons/dee.png",
-      "description": "A Muay Thai training companion. Build a plan around your goals, time, and equipment, then follow rounds with spoken cues, a timer, and haptics.",
       "benefit": "1 year of Dee Pro free",
       "terms": "Yearly App Store subscription; renewal terms to be confirmed.",
       "redemptionInstructions": "Not open yet. Eligibility and deadline to be confirmed; instructions will come through the conference.",
@@ -177,16 +160,12 @@
         "review": "unambiguous",
         "verifiedOn": "2026-11-13",
         "sourceURL": "https://apps.apple.com/us/app/dee-muay-thai-coach/id6788483296"
-      }
+      },
+      "projectID": "dee"
     },
     {
       "id": "rocketsim-yearly",
       "editionID": "arctic-2027",
-      "indieID": "antoine-van-der-lee",
-      "productName": "RocketSim for Xcode",
-      "productURL": "https://www.rocketsim.app/",
-      "productIconPath": "/app-icons/rocketsim.png",
-      "description": "An Xcode Simulator companion for Mac. Capture screenshots and videos, inspect network traffic, test app behaviour, and compare designs without leaving your development flow.",
       "benefit": "30% off your first year",
       "terms": "Individual annual plan; first year only. Renewal price to be confirmed.",
       "redemptionInstructions": "Not open yet. Eligibility and deadline to be confirmed; instructions will come through the conference.",
@@ -206,18 +185,14 @@
         "review": "provisional",
         "verifiedOn": "2026-11-13",
         "sourceURL": "https://apps.apple.com/us/app/rocketsim-for-xcode-simulator/id1504940162"
-      }
+      },
+      "projectID": "rocketsim"
     },
     {
       "editionID": "arctic-2027",
-      "indieID": "antoine-van-der-lee",
       "redemptionInstructions": "Not open yet. Eligibility and deadline to be confirmed; instructions will come through the conference.",
       "publicationApproved": true,
       "id": "rockettrace-yearly",
-      "productName": "RocketTrace for Xcode",
-      "productURL": "https://rockettrace.app/",
-      "productIconPath": "/app-icons/rockettrace.png",
-      "description": "Find performance issues in Xcode Instruments recordings. Review ranked findings, share focused investigation prompts with your coding agent, and compare recordings after making changes.",
       "benefit": "30% off your first year",
       "terms": "Yearly Pro subscription; first year only. Renewal price to be confirmed.",
       "savingEstimate": {
@@ -234,18 +209,14 @@
         "review": "unambiguous",
         "verifiedOn": "2026-11-13",
         "sourceURL": "https://apps.apple.com/us/app/rockettrace-for-xcode/id6798298905"
-      }
+      },
+      "projectID": "rockettrace"
     },
     {
       "editionID": "arctic-2027",
-      "indieID": "antoine-van-der-lee",
       "redemptionInstructions": "Not open yet. Eligibility and deadline to be confirmed; instructions will come through the conference.",
       "publicationApproved": true,
       "id": "ai-fundamentals-course",
-      "productName": "AI Fundamentals",
-      "productURL": "https://aifundamentals.dev/",
-      "productIconPath": "/app-icons/ai-fundamentals.png",
-      "description": "A practical course on working with AI coding agents. Learn to give clear context and instructions, check results, and build repeatable workflows across tools.",
       "benefit": "25% off lifetime course access",
       "terms": "Discount on the regular course price. One payment for lifetime access; taxes added at checkout.",
       "savingEstimate": {
@@ -264,7 +235,8 @@
         "sourceURL": "https://aifundamentals.dev/pricing/?country=US",
         "sourceFormat": "schemaOrg",
         "sourceProductName": "AI Fundamentals: agentic coding fundamentals for developers"
-      }
+      },
+      "projectID": "ai-fundamentals"
     }
   ]
 }

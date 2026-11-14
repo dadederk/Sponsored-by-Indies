@@ -7,7 +7,9 @@ enum AssetFingerprint {
         var digest = SHA256()
         digest.update(data: Data(tokens.utf8))
         let paths = (["styles.css"] + DesignTokens.brandAssetNames).map { "Assets/\($0)" }
-            + ["Sources/SponsoredByIndiesWebsite/Publishing/SocialPreview.swift"]
+            + ["Sources/SponsoredByIndiesWebsite/Publishing/SocialPreview.swift",
+               "Sources/SponsoredByIndiesWebsite/Publishing/BundleArtwork.swift",
+               "Sources/SponsoredByIndiesWebsite/Publishing/SiteIdentity.swift"]
         for name in paths.sorted() {
             let data = try Data(contentsOf: sourceDirectory.appending(path: name))
             digest.update(data: Data(name.utf8))

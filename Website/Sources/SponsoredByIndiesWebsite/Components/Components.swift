@@ -14,39 +14,43 @@ enum Components {
         case primary, secondary, tertiary
     }
 
-    static func brand(assetVersion: String) -> some InlineElement {
+    static func brand(assetVersion: String, identity: SiteIdentity = .sponsored) -> some InlineElement {
         Span {
             Image(decorative: "/logo.svg?v=shared-imprint-01-\(assetVersion)").class("brand-mark")
             Span {
-                Span("Sponsored").class("brand-sponsored")
+                if identity == .sponsored { Span("Sponsored").class("brand-sponsored") }
                 Span {
                     Span("by ").class("brand-by")
-                    Span("Indies").class("title-accent", "brand-name")
+                    Span(SiteIdentity.wordmarkName).class("title-accent", "brand-name")
                 }.class("brand-signature")
             }.class("brand-wordmark")
         }.foregroundStyle(Color(hex: DesignTokens.palette.blue))
     }
 
-    static func header(assetVersion: String) -> some HTML {
+    static func header(assetVersion: String, identity: SiteIdentity = .sponsored, preview: Bool = false, homePath: String = "/", sponsoredRoot: String? = nil) -> some HTML {
         Group {
             Link("Skip to content", target: "#main").class("skip-link")
             Tag("header") {
-                Link(brand(assetVersion: assetVersion), target: "/").class("brand").aria(.label, "Sponsored by Indies. Home")
+                Link(brand(assetVersion: assetVersion, identity: identity), target: homePath).class("brand").aria(.label, identity.name + ". Home")
                 Tag("nav") {
-                    Link("All Conferences", target: "/conferences/")
-                    Link("Get involved", target: "/participate/")
+                    if identity == .sponsored {
+                        Link("All Conferences", target: "/conferences/")
+                        Link("Get involved", target: "/participate/")
+                    } else {
+                        Link("Sponsored by Indies", target: (sponsoredRoot ?? SiteIdentity.sponsored.baseURL(preview: preview)) + "/")
+                    }
                 }.aria(.label, "Main navigation")
             }.class("container", "site-header")
         }
     }
 
-    static func footer(assetVersion: String) -> some HTML {
+    static func footer(assetVersion: String, identity: SiteIdentity = .sponsored, preview: Bool = false, homePath: String = "/", sponsoredRoot: String? = nil) -> some HTML {
         Tag("footer") {
             HStack(alignment: .center, spacing: .none) {
-                Link(brand(assetVersion: assetVersion), target: "/").class("brand").aria(.label, "Sponsored by Indies. Home")
+                Link(brand(assetVersion: assetVersion, identity: identity), target: homePath).class("brand").aria(.label, identity.name + ". Home")
                 Section {
-                    Text("Amazing conferences.")
-                    Text("A little extra.")
+                    Text(identity.headline)
+                    Text(identity.emphasis)
                 }
             }.class("footer-identity")
             Text {
@@ -55,9 +59,14 @@ enum Components {
             }
             .foregroundStyle(.secondary)
             Tag("nav") {
-                Link("For conferences", target: "/participate/conferences/")
-                Link("For indies", target: "/participate/indies/")
-                Link("Terms &amp; conditions", target: "/terms/")
+                if identity == .showcase {
+                    Link("Sponsored by Indies", target: (sponsoredRoot ?? SiteIdentity.sponsored.baseURL(preview: preview)) + "/")
+                } else {
+                    Link("For conferences", target: "/participate/conferences/")
+                    Link("For indies", target: "/participate/indies/")
+                    Link("By Indies", target: SiteIdentity.showcase.baseURL(preview: preview) + "/")
+                }
+                Link("Terms &amp; conditions", target: sponsoredRoot.map { $0 + "/terms/" } ?? identity.sponsoredLink("/terms/", preview: preview))
             }.aria(.label, "Footer navigation")
         }.class("container", "site-footer")
     }
@@ -119,26 +128,14 @@ enum Components {
         }.class("conference-card")
     }
 
-    static func productCard(_ product: Offer, offers: [Offer], indie: Indie, participation: Participation) -> some HTML {
+    static func productCard(_ product: Offer, offers: [Offer], indie: Indie, participation: Participation, bundlePath: String) -> some HTML {
         // Hex-encoded IDs stay unique and safe as selectors even when editorial IDs contain punctuation.
         let termsID = "offer-terms-" + product.id.utf8.map { String(("0" + String($0, radix: 16)).suffix(2)) }.joined()
         return Tag("article") {
-            Text {
-                Link(target: product.productURL) {
-                    if let icon = product.productIconPath {
-                        Image(decorative: icon)
-                            .frame(width: .px(DesignTokens.productIconSize), height: .px(DesignTokens.productIconSize))
-                            .cornerRadius(DesignTokens.productIconRadius)
-                    }
-                    Span {
-                        Span(escaped(product.productName)).class("product-card-title")
-                        if let host = URL(string: product.productURL)?.host {
-                            Span(escaped(host)).font(.small).fontWeight(.regular)
-                                .foregroundStyle(.secondary).class("product-card-url")
-                        }
-                    }.class("product-card-name")
-                }
-            }.font(.title3).margin(0).class("product-card-heading")
+            HStack(alignment: .top, spacing: .small) {
+                projectHeading(product.productName, url: product.productURL, icon: product.productIconPath)
+                offerSharing(product, bundlePath: bundlePath)
+            }.class("product-card-header")
             Text(escaped(product.description)).margin(0)
             // Safari otherwise removes list semantics when CSS hides the markers.
             List(offers) { offer in
@@ -169,7 +166,8 @@ enum Components {
                                 if index > 0 { Span(" &amp; ") }
                                 if let url = person.websiteURL {
                                     Span { Link(escaped(person.name), target: escaped(url)) }
-                                } else {
+                                }
+                                if person.websiteURL == nil {
                                     Span(escaped(person.name))
                                 }
                             }
@@ -192,7 +190,7 @@ enum Components {
                         " · "
                         // Bootstrap's data API restores focus to this link when the modal closes.
                         Link(target: "#" + termsID) {
-                            "Offer terms"
+                            "Terms"
                             Span(" for " + escaped(product.productName)).class("visually-hidden")
                         }.attribute("data-bs-toggle", "modal")
                             .class("offer-terms-link")
@@ -201,6 +199,7 @@ enum Components {
                 }.font(.small).margin(0)
                 for social in indie.socials { Link(escaped(social.label), target: social.url).font(.small) }
                 productTerms(product, offers: offers, id: termsID)
+                offerSharingFallback
             }.foregroundStyle(.secondary).class("product-card-maker")
         }.class("panel", "product-card")
     }

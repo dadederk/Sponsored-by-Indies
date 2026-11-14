@@ -22,7 +22,6 @@ for (const [directory, origin, preview] of [
     assert.ok(files.length >= 8, 'Generate both site outputs before running these checks.');
     const pages = new Map();
     const expectedSitemap = new Set();
-    const imagePath = new URL('/social-preview.png', origin);
     const png = await readFile(join(root, 'social-preview.png'));
     assert.equal(png.subarray(0, 8).toString('hex'), '89504e470d0a1a0a', 'sharing image is a PNG');
     assert.equal(png.readUInt32BE(16), 1200, 'sharing image width');
@@ -44,8 +43,6 @@ for (const [directory, origin, preview] of [
       const html = await readFile(join(root, file), 'utf8');
       const version = html.match(/design-tokens\.css\?v=([a-f0-9]+)/)?.[1];
       assert.ok(version, `${file}: versioned brand assets`);
-      imagePath.search = new URLSearchParams({v: version}).toString();
-      const imageURL = imagePath.href;
       for (const path of ['favicon.ico', 'favicon-shared-imprint-01.svg', 'apple-touch-icon.png']) {
         assert.ok(html.includes(`href="/${path}?v=${version}"`), `${file}: current ${path}`);
       }
@@ -60,22 +57,36 @@ for (const [directory, origin, preview] of [
       assert.match(html, /<meta[^>]+name="description"[^>]+content="[^"]+"/, `${file}: description`);
       const route = '/' + file.replace(/(^|\/)index\.html$/, '$1');
       const isAccess = route.endsWith('/access/');
+      const isUtility = isAccess || route === '/by-indies-preview/';
       const permanentLinks = [...html.matchAll(/<a\b[^>]*href="([^"]+)"[^>]*>Permanent link to /g)];
       const isHub = /^\/conferences\/[^/]+\/$/.test(route) && permanentLinks.length > 0;
       const canonical = new URL(isHub ? permanentLinks[0][1] : route, origin).href;
+      const bundleRoute = /^\/conferences\/[^/]+\/[^/]+\/(?:access\/)?$/.test(route)
+        ? route.replace(/access\/$/, '') : isHub ? new URL(canonical).pathname : null;
+      let imagePath = '/social-preview.png';
+      if (bundleRoute) {
+        const artwork = (await readdir(join(root, bundleRoute))).filter(name => /^social-preview-[a-f0-9]+\.png$/.test(name));
+        assert.equal(artwork.length, 1, `${file}: one current bundle image`);
+        imagePath = bundleRoute + artwork[0];
+        const bundlePNG = await readFile(join(root, imagePath));
+        assert.equal(bundlePNG.readUInt32BE(16), 1200);
+        assert.equal(bundlePNG.readUInt32BE(20), 630);
+      }
+      const imageURL = new URL(imagePath, origin);
+      imageURL.search = new URLSearchParams({v: version}).toString();
       assertCanonicalURL(html, canonical, file);
       const robots = [...html.matchAll(/<meta\b[^>]*>/g)].map(m => m[0])
         .filter(tag => attributes(tag, 'name').includes('robots'));
       assert.deepEqual(robots.map(tag => attributes(tag, 'content')[0]),
-        preview ? ['noindex, nofollow'] : isAccess ? ['noindex, follow'] : [], `${file}: indexing policy`);
+        preview ? ['noindex, nofollow'] : isUtility ? ['noindex, follow'] : [], `${file}: indexing policy`);
       for (const [attribute, name, expected] of [
-        ['property', 'og:url', canonical], ['property', 'og:image', imageURL], ['name', 'twitter:image', imageURL]
+        ['property', 'og:url', canonical], ['property', 'og:image', imageURL.href], ['name', 'twitter:image', imageURL.href]
       ]) {
         const tags = [...html.matchAll(/<meta\b[^>]*>/g)].map(m => m[0])
           .filter(tag => attributes(tag, attribute).includes(name));
         assert.deepEqual(tags.map(tag => attributes(tag, 'content')[0]), [expected], `${file}: ${name}`);
       }
-      if (!isAccess && !isHub) expectedSitemap.add(canonical);
+      if (!isUtility && !isHub) expectedSitemap.add(canonical);
     }
     const sitemap = await readFile(join(root, 'sitemap.xml'), 'utf8');
     const locations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1]);

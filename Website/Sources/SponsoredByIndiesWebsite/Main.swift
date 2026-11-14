@@ -24,14 +24,15 @@ struct SponsoredByIndiesWebsite {
             print("Price evidence has more than seven days remaining. No content or check dates were changed.")
             return
         }
-        try catalog.validatePriceFreshness(on: .now)
+        // The evergreen showcase does not publish prices or savings.
+        if options.identity == .sponsored { try catalog.validatePriceFreshness(on: .now) }
         if options.validateOnly {
             print("Catalogue valid: \(catalog.conferences.count) conference(s), \(catalog.editions.count) edition(s).")
             return
         }
         let baseURL = options.siteURL
-        var site = IndiesSite(catalog: catalog, preview: preview, url: baseURL)
-        let directory = source.appendingPathComponent(preview ? "Build" : "BuildPublic")
+        var site = IndiesSite(catalog: catalog, preview: preview, url: baseURL, identity: options.identity)
+        let directory = source.appendingPathComponent(options.identity.buildDirectory(preview: preview))
         let staging = source.appendingPathComponent(".build/site-\(UUID().uuidString)")
         defer { try? FileManager.default.removeItem(at: staging) }
         // Generate a fresh tree, so failures preserve the previous output and

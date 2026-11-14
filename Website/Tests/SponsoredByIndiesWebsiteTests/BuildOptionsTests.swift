@@ -3,7 +3,8 @@ import Testing
 
 struct BuildOptionsTests {
     @Test(arguments: [
-        ["--unknown"], ["--site-url"], ["--site-url", "garbage"], ["--public"],
+        ["--unknown"], ["--site"], ["--site", "unknown"], ["--site", "showcase", "--site", "sponsored"],
+        ["--site-url"], ["--site-url", "garbage"], ["--public"],
         ["--public", "--site-url", "http://example.org"],
         ["--site-url", "https://example.org/path"],
         ["--site-url", "https://example.org?query=1"],
@@ -24,5 +25,10 @@ struct BuildOptionsTests {
         #expect(try BuildOptions(arguments: ["--public", "--validate-only"]).validateOnly)
         #expect(try BuildOptions(arguments: ["--verify-prices"]).verifyPrices)
         #expect(try BuildOptions(arguments: ["--check-maintenance"]).checkMaintenance)
+        let showcase = try BuildOptions(arguments: ["--site", "showcase"])
+        #expect(showcase.identity == .showcase)
+        #expect(showcase.siteURL.absoluteString == "http://localhost:8001")
+        #expect(showcase.identity.buildDirectory(preview: true) == "BuildIndies")
+        #expect(showcase.identity.buildDirectory(preview: false) == "BuildIndiesPublic")
     }
 }

@@ -2,7 +2,7 @@
   "contactURL": "mailto:hello@accessibilityUpTo11.com",
   "partnershipNote": "We’d love to hear from organisers who want to bring an indie bundle to their conference.",
   "terms": {
-    "updatedOn": "2026-11-13",
+    "updatedOn": "2026-11-14",
     "introduction": "A little extra from the community, offered in good faith. These terms explain how Sponsored by Indies works and what attendees, independent makers and conference organisers can expect from one another.",
     "sections": [
       {
@@ -16,6 +16,7 @@
       {
         "heading": "What the site does",
         "paragraphs": [
+          "By Indies, at byindies.com, showcases projects contributing to Sponsored by Indies conference bundles and introduces their makers. These community terms apply to both websites. Bundle listings on sponsored.byindies.com contain the edition-specific offer information.",
           "This website introduces participating conferences and makers, explains how to get involved, and shares approved contributions and offer information. It does not sell tickets or products, process orders or payments, verify tickets, issue or redeem restricted codes, or provide the products listed here. Any purchase, licence, subscription or event booking is arranged directly with the relevant provider under their own terms.",
           "For attendee-only contributions, the conference manages attendee eligibility and distributes access instructions or restricted codes through its agreed attendee channel. Makers provide the resources or products and explain how to redeem each offer through their designated service. This site publishes the agreed guidance; it does not collect attendee lists or provide an attendee account or checkout.",
           "Listing a maker or conference recognises their participation; it is not a guarantee of their products, services or event. Participation does not create an agency, legal partnership or authority for anyone to make commitments on someone else’s behalf."
@@ -79,5 +80,32 @@
         ]
       }
     ]
-  }
+  },
+  "discoveryResources": [
+    {
+      "name": "Create with Swift",
+      "url": "https://www.createwithswift.com/weekly-newsletter/",
+      "description": "A Swift community newsletter with an Indie App of the Week, alongside articles and learning resources."
+    },
+    {
+      "name": "Launched",
+      "url": "https://launchedfm.com/",
+      "description": "Charlie Chapman talks with indie developers and creators about the stories behind shipping their projects."
+    },
+    {
+      "name": "Indie Dev Monday",
+      "url": "https://indiedevmonday.com/",
+      "description": "Meet independent developers and follow their journeys through profiles, interviews and an archive of indie stories."
+    },
+    {
+      "name": "Going Indie",
+      "url": "https://podcast.going-indie.com/",
+      "description": "Antoine van der Lee explores the experiences of independent creators and developers through in-depth conversations."
+    },
+    {
+      "name": "Springboard · App Picks",
+      "url": "https://darylbaxter.com/springboard/",
+      "description": "Daryl Baxter’s Springboard newsletter includes App Picks to help readers discover apps worth a closer look."
+    }
+  ]
 }

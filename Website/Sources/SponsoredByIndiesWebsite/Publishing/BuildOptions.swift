@@ -7,6 +7,7 @@ struct BuildOptions {
     let verifyPrices: Bool
     let checkMaintenance: Bool
     let siteURL: URL
+    let identity: SiteIdentity
 
     init(arguments: [String]) throws {
         var isPublic = false
@@ -14,6 +15,7 @@ struct BuildOptions {
         var verifyPrices = false
         var checkMaintenance = false
         var providedURL: String?
+        var identity: SiteIdentity?
         var remaining = arguments.makeIterator()
         while let argument = remaining.next() {
             switch argument {
@@ -21,6 +23,11 @@ struct BuildOptions {
             case "--validate-only": validateOnly = true
             case "--verify-prices": verifyPrices = true
             case "--check-maintenance": checkMaintenance = true
+            case "--site":
+                guard identity == nil, let value = remaining.next(), let selected = SiteIdentity(rawValue: value) else {
+                    throw CatalogError.invalid("--site requires sponsored or showcase, once.")
+                }
+                identity = selected
             case "--site-url":
                 guard providedURL == nil, let value = remaining.next(), !value.hasPrefix("--") else {
                     throw CatalogError.invalid("--site-url requires one URL.")
@@ -35,7 +42,8 @@ struct BuildOptions {
         guard !isPublic || validateOnly || providedURL != nil else {
             throw CatalogError.invalid("Public builds require --site-url https://your-chosen-domain.")
         }
-        let value = providedURL ?? "http://localhost:8000"
+        let selected = identity ?? .sponsored
+        let value = providedURL ?? selected.previewURL
         guard let url = URL(string: value),
               let host = url.host, !host.isEmpty,
               ["http", "https"].contains(url.scheme),
@@ -49,5 +57,6 @@ struct BuildOptions {
         self.verifyPrices = verifyPrices
         self.checkMaintenance = checkMaintenance
         self.siteURL = url
+        self.identity = selected
     }
 }

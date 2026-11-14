@@ -1,0 +1,56 @@
+[
+  {
+    "id": "xarra",
+    "indieID": "dani-devesa",
+    "name": "Xarra!",
+    "websiteURL": "https://accessibilityupto11.com/apps/xarra/",
+    "iconPath": "/app-icons/xarra.png",
+    "description": "Turn articles, books, and documents into audio with synchronized highlighting. Read along, listen hands-free, or switch between the two.",
+    "showcaseDescription": "Turn articles, books, and documents into audio with synchronized highlighting. Read along, listen hands-free, or switch between the two. Keep the words in view while you listen, or put the screen aside and enjoy your next read hands-free."
+  },
+  {
+    "id": "retrorapid",
+    "indieID": "dani-devesa",
+    "name": "RetroRapid!",
+    "websiteURL": "https://accessibilityupto11.com/apps/retrorapid/",
+    "iconPath": "/app-icons/retrorapid.png",
+    "description": "A little LCD nostalgia. Dodge traffic, chase a high score, or race a friend live with SharePlay. Released with love from ARCTIC in Oulu.",
+    "showcaseDescription": "A little LCD nostalgia. Dodge traffic, chase a high score, or race a friend live with SharePlay. Released with love from ARCTIC in Oulu. A compact racing game built around a simple idea: move between three lanes, overtake cars and see how far you can go."
+  },
+  {
+    "id": "dee",
+    "indieID": "noam-efergan",
+    "name": "Dee: Muay Thai Coach",
+    "websiteURL": "https://dee.training/",
+    "iconPath": "/app-icons/dee.png",
+    "description": "A Muay Thai training companion. Build a plan around your goals, time, and equipment, then follow rounds with spoken cues, a timer, and haptics.",
+    "showcaseDescription": "A Muay Thai training companion. Build a plan around your goals, time, and equipment, then follow rounds with spoken cues, a timer, and haptics. Make space for solo practice between classes, with sessions shaped around what you have available and guidance to keep you moving through each round."
+  },
+  {
+    "id": "rocketsim",
+    "indieID": "antoine-van-der-lee",
+    "name": "RocketSim for Xcode",
+    "websiteURL": "https://www.rocketsim.app/",
+    "iconPath": "/app-icons/rocketsim.png",
+    "description": "An Xcode Simulator companion for Mac. Capture screenshots and videos, inspect network traffic, test app behaviour, and compare designs without leaving your development flow.",
+    "showcaseDescription": "An Xcode Simulator companion for Mac. Capture screenshots and videos, inspect network traffic, test app behaviour, and compare designs without leaving your development flow. Bring everyday testing and presentation tasks closer to the Simulator, so there is less to interrupt you while you build your app."
+  },
+  {
+    "id": "rockettrace",
+    "indieID": "antoine-van-der-lee",
+    "name": "RocketTrace for Xcode",
+    "websiteURL": "https://rockettrace.app/",
+    "iconPath": "/app-icons/rockettrace.png",
+    "description": "Find performance issues in Xcode Instruments recordings. Review ranked findings, share focused investigation prompts with your coding agent, and compare recordings after making changes.",
+    "showcaseDescription": "Find performance issues in Xcode Instruments recordings. Review ranked findings, share focused investigation prompts with your coding agent, and compare recordings after making changes. Turn a performance recording into a clearer starting point for your next investigation, and check what changed after a fix."
+  },
+  {
+    "id": "ai-fundamentals",
+    "indieID": "antoine-van-der-lee",
+    "name": "AI Fundamentals",
+    "websiteURL": "https://aifundamentals.dev/",
+    "iconPath": "/app-icons/ai-fundamentals.png",
+    "description": "A practical course on working with AI coding agents. Learn to give clear context and instructions, check results, and build repeatable workflows across tools.",
+    "showcaseDescription": "A practical course on working with AI coding agents. Learn to give clear context and instructions, check results, and build repeatable workflows across tools. Explore the habits behind agent-assisted development, from preparing a task to reviewing the work and making the process repeatable."
+  }
+]

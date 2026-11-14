@@ -7,6 +7,7 @@ struct BrandPalette: Sendable {
     var ink = "#142a50"
     var paper = "#f7f9fd"
     var muted = "#526078"
+    var utilityIcon = "#7d7d7d"
     var accent = "#b9470d"
     var accentSoft = "#ffad6b"
     var accentHover = "#96380a"
@@ -17,7 +18,7 @@ struct BrandPalette: Sendable {
     var white = "#ffffff"
 
     var properties: [(String, String)] {
-        [("blue", blue), ("ink", ink), ("paper", paper), ("muted", muted),
+        [("blue", blue), ("ink", ink), ("paper", paper), ("muted", muted), ("utility-icon", utilityIcon),
          ("accent", accent), ("accent-soft", accentSoft), ("accent-hover", accentHover),
          ("surface", surface), ("tint", tint), ("line", line), ("rule", rule), ("white", white)]
     }
@@ -27,6 +28,7 @@ enum DesignTokens {
     static let palette = BrandPalette()
     static let productIconSize = 64
     static let productIconRadius = 14
+    static let builderPortraitSize = 56
     static let brandAssetNames = ["logo.svg", "logo-inverse.svg", "favicon.svg", "favicon-shared-imprint-01.svg"]
     static let brandMarkSize = 76.0
     static let brandLabelSize = 20.0
@@ -79,6 +81,7 @@ enum DesignTokens {
       --radius-small: .3rem;
       --radius-card: .5rem;
       --target-size: 44px;
+      --utility-icon-size: 1.25rem;
       --link-underline-offset: .23em;
       --border-width: 1px;
       --control-border-width: 2px;
@@ -88,6 +91,9 @@ enum DesignTokens {
       --focus-radius: 2px;
       --reading-width: 52rem;
       --offer-heading-size: 1.125rem;
+      --project-heading-size: 1.5rem;
+      --builder-heading-size: 1.125rem;
+      --card-text-basis: 10rem;
     """
 
     static func stylesheet(palette: BrandPalette = DesignTokens.palette) -> String {

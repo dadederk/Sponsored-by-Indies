@@ -3,12 +3,16 @@ import Ignite
 
 struct MarketingLayout: Layout {
     let preview: Bool
+    var identity: SiteIdentity = .sponsored
     var searchIndex: SearchIndex? = nil
     var assetVersion: String = DesignTokens.version
     @Environment(\.page) private var page
     @Environment(\.site) private var site
 
     private var canonicalURL: URL { searchIndex?.canonicalURL(for: page.url) ?? page.url }
+    private var hostedShowcase: Bool { searchIndex?.isShowcasePreview(page.url) == true }
+    private var pageIdentity: SiteIdentity { hostedShowcase ? .showcase : identity }
+    private var homePath: String { hostedShowcase ? SiteIdentity.showcasePreviewPath : "/" }
 
     var body: some Document {
         Head {
@@ -23,7 +27,7 @@ struct MarketingLayout: Layout {
             MetaLink.iconCSS
             MetaLink(href: "/css/ignite-core.min.css?v=\(assetVersion)", rel: "stylesheet")
             MetaLink(href: canonicalURL, rel: "canonical")
-            MetaTag(.openGraphSiteName, content: escaped(site.name))
+            MetaTag(.openGraphSiteName, content: escaped(pageIdentity.name))
             MetaTag(.openGraphTitle, content: escaped(page.title))
             MetaTag(.twitterTitle, content: escaped(page.title))
             MetaTag(.openGraphDescription, content: escaped(page.description))
@@ -38,8 +42,8 @@ struct MarketingLayout: Layout {
                 MetaTag(property: "og:image:width", content: "1200")
                 MetaTag(property: "og:image:height", content: "630")
                 MetaTag(property: "og:image:type", content: "image/png")
-                MetaTag(property: "og:image:alt", content: "Sponsored by Indies — indie bundles for Swift and iOS conferences")
-                MetaTag(name: "twitter:image:alt", content: "Sponsored by Indies — indie bundles for Swift and iOS conferences")
+                MetaTag(property: "og:image:alt", content: escaped(searchIndex?.imageDescription(for: page.url) ?? identity.imageDescription))
+                MetaTag(name: "twitter:image:alt", content: escaped(searchIndex?.imageDescription(for: page.url) ?? identity.imageDescription))
             }
             MetaLink(href: "/design-tokens.css?v=\(assetVersion)", rel: "stylesheet")
             MetaLink(href: "/styles.css?v=tokens-\(assetVersion)", rel: "stylesheet")
@@ -59,9 +63,11 @@ struct MarketingLayout: Layout {
         }
         .standardHeadersDisabled()
         Body {
-            Components.header(assetVersion: assetVersion)
+            Components.header(assetVersion: assetVersion, identity: pageIdentity, preview: preview,
+                              homePath: homePath, sponsoredRoot: hostedShowcase ? "" : nil)
             Tag("main") { content }.id("main").attribute("tabindex", "-1")
-            Components.footer(assetVersion: assetVersion)
+            Components.footer(assetVersion: assetVersion, identity: pageIdentity, preview: preview,
+                              homePath: homePath, sponsoredRoot: hostedShowcase ? "" : nil)
         }
         .ignorePageGutters()
     }

@@ -16,6 +16,14 @@ struct SearchIndex {
         page(for: url)?.isIndexable == true
     }
 
+    func isShowcasePreview(_ url: URL) -> Bool {
+        page(for: url)?.isShowcasePreview == true
+    }
+
+    func imageDescription(for url: URL) -> String? {
+        page(for: url)?.bundleArtwork?.imageDescription
+    }
+
     private func page(for url: URL) -> MarketingPage? {
         guard url.scheme == siteURL.scheme, url.host == siteURL.host, url.port == siteURL.port else { return nil }
         // Ignite appends an empty path for the home page. Foundation versions

@@ -9,7 +9,27 @@
     "people": [
       {
         "name": "Dani Devesa",
-        "websiteURL": "https://accessibilityupto11.com/"
+        "websiteURL": "https://accessibilityupto11.com/",
+        "bio": "iOS engineer and accessibility specialist. Author of Developing Accessible iOS Apps, and the maker of Xarra! and RetroRapid!.",
+        "portraitPath": "/portraits/dani-devesa.jpg",
+        "socials": [
+          {
+            "label": "Mastodon",
+            "url": "https://iosdev.space/@dadederk"
+          },
+          {
+            "label": "Bluesky",
+            "url": "https://bsky.app/profile/dadederk.bsky.social"
+          },
+          {
+            "label": "Twitter",
+            "url": "https://x.com/dadederk"
+          },
+          {
+            "label": "GitHub",
+            "url": "https://github.com/dadederk"
+          }
+        ]
       }
     ]
   },
@@ -23,7 +43,15 @@
     "people": [
       {
         "name": "Noam Efergan",
-        "websiteURL": "https://nowham.dev/"
+        "websiteURL": "https://nowham.dev/",
+        "bio": "Mobile engineer working with Swift, SwiftUI and Kotlin Multiplatform. Maker of Dee, a companion for Muay Thai practice.",
+        "portraitPath": "/portraits/noam-efergan.jpg",
+        "socials": [
+          {
+            "label": "Twitter",
+            "url": "https://x.com/No_Wham"
+          }
+        ]
       }
     ]
   },
@@ -37,7 +65,23 @@
     "people": [
       {
         "name": "Antoine van der Lee",
-        "websiteURL": "https://www.avanderlee.com/"
+        "websiteURL": "https://www.avanderlee.com/",
+        "bio": "Indie developer and founder of SwiftLee. Builds developer tools and shares practical lessons about Swift, Xcode and working independently.",
+        "portraitPath": "/portraits/antoine-van-der-lee.jpg",
+        "socials": [
+          {
+            "label": "Bluesky",
+            "url": "https://bsky.app/profile/avanderlee.com"
+          },
+          {
+            "label": "Twitter",
+            "url": "https://x.com/twannl"
+          },
+          {
+            "label": "GitHub",
+            "url": "https://github.com/avdlee"
+          }
+        ]
       }
     ]
   }

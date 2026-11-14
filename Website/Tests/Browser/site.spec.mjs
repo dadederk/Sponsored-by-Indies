@@ -9,9 +9,12 @@ const records = await Promise.all((await readdir(data)).filter(name => name.ends
 const record = records.find(record => record.offers.some(offer => offer.publicationApproved));
 if (!record) throw new Error('Browser checks need an edition with approved offers.');
 const product = record.offers.find(offer => offer.publicationApproved);
+const projects = JSON.parse(await readFile(new URL('../../Data/projects.json', import.meta.url), 'utf8'));
+const project = projects.find(project => project.id === product.projectID);
 const edition = record.editions.find(edition => edition.id === product.editionID);
 const bundlePath = `/conferences/${record.conference.slug}/${edition.slug}/`;
-const termsName = `Offer terms for ${product.productName}`;
+const termsName = `Offer terms for ${project.name}`;
+const termsLinkName = `Terms for ${project.name}`;
 const formPath = '/participate/indies/';
 
 test.beforeEach(async ({ page }) => {
@@ -48,9 +51,60 @@ test('visitors can discover an edition using the keyboard', async ({ page }) => 
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(`${record.conference.name} ${edition.label}`);
 });
 
+test('offer links copy with the keyboard and open the matching card in its fixed edition', async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText: async value => { window.copiedOfferLink = value; } } });
+  });
+  await page.goto(`/conferences/${record.conference.slug}/`);
+  const card = page.locator(`#project-${project.id}`);
+  const button = card.getByRole('button', { name: `Copy link to ${project.name} in this bundle`, exact: true });
+  await button.press('Enter');
+  await expect(card.getByRole('status')).toHaveText('Link copied.');
+  await expect(button.locator('[data-copied-icon]')).toBeVisible();
+  await expect(button.locator('[data-copy-icon]')).toBeHidden();
+  await expect(button).toBeFocused();
+  const target = await button.boundingBox();
+  expect(target.width).toBeGreaterThanOrEqual(44);
+  expect(target.height).toBeGreaterThanOrEqual(44);
+  const heading = await card.locator('.product-card-heading').boundingBox();
+  expect(heading.x + heading.width).toBeLessThanOrEqual(target.x);
+  const copied = await page.evaluate(() => window.copiedOfferLink);
+  const canonical = new URL(await page.locator('link[rel="canonical"]').getAttribute('href'));
+  expect(copied).toBe(`${canonical.origin}${bundlePath}#project-${project.id}`);
+  await button.press('Space');
+  await expect(card.getByRole('status')).toHaveText('Link copied.');
+  const local = new URL(copied);
+  await page.goto(local.pathname + local.hash);
+  await expect(page.locator(':target')).toHaveAttribute('id', `project-${project.id}`);
+  await expect(page.locator(':target .product-card-heading')).toBeInViewport();
+  await expectAccessible(page);
+});
+
+test('offer links remain usable if copying is denied or the sharing script fails', async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText: async () => { throw new Error('Denied'); } } });
+  });
+  await page.goto(bundlePath);
+  const card = page.locator(`#project-${project.id}`);
+  await card.getByRole('button', { name: `Copy link to ${project.name} in this bundle`, exact: true }).click();
+  const field = card.getByRole('textbox', { name: 'Link to this offer', exact: true });
+  await expect(field).toBeVisible();
+  await expect(field).toBeFocused();
+  await expect(field).toHaveValue(new RegExp(`${bundlePath}#project-${project.id}$`));
+  expect(await field.evaluate(input => input.selectionEnd - input.selectionStart)).toBe((await field.inputValue()).length);
+  await expectAccessible(page);
+  await page.route('**/offer-sharing.mjs*', route => route.abort());
+  await page.reload();
+  const link = card.getByRole('link', { name: `Link to this offer for ${project.name}`, exact: true });
+  await expect(link).toBeVisible();
+  await expect(card.getByRole('button', { name: /Copy link/ })).toBeHidden();
+  await link.press('Enter');
+  await expect(page).toHaveURL(`${bundlePath}#project-${project.id}`);
+});
+
 test('offer dialogs have a name, contain keyboard focus and restore it on Escape', async ({ page, browserName }) => {
   await page.goto(bundlePath);
-  const trigger = page.getByRole('link', { name: termsName, exact: true });
+  const trigger = page.getByRole('link', { name: termsLinkName, exact: true });
   await trigger.press('Enter');
   const dialog = page.getByRole('dialog', { name: termsName, exact: true });
   await expect(dialog).toBeVisible();

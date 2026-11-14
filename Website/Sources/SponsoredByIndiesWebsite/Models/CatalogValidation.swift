@@ -33,6 +33,12 @@ extension Catalog {
         try unique(offers.map(\.id), "offer ID")
         try unique(editions.map { "\($0.conferenceID)/\($0.slug)" }, "edition route")
         try unique(participations.map { "\($0.editionID)/\($0.indieID)" }, "participation")
+        try Self.validateProjects(projects, indies: indies)
+        try unique(discoveryResources.map(\.url), "indie discovery resource")
+        for resource in discoveryResources {
+            try nonempty([resource.name, resource.description], "indie discovery resource")
+            try Self.validateURL(resource.url)
+        }
         for conference in conferences {
             try nonempty([conference.id, conference.name, conference.location, conference.description], conference.id)
             if let editions = conference.connectionEditions {
@@ -92,6 +98,15 @@ extension Catalog {
                 for person in people {
                     try nonempty([person.name], "maker profile for \(indie.id)")
                     if let url = person.websiteURL { try Self.validateURL(url) }
+                    if let bio = person.bio { try nonempty([bio], "maker bio for \(indie.id)") }
+                    if let path = person.portraitPath {
+                        try require(path.range(of: "^/portraits/[a-z0-9-]+\\.(png|jpg|webp)$", options: .regularExpression) != nil,
+                                    "Maker portraits must use a local image in /portraits/.")
+                    }
+                    for link in person.socials ?? [] {
+                        try nonempty([link.label], "maker social link for \(indie.id)")
+                        try Self.validateURL(link.url)
+                    }
                 }
                 try unique(people.compactMap(\.websiteURL), "maker profile URL for \(indie.id)")
             }
@@ -114,6 +129,12 @@ extension Catalog {
             }
         }
         for offer in offers {
+            if let projectID = offer.projectID {
+                try require(projects.contains {
+                    $0.id == projectID && $0.indieID == offer.indieID && $0.name == offer.productName &&
+                    $0.websiteURL == offer.productURL && $0.iconPath == offer.productIconPath && $0.description == offer.description
+                }, "Offer \(offer.id) must resolve to its shared project.")
+            }
             try require(participations.contains {
                 $0.editionID == offer.editionID && $0.indieID == offer.indieID
             }, "Offer \(offer.id) has no participation in its edition.")
@@ -160,6 +181,29 @@ extension Catalog {
             }
         }
         if let contactURL { try Self.validateURL(contactURL, allowMail: true) }
+    }
+
+    static func validateProjects(_ projects: [Project], indies: [Indie]) throws {
+        guard Set(projects.map(\.id)).count == projects.count else {
+            throw CatalogError.invalid("Duplicate project ID.")
+        }
+        guard Set(projects.map { "\($0.indieID)|\($0.websiteURL)" }).count == projects.count else {
+            throw CatalogError.invalid("Duplicate project for the same maker and URL.")
+        }
+        for project in projects {
+            guard project.id.range(of: "^[a-z0-9]+(?:-[a-z0-9]+)*$", options: .regularExpression) != nil,
+                  indies.contains(where: { $0.id == project.indieID }),
+                  [project.name, project.description, project.showcaseDescription].allSatisfy({
+                      !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                  }) else {
+                throw CatalogError.invalid("Project \(project.id) needs a stable slug ID, a known maker and descriptions.")
+            }
+            try validateURL(project.websiteURL)
+            if let path = project.iconPath,
+               path.range(of: "^/app-icons/[a-z0-9-]+\\.png$", options: .regularExpression) == nil {
+                throw CatalogError.invalid("Project icons must use a local PNG in /app-icons/.")
+            }
+        }
     }
 
     private static func validateURL(_ string: String, allowMail: Bool = false) throws {

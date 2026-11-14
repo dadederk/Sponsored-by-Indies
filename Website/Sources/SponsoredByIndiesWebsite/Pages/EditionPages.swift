@@ -10,7 +10,7 @@ extension Pages {
         let products = catalog.visibleProductContributions(for: edition)
         return MarketingPage(
             path: path, title: "\(conference.name) \(edition.label)", description: edition.introduction,
-            canonicalPath: edition.path(in: catalog)
+            canonicalPath: edition.path(in: catalog), bundleArtwork: BundleArtwork(conference: conference, edition: edition)
         ) {
             if asConferenceHome {
                 Components.breadcrumb([("Conferences", "/conferences/"), ("\(conference.name) \(edition.label)", nil)])
@@ -53,11 +53,14 @@ extension Pages {
                             if let participation = people.first(where: { $0.indieID == contribution.product.indieID }) {
                                 Components.productCard(
                                     contribution.product, offers: contribution.offers,
-                                    indie: catalog.indie(withID: contribution.product.indieID), participation: participation)
+                                    indie: catalog.indie(withID: contribution.product.indieID), participation: participation,
+                                    bundlePath: edition.path(in: catalog))
                             }
                         }
+                        .id(contribution.product.bundleAnchor).attribute("data-offer-sharing", "true")
                     }.columns(2).class("g-3", "product-grid")
                     Script(file: "/offer-terms.mjs").attribute("type", "module")
+                    Script(file: "/offer-sharing.mjs?v=\(DesignTokens.version)").attribute("type", "module")
                 }
             }.id("bundle").class("container", "section-space").aria(.labelledBy, "bundle-title")
             Tag("section") {
@@ -144,7 +147,7 @@ extension Pages {
         let path = edition.path(in: catalog)
         return MarketingPage(
             path: path + "access/", title: "Attendee access · \(conference.name) \(edition.label)", description: edition.accessIntroduction,
-            isIndexable: false
+            isIndexable: false, bundleArtwork: BundleArtwork(conference: conference, edition: edition)
         ) {
             Components.breadcrumb([("Conferences", "/conferences/"), (conference.name + " " + edition.label, path), ("Access", nil)])
             Tag("section") {

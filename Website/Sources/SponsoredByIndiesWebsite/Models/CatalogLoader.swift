@@ -13,10 +13,14 @@ extension Catalog {
 
         let settings = try decode(Settings.self, at: directory.appendingPathComponent("site.json"))
         let indies = try decode([Indie].self, at: directory.appendingPathComponent("indies.json"))
+        let projects = try decode([Project].self, at: directory.appendingPathComponent("projects.json"))
         let files = try FileManager.default.contentsOfDirectory(
             at: directory.appendingPathComponent("Conferences"), includingPropertiesForKeys: nil
         ).filter { $0.pathExtension == "json" }.sorted { $0.lastPathComponent < $1.lastPathComponent }
         let records = try files.map { try decode(ConferenceRecord.self, at: $0) }
+        // Check identities before constructing a lookup or resolving offer records.
+        try validateProjects(projects, indies: indies)
+        let projectsByID = Dictionary(uniqueKeysWithValues: projects.map { ($0.id, $0) })
         for record in records {
             guard record.editions.allSatisfy({ $0.conferenceID == record.conference.id }) else {
                 throw CatalogError.invalid("Editions in \(record.conference.id) must belong to that conference.")
@@ -30,10 +34,18 @@ extension Catalog {
         let catalog = Catalog(
             conferences: records.map(\.conference), editions: records.flatMap(\.editions),
             indies: indies, participations: records.flatMap(\.participations),
-            offers: records.flatMap(\.offers), contactURL: settings.contactURL,
-            partnershipNote: settings.partnershipNote, terms: settings.terms
+            offers: try records.flatMap(\.offers).map { try $0.resolve(in: projectsByID) }, contactURL: settings.contactURL,
+            partnershipNote: settings.partnershipNote, terms: settings.terms, projects: projects,
+            discoveryResources: settings.discoveryResources ?? []
         )
         try catalog.validate()
+        let images = projects.compactMap(\.iconPath) + indies.flatMap { ($0.people ?? []).compactMap(\.portraitPath) }
+        for path in images {
+            let file = directory.deletingLastPathComponent().appending(path: "Assets" + path)
+            guard FileManager.default.fileExists(atPath: file.path) else {
+                throw CatalogError.invalid("Missing local image: \(path).")
+            }
+        }
         return catalog
     }
 }
@@ -42,11 +54,35 @@ private struct Settings: Decodable {
     let contactURL: String?
     let partnershipNote: String?
     let terms: CommunityTerms
+    let discoveryResources: [DiscoveryResource]?
 }
 
 private struct ConferenceRecord: Decodable {
     let conference: Conference
     let editions: [Edition]
     let participations: [Participation]
-    let offers: [Offer]
+    let offers: [OfferRecord]
+}
+
+private struct OfferRecord: Decodable {
+    let id: String
+    let editionID: String
+    let projectID: String
+    let savingEstimate: SavingEstimate?
+    let benefit: String
+    let terms: String
+    let redemptionInstructions: String
+    let publicationApproved: Bool
+
+    func resolve(in projects: [String: Project]) throws -> Offer {
+        guard let project = projects[projectID] else {
+            throw CatalogError.invalid("Unknown project \(projectID) for offer \(id).")
+        }
+        return Offer(
+            id: id, editionID: editionID, indieID: project.indieID,
+            productName: project.name, productURL: project.websiteURL, productIconPath: project.iconPath,
+            savingEstimate: savingEstimate, description: project.description, benefit: benefit,
+            terms: terms, redemptionInstructions: redemptionInstructions,
+            publicationApproved: publicationApproved, projectID: project.id)
+    }
 }

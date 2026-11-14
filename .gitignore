@@ -3,6 +3,8 @@ Website/.build/
 Website/.swiftpm/
 Website/Build/
 Website/BuildPublic/
+Website/BuildIndies/
+Website/BuildIndiesPublic/
 Website/.cache/
 Website/.ignite/
 Website/node_modules/

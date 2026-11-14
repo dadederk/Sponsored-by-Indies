@@ -16,9 +16,13 @@ export default defineConfig({
     { name: `${browserName}-desktop`, use: { browserName, viewport: { width: 1280, height: 900 } } },
     { name: `${browserName}-narrow`, use: { browserName, viewport: { width: 320, height: 800 } } }
   ]),
-  webServer: {
+  webServer: [{
     command: 'python3 -m http.server 4173 --bind 127.0.0.1 --directory BuildPublic',
     url: 'http://127.0.0.1:4173',
     reuseExistingServer: false
-  }
+  }, {
+    command: 'python3 -m http.server 4174 --bind 127.0.0.1 --directory BuildIndiesPublic',
+    url: 'http://127.0.0.1:4174',
+    reuseExistingServer: false
+  }]
 });

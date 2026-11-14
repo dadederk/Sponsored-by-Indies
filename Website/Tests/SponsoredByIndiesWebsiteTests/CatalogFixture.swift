@@ -4,6 +4,16 @@ import Foundation
 
 /// Synthetic public content shared by tests; never loaded into the real site.
 enum CatalogFixture {
+    static func showcase() -> Catalog {
+        var catalog = make()
+        let offer = catalog.offers[0]
+        catalog.projects = [Project(id: "tool", indieID: offer.indieID, name: offer.productName,
+                                    websiteURL: offer.productURL, iconPath: offer.productIconPath,
+                                    description: offer.description, showcaseDescription: "A longer project story & <details>.")]
+        catalog.offers[0].projectID = "tool"
+        return catalog
+    }
+
     static func make() -> Catalog {
         let conference = Conference(
             id: "sample", slug: "sample", name: "Sample Conference", location: "Sample City",
