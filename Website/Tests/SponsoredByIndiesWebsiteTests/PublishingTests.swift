@@ -579,6 +579,7 @@ extension PublishingTests {
         #expect(html.contains("By Indies. Home"))
         #expect(!html.contains("brand-sponsored"))
         #expect(html.contains("href=\"/by-indies-preview/\""))
+        #expect(html.contains("href=\"/by-indies-preview/#project-tool\""))
         #expect(html.contains("href=\"/conferences/sample/2027/#project-tool\""))
         #expect(html.contains("href=\"/participate/indies/\""))
         #expect(html.contains("href=\"/terms/\""))
@@ -595,9 +596,7 @@ extension PublishingTests {
     }
 
     @Test(arguments: ["2027-02-01", "2027-02-02", "2027-02-04", "2027-02-05"])
-    func showcaseLabelsConferenceDatesAtBothBoundaries(day: String) async throws {
-        let labels = ["2027-02-01": "Upcoming conference", "2027-02-02": "Current conference",
-                      "2027-02-04": "Current conference", "2027-02-05": "Past conference"]
+    func showcaseShowsConferenceDatesBeforeDuringAndAfterEdition(day: String) async throws {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: root) }
         var site = IndiesSite(catalog: CatalogFixture.showcase(), preview: true,
@@ -605,7 +604,10 @@ extension PublishingTests {
                               publicationDate: try Date(day, strategy: Edition.dayStyle), identity: .showcase)
         try await site.generate(sourceDirectory: source, buildDirectory: root)
         let html = try String(contentsOf: root.appending(path: "index.html"), encoding: .utf8)
-        #expect(html.contains(try #require(labels[day])))
+        #expect(html.contains("2–4 February 2027"))
+        for label in ["Upcoming conference", "Current conference", "Past conference"] {
+            #expect(!html.contains(label))
+        }
     }
 
     @Test(arguments: [true, false])
@@ -634,7 +636,12 @@ extension PublishingTests {
         #expect(!html.contains("Sample Company"))
         #expect(html.contains("Website<span class=\"visually-hidden\"> for One &amp; &lt;Builder&gt;</span>"))
         #expect(html.contains("Social &amp; &lt;more&gt;<span class=\"visually-hidden\"> for Two Builder</span>"))
-        #expect(html.contains("Past conference"))
+        #expect(html.contains("2–4 February 2027"))
+        #expect(html.contains("href=\"/#project-tool\""))
+        #expect(html.contains("Copy link to Tool &amp; &lt;Kit&gt;"))
+        #expect(html.contains("aria-label=\"Link to Tool &amp; <Kit>\""))
+        #expect(html.contains("data-offer-copy-status"))
+        #expect(html.contains("offer-sharing.mjs?v="))
         #expect(html.contains("More &amp; &lt;indies&gt;"))
         #expect(html.contains("https://example.org/one?x=1&amp;y=2"))
         #expect(!html.contains("product-card-benefits"))

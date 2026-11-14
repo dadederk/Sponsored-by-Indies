@@ -2,10 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { initialiseOfferSharing } from '../Assets/offer-sharing.mjs';
 
-function fixture(canonical = 'https://sponsored.example/conferences/north/') {
+function fixture(canonical = 'https://sponsored.example/conferences/north/', path = '/conferences/north/2027/') {
   const cards = ['first', 'second'].map(id => {
     const listeners = {};
-    const link = { hidden: false, getAttribute: () => `/conferences/north/2027/#project-${id}` };
+    const link = { hidden: false, getAttribute: () => `${path}#project-${id}` };
     const copyIcon = { hidden: false };
     const copiedIcon = { hidden: true };
     const button = { hidden: true, addEventListener: (type, listener) => { listeners[type] = listener; },
@@ -38,6 +38,21 @@ test('copying uses the canonical host, fixed edition and the selected project, w
   }
   assert.deepEqual(copied, ['https://sponsored.example/conferences/north/2027/#project-first',
     'https://sponsored.example/conferences/north/2027/#project-second']);
+});
+
+test('showcase links use the canonical project URL on both publications', async () => {
+  for (const [canonical, path] of [
+    ['https://byindies.com/', '/'],
+    ['https://sponsored.byindies.com/by-indies-preview/', '/by-indies-preview/']
+  ]) {
+    const { cards, root } = fixture(canonical, path);
+    const copied = [];
+    initialiseOfferSharing(root, 'http://localhost:8001/?tracking=yes#other', {
+      writeText: async value => copied.push(value)
+    });
+    await cards[1].listeners.click();
+    assert.deepEqual(copied, [`${canonical}#project-second`]);
+  }
 });
 
 test('missing clipboard support keeps native permalinks usable', () => {

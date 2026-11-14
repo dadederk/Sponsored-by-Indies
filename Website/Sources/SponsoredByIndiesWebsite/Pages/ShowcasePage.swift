@@ -3,8 +3,9 @@ import Ignite
 extension Pages {
     func showcase(preview: Bool, asHostedPreview: Bool = false) -> MarketingPage {
         let sponsoredRoot = asHostedPreview ? "" : SiteIdentity.sponsored.baseURL(preview: preview)
+        let showcasePath = asHostedPreview ? SiteIdentity.showcasePreviewPath : "/"
         return MarketingPage(
-            path: asHostedPreview ? SiteIdentity.showcasePreviewPath : "/",
+            path: showcasePath,
             title: asHostedPreview ? "By Indies preview" : "Independent projects and their makers",
             description: "Meet the independent apps, games, tools and courses supporting our conference community, and the people who make them.",
             isIndexable: !asHostedPreview, isShowcasePreview: asHostedPreview) {
@@ -22,26 +23,29 @@ extension Pages {
                 if catalog.showcaseProjects.isEmpty {
                     Text("Good things are taking shape. Meet our contributing projects here soon.").class("panel")
                 } else {
-                    Grid(catalog.showcaseProjects, alignment: .top, spacing: .none) { project in
+                    Grid(catalog.showcaseProjects, alignment: .topLeading, spacing: .none) { project in
                         Section {
                             Components.showcaseCard(
                                 project, indie: catalog.indie(withID: project.indieID),
                                 editions: catalog.contributingEditions(for: project), catalog: catalog,
-                                date: date, sponsoredRoot: sponsoredRoot)
+                                sponsoredRoot: sponsoredRoot, showcasePath: showcasePath)
                         }
                     }.columns(2).class("g-3", "showcase-grid")
+                    Script(file: "/offer-sharing.mjs?v=\(DesignTokens.version)").attribute("type", "module")
                 }
             }.class("container", "section-space").aria(.labelledBy, "projects-title")
             if !catalog.discoveryResources.isEmpty {
                 Tag("section") {
                     Components.heading("More indie", "discoveries.", id: "discoveries-title")
                     Text("There’s a whole community celebrating independent makers. These newsletters, podcasts and showcases are lovely places to keep exploring.").class("lead")
-                    Grid(catalog.discoveryResources, alignment: .top, spacing: .none) { resource in
+                    Grid(catalog.discoveryResources, alignment: .topLeading, spacing: .none) { resource in
                         Section {
-                            Text { Link(escaped(resource.name), target: escaped(resource.url)) }.font(.title3)
-                            Text(escaped(resource.description)).margin(0)
-                        }.class("discovery-resource")
-                    }.columns(2).class("g-3")
+                            Tag("article") {
+                                Text { Link(escaped(resource.name), target: escaped(resource.url)) }.font(.title3).margin(0)
+                                Text(escaped(resource.description)).margin(0)
+                            }.class("panel", "discovery-card")
+                        }
+                    }.columns(2).class("g-3", "discovery-grid")
                 }.class("container", "section-space").aria(.labelledBy, "discoveries-title")
             }
             Tag("section") {

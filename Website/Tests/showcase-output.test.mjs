@@ -34,7 +34,8 @@ for (const [directory, sponsoredDirectory, origin, sponsoredOrigin, preview] of 
     assert.equal((html.match(/<h1\b/g) ?? []).length, 1);
     assert.equal((html.match(/<main\b/g) ?? []).length, 1);
     assert.equal(new Set(attributes(html, 'id')).size, attributes(html, 'id').length);
-    const cards = html.match(/<article\b[^>]*>[\s\S]*?<\/article>/g) ?? [];
+    const articles = html.match(/<article\b[^>]*>[\s\S]*?<\/article>/g) ?? [];
+    const cards = articles.filter(card => /class="[^"]*\bshowcase-card\b/.test(card));
     assert.equal(cards.length, approvedProjects.length, 'one card per contributing project');
     // Match Swift's stable Unicode ordering, independent of the runner's locale.
     const compare = (a, b) => Buffer.compare(Buffer.from(a.normalize('NFC')), Buffer.from(b.normalize('NFC')));
@@ -45,8 +46,14 @@ for (const [directory, sponsoredDirectory, origin, sponsoredOrigin, preview] of 
       const maker = indies.find(indie => indie.id === project.indieID);
       assert.equal((card.match(/class="[^"]*\bbuilder-row\b/g) ?? []).length, maker.people?.length ?? 1);
       assert.ok(attributes(card, 'href').includes(project.websiteURL));
+      assert.ok(attributes(card, 'href').includes(`/#project-${project.id}`), 'project permalink');
+      assert.ok(card.includes('data-offer-copy-status'), 'copy confirmation');
     }
-    for (const resource of resources) assert.ok(attributes(html, 'href').includes(resource.url), resource.name);
+    const discoveries = articles.filter(card => /class="[^"]*\bdiscovery-card\b/.test(card));
+    assert.equal(discoveries.length, resources.length, 'one discovery card per selected resource');
+    for (const resource of resources) {
+      assert.equal(discoveries.filter(card => attributes(card, 'href').includes(resource.url)).length, 1, resource.name);
+    }
     assert.ok(!html.includes('indieappcatalog.com') && !html.includes('9to5mac.com'), 'only selected discovery resources');
     assert.ok(!html.includes('brand-sponsored'), 'showcase wordmark');
     assert.ok(!html.includes('offer-terms.mjs') && !html.includes('product-card-benefits'), 'project-focused content');

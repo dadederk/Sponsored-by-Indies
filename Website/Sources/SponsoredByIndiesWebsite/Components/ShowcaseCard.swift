@@ -1,16 +1,18 @@
-import Foundation
 import Ignite
 
 extension Components {
     static func showcaseCard(
         _ project: Project, indie: Indie, editions: [Edition], catalog: Catalog,
-        date: Date, sponsoredRoot: String
+        sponsoredRoot: String, showcasePath: String
     ) -> some HTML {
         let people = indie.people ?? [IndiePerson(name: indie.name, websiteURL: indie.websiteURL, socials: indie.socials)]
-        let today = date.formatted(Edition.dayStyle)
         return Tag("article") {
-            projectHeading(project.name, url: project.websiteURL, icon: project.iconPath, level: .title2)
-                .class("showcase-project-title")
+            HStack(alignment: .top, spacing: .small) {
+                projectHeading(project.name, url: project.websiteURL, icon: project.iconPath, level: .title2)
+                    .class("showcase-project-title")
+                projectSharing(project, showcasePath: showcasePath)
+            }.class("product-card-header")
+            sharingFallback(label: "Link to " + project.name)
             Text(escaped(project.showcaseDescription)).margin(0)
             Section {
                 Text(people.count == 1 ? "Meet the builder" : "Meet the builders")
@@ -20,17 +22,16 @@ extension Components {
             Section {
                 Text("Find it in a conference bundle").fontWeight(.semibold).margin(.bottom, .small)
                 List(editions) { edition in
-                    let timing = edition.endDate < today ? "Past conference" : edition.startDate > today ? "Upcoming conference" : "Current conference"
                     return ListItem {
                         Link(
                             escaped(catalog.conference(for: edition).name + " " + edition.label) + " bundle",
                             target: escaped(sponsoredRoot + edition.path(in: catalog) + "#" + project.bundleAnchor))
-                        Span(" · " + timing)
+                        Span(" · " + escaped(edition.dateLabel))
                             .font(.small).foregroundStyle(.secondary)
                     }
                 }.margin(0).class("showcase-bundles")
             }.class("showcase-contributions")
-        }.id(project.bundleAnchor).class("panel", "showcase-card")
+        }.id(project.bundleAnchor).attribute("data-offer-sharing", "true").class("panel", "showcase-card")
     }
 
     private static func builderRow(_ person: IndiePerson) -> some HTML {

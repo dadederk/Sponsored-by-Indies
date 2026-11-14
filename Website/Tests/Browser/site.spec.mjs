@@ -153,7 +153,10 @@ test('invalid optional fields are revealed and focused before a draft is prepare
   await expect(website).toBeFocused();
   await expect(page.getByRole('heading', { name: 'Your email draft', exact: true })).toBeHidden();
   const name = page.getByLabel('Name (required)', { exact: true });
+  // Dismiss the native validation bubble before clearing a second field.
+  await page.keyboard.press('Escape');
   await name.fill('');
+  await expect(name).toHaveValue('');
   await more.click();
   await page.getByRole('button', { name: 'Preview email first' }).click();
   await expect(website).toBeVisible();

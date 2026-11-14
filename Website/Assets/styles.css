@@ -139,8 +139,8 @@ input.form-control:focus-visible,textarea.form-control:focus-visible,select.form
    cards share a row height; Bootstrap’s alignment utility requires !important.
    Extra row height stays below the content when a neighbouring card opens. */
 .product-grid > .col { align-self: stretch !important; display: flex; }
-.product-card,.showcase-card { --card-inset: min(var(--space-6), 5vw); display: flex; flex-direction: column; width: 100%; }
-.product-card { gap: var(--space-4); }
+.product-card,.showcase-card,.discovery-card { --card-inset: min(var(--space-6), 5vw); display: flex; flex-direction: column; width: 100%; }
+.product-card,.discovery-card { gap: var(--space-4); }
 /* Intrinsic wrapping keeps enlarged text readable beside fixed-size artwork.
    Ignite has no wrapping/basis modifiers; descendants share a text-space token. */
 .product-card-heading a { gap: var(--space-4); text-decoration: none; flex-wrap: wrap; }
@@ -160,7 +160,7 @@ input.form-control:focus-visible,textarea.form-control:focus-visible,select.form
 .offer-share-control,.btn.offer-share-control { display: inline-flex; align-items: center; justify-content: center; width: var(--target-size); height: var(--target-size); padding: 0; border: 0; background: transparent; color: var(--utility-icon); font-size: var(--utility-icon-size); line-height: 1; text-decoration: none; }
 .offer-share-control:hover,.btn.offer-share-control:hover { color: var(--ink); }
 .offer-share-control .title-accent { color: inherit; }
-.product-grid > :target .product-card { outline: var(--control-border-width) solid var(--accent); outline-offset: var(--focus-offset); }
+.product-grid > :target .product-card,.showcase-card:target { outline: var(--control-border-width) solid var(--accent); outline-offset: var(--focus-offset); }
 .product-card .modal { --bs-modal-color: var(--ink); --bs-modal-bg: var(--surface); --bs-modal-border-color: var(--line); --bs-modal-border-radius: var(--radius-card); --bs-modal-padding: var(--space-6); --bs-modal-header-padding: var(--space-4) var(--space-6); }
 .product-card .modal-header { align-items: flex-start; gap: var(--space-4); }
 .product-card .modal-header h3 { align-self: center; }
@@ -169,7 +169,7 @@ input.form-control:focus-visible,textarea.form-control:focus-visible,select.form
 
 /* Separate showcase rows support longer bios and multi-person teams without
    inheriting the offer grid's four-row subgrid. Shared selectors style descendants. */
-.showcase-grid > .col { align-self: stretch !important; display: flex; }
+.showcase-grid > .col,.discovery-grid > .col { align-self: stretch !important; display: flex; }
 .showcase-card { gap: var(--space-6); }
 .showcase-project-title { font-size: var(--project-heading-size); max-width: none; }
 .showcase-builders h3 { font-size: var(--builder-heading-size); }
@@ -184,7 +184,6 @@ input.form-control:focus-visible,textarea.form-control:focus-visible,select.form
 .builder-links { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-4); }
 .showcase-bundles { padding-inline-start: var(--space-5); }
 .showcase-bundles li + li { margin-top: var(--space-1); }
-.discovery-resource { border-top: var(--border-width) solid var(--line); padding-block: var(--space-6); }
 
 /* Shared intrinsic rows align offers despite different title/description lengths.
    Ignite provides the grid markup; subgrid supplies alignment across card interiors. */

@@ -8,6 +8,63 @@ test.beforeEach(async ({page}) => {
 });
 
 for (const path of [showcase, '/by-indies-preview/']) {
+  test(`project permalinks copy and navigate to the selected card: ${path}`, async ({page}) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, 'clipboard', {value:{writeText:async value => { window.copiedProjectLink = value; }}});
+    });
+    await page.goto(path);
+    const card = page.locator('#project-xarra');
+    const button = card.getByRole('button', {name:'Copy link to Xarra!', exact:true});
+    await button.press('Enter');
+    await expect(card.getByRole('status')).toHaveText('Link copied.');
+    await expect(button.locator('[data-copied-icon]')).toBeVisible();
+    await expect(button).toBeFocused();
+    const canonical = await page.locator('link[rel="canonical"]').getAttribute('href');
+    expect(await page.evaluate(() => window.copiedProjectLink)).toBe(`${canonical}#project-xarra`);
+    await page.goto(`${path}#project-xarra`);
+    await expect(page.locator(':target')).toHaveAttribute('id', 'project-xarra');
+    await expect(card.locator('.product-card-heading')).toBeInViewport();
+  });
+
+  test(`project links remain usable when copying or the sharing script fails: ${path}`, async ({page}) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, 'clipboard', {value:{writeText:async () => { throw new Error('Denied'); }}});
+    });
+    await page.goto(path);
+    const card = page.locator('#project-xarra');
+    await card.getByRole('button', {name:'Copy link to Xarra!', exact:true}).click();
+    const field = card.getByRole('textbox', {name:'Link to Xarra!', exact:true});
+    await expect(field).toBeVisible();
+    await expect(field).toBeFocused();
+    const canonical = await page.locator('link[rel="canonical"]').getAttribute('href');
+    await expect(field).toHaveValue(`${canonical}#project-xarra`);
+    expect(await field.evaluate(input => input.selectionEnd - input.selectionStart)).toBe((await field.inputValue()).length);
+    await page.route('**/offer-sharing.mjs*', route => route.abort());
+    await page.reload();
+    const link = card.getByRole('link', {name:'Link to this project for Xarra!', exact:true});
+    await expect(link).toBeVisible();
+    await link.press('Enter');
+    await expect(page.locator(':target')).toHaveAttribute('id', 'project-xarra');
+  });
+
+  test(`discovery cards fit two per row and stack on narrow screens: ${path}`, async ({page}) => {
+    await page.goto(path);
+    const cards = page.locator('.discovery-card');
+    expect(await cards.count()).toBeGreaterThan(1);
+    for (const width of [1280, 320]) {
+      await page.setViewportSize({width, height:900});
+      const first = await cards.nth(0).boundingBox();
+      const second = await cards.nth(1).boundingBox();
+      if (width === 1280) {
+        expect(Math.abs(first.y - second.y)).toBeLessThan(1);
+        expect(second.x).toBeGreaterThanOrEqual(first.x + first.width);
+      } else {
+        expect(second.y).toBeGreaterThanOrEqual(first.y + first.height);
+      }
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    }
+  });
+
   test(`card headings use the space beside their icons: ${path}`, async ({page}) => {
     await page.setViewportSize({width:1440, height:900});
     await page.goto(path);
