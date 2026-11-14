@@ -64,6 +64,12 @@ struct Indie: Decodable {
     var websiteURL: String?
     var socials: [SocialLink]
     var initials: String
+    var people: [IndiePerson]? = nil
+}
+
+struct IndiePerson: Decodable {
+    var name: String
+    var websiteURL: String?
 }
 
 struct SocialLink: Decodable {
@@ -77,6 +83,12 @@ struct Participation: Decodable {
     var connection: String?
     var quote: String?
     var publicationApproved: Bool
+    var quoteAttribution: QuoteAttribution? = nil
+}
+
+struct QuoteAttribution: Decodable {
+    var name: String
+    var sourceURL: String
 }
 
 struct Offer: Decodable {

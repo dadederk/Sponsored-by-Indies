@@ -94,6 +94,7 @@ extension Pages {
                 Components.heading("Getting", "access.", id: "access-title")
                 accessGuidance(edition)
             }.id("access").class("container", "section-space").aria(.labelledBy, "access-title")
+            if !offers.isEmpty { Components.attendeeThanks }
             if !otherEditions.isEmpty {
                 Tag("section") {
                     Components.heading("Other", "editions.", id: "other-editions-title")
@@ -156,6 +157,7 @@ extension Pages {
                     Components.button("Back to the bundle", href: path + "#bundle", style: .secondary)
                 }.class("reading-width")
             }.class("container", "section-space").aria(.labelledBy, "access-title")
+            if !catalog.visibleOffers(for: edition).isEmpty { Components.attendeeThanks }
         }
     }
 

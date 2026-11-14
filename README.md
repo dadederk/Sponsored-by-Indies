@@ -1,6 +1,6 @@
 # Sponsored by Indies
 
-![Sponsored by Indies. A little extra. From your community.](Images/readme-banner.png)
+![Sponsored by Indies. Amazing conferences. A little extra.](Images/readme-banner.png)
 
 Free products and discounts from independent makers, included with tickets to iOS, Swift and Apple developer conferences. Contributions can include apps, games, tools, courses, books and more.
 

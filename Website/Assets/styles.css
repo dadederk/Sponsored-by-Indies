@@ -29,12 +29,16 @@ main:focus { outline: none; }
 .site-header,.site-footer { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4) var(--space-8); flex-wrap: wrap; padding-block: var(--space-6); }
 .site-header nav,.site-footer nav,.actions,.edition-nav { display: flex; flex-wrap: wrap; align-items: center; gap: var(--action-row-gap) var(--space-6); }
 .site-header nav a,.site-footer nav a { padding-inline: var(--space-1); }
-.brand { font-weight: 700; text-decoration: none; font-size: 1rem; }
+/* Scale the logo as one unit so enlarged text does not clip its wordmark. */
+.brand { font-weight: 700; text-decoration: none; font-size: var(--brand-base-size); }
 .brand > span { display: inline-flex; align-items: center; gap: var(--brand-gap); max-width: 100%; }
-.brand-mark { display: block; width: min(3.75rem,16vw); height: auto; flex: none; }
-.brand-wordmark { display: flex; flex-direction: column; line-height: 1.05; letter-spacing: -.035em; }
-.brand-by { font-size: .8em; }
-.brand-name { font-size: 1.65em; font-weight: 750; }
+.brand-mark { display: block; width: var(--brand-mark-size); height: auto; min-width: 0; flex-shrink: 1; }
+.brand-wordmark { display: flex; flex-direction: column; flex-shrink: 0; gap: var(--brand-line-gap); line-height: var(--brand-line-height); letter-spacing: -.035em; }
+.brand-sponsored { font-size: var(--brand-label-size); }
+.brand-signature { display: flex; align-items: baseline; gap: var(--brand-signature-gap); white-space: nowrap; }
+.brand-by,.brand-name { font-size: var(--brand-name-size); line-height: 1; }
+.brand-by { font-weight: 400; }
+.brand-name { font-weight: 700; letter-spacing: -.025em; }
 .site-footer { border-top: var(--border-width) solid var(--line); padding-block: var(--space-8); font-size: .9375rem; }
 .site-footer p { margin: 0; }
 .footer-identity { flex-wrap: wrap; gap: var(--space-4) var(--space-6); }

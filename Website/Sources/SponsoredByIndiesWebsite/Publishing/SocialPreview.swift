@@ -1,9 +1,14 @@
 import AppKit
+import CoreText
 
 /// Render the same resolved vector artwork for sharing, profiles and browser icons.
 @MainActor
 enum SocialPreview {
     static func install(in directory: URL) throws {
+        guard let emphasis = NSFont(name: "Georgia-BoldItalic", size: 1),
+              let headlineEmphasis = NSFont(name: "Georgia-Italic", size: 1) else {
+            throw RenderError.unavailableFont
+        }
         guard let logo = NSImage(contentsOf: directory.appending(path: "logo.svg")),
               let inverse = NSImage(contentsOf: directory.appending(path: "logo-inverse.svg")),
               let icon = NSImage(contentsOf: directory.appending(path: "favicon.svg")) else {
@@ -11,32 +16,25 @@ enum SocialPreview {
         }
         let palette = DesignTokens.palette
         try png(width: 1200, height: 630, background: palette.paper) {
-            logo.draw(in: NSRect(x: 65, y: 205, width: 290, height: 290))
-            draw("Sponsored by", at: NSPoint(x: 390, y: 405), size: 36, color: palette.ink)
-            draw("Indies", at: NSPoint(x: 385, y: 305), size: 90, color: palette.ink, weight: .bold)
-            draw("A little extra. From your community.", at: NSPoint(x: 390, y: 260), size: 27, color: palette.accent)
-            fill(NSRect(x: 0, y: 0, width: 1200, height: 140), with: palette.ink)
-            draw("Indie bundles for Swift & iOS conferences", at: NSPoint(x: 70, y: 52), size: 34, color: palette.accentSoft)
+            wordmark(logo: logo, emphasis: emphasis, at: NSPoint(x: 65, y: 390), markSize: 160)
+            headline(at: NSPoint(x: 70, y: 245), size: 74, emphasis: headlineEmphasis)
+            fill(NSRect(x: 0, y: 0, width: 1200, height: 80), with: palette.ink)
+            draw("Indie bundles for iOS, Swift and Apple developer conferences.", at: NSPoint(x: 70, y: 25), size: 28, color: palette.accentSoft)
         }.write(to: directory.appending(path: "social-preview.png"), options: .atomic)
         try png(width: 1024, height: 1024, background: palette.ink) {
             inverse.draw(in: NSRect(x: 155, y: 155, width: 714, height: 714))
         }.write(to: directory.appending(path: "social-avatar.png"), options: .atomic)
         try png(width: 1500, height: 500, background: palette.paper) {
-            logo.draw(in: NSRect(x: 70, y: 105, width: 300, height: 300))
-            draw("Sponsored by", at: NSPoint(x: 420, y: 315), size: 38, color: palette.ink)
-            draw("Indies", at: NSPoint(x: 415, y: 205), size: 100, color: palette.ink, weight: .bold)
-            draw("A little extra. From your community.", at: NSPoint(x: 420, y: 150), size: 32, color: palette.accent)
+            wordmark(logo: logo, emphasis: emphasis, at: NSPoint(x: 60, y: 165), markSize: 190)
+            headline(at: NSPoint(x: 850, y: 265), size: 50, emphasis: headlineEmphasis)
             fill(NSRect(x: 0, y: 0, width: 1500, height: 65), with: palette.ink)
-            draw("Independent makers. Shared support.", at: NSPoint(x: 80, y: 19), size: 24, color: palette.accentSoft)
+            draw("Indie bundles for iOS, Swift and Apple developer conferences.", at: NSPoint(x: 60, y: 19), size: 24, color: palette.accentSoft)
         }.write(to: directory.appending(path: "social-banner.png"), options: .atomic)
         try png(width: 1800, height: 450, background: palette.paper) {
-            logo.draw(in: NSRect(x: 70, y: 100, width: 280, height: 280))
-            draw("Sponsored by", at: NSPoint(x: 400, y: 270), size: 38, color: palette.ink)
-            draw("Indies", at: NSPoint(x: 395, y: 160), size: 100, color: palette.ink, weight: .bold)
-            draw("A little extra.", at: NSPoint(x: 1050, y: 245), size: 52, color: palette.accent)
-            draw("From your community.", at: NSPoint(x: 1050, y: 190), size: 40, color: palette.accent)
+            wordmark(logo: logo, emphasis: emphasis, at: NSPoint(x: 60, y: 140), markSize: 200)
+            headline(at: NSPoint(x: 900, y: 230), size: 60, emphasis: headlineEmphasis)
             fill(NSRect(x: 0, y: 0, width: 1800, height: 60), with: palette.ink)
-            draw("Indie bundles for Swift & iOS conferences", at: NSPoint(x: 80, y: 17), size: 25, color: palette.accentSoft)
+            draw("Indie bundles for iOS, Swift and Apple developer conferences.", at: NSPoint(x: 80, y: 17), size: 25, color: palette.accentSoft)
         }.write(to: directory.appending(path: "readme-banner.png"), options: .atomic)
         for (name, size) in [("favicon-32.png", 32), ("apple-touch-icon.png", 180)] {
             try png(width: size, height: size, background: palette.ink) {
@@ -51,6 +49,50 @@ enum SocialPreview {
         }
         ico.append(iconPNG)
         try ico.write(to: directory.appending(path: "favicon.ico"), options: .atomic)
+    }
+
+    /// Share the homepage's navy headline and regular orange serif emphasis.
+    private static func headline(at point: NSPoint, size: CGFloat, emphasis: NSFont) {
+        draw("Amazing conferences.", at: point, size: size, color: DesignTokens.palette.ink, weight: .bold)
+        let italic = NSFont(descriptor: emphasis.fontDescriptor, size: size * 1.1)!
+        draw("A little extra.", at: NSPoint(x: point.x - 3, y: point.y - size * 1.2),
+             font: italic, color: DesignTokens.palette.accent)
+    }
+
+    /// Match the website's two-line lockup and its relative type sizes.
+    private static func wordmark(logo: NSImage, emphasis: NSFont, at point: NSPoint, markSize: CGFloat) {
+        let palette = DesignTokens.palette
+        let scale = markSize / DesignTokens.brandMarkSize
+        let x = point.x + markSize + DesignTokens.brandGap * scale
+        let label = NSFont.systemFont(ofSize: DesignTokens.brandLabelSize * scale, weight: .bold)
+        let byFont = NSFont.systemFont(ofSize: DesignTokens.brandNameSize * scale, weight: .regular)
+        let name = NSFont(descriptor: emphasis.fontDescriptor, size: DesignTokens.brandNameSize * scale)!
+        logo.draw(in: NSRect(origin: point, size: NSSize(width: markSize, height: markSize)))
+        let sponsored = line("Sponsored", font: label, color: palette.blue)
+        let indies = line("Indies", font: name, color: palette.accent)
+        let by = line("by ", font: byFont, color: palette.blue)
+        let sponsoredBounds = CTLineGetBoundsWithOptions(sponsored, .useGlyphPathBounds)
+        let indiesBounds = CTLineGetBoundsWithOptions(indies, .useGlyphPathBounds)
+        let labelHeight = sponsoredBounds.height + DesignTokens.brandLineGap * scale
+        let height = labelHeight + indiesBounds.height
+        let top = point.y + (markSize + height) / 2
+        let baseline = top - labelHeight - indiesBounds.maxY
+        // Glyph bounds keep the italic capitals clear of the line above.
+        draw(sponsored, at: NSPoint(x: x, y: top - sponsoredBounds.maxY))
+        draw(by, at: NSPoint(x: x, y: baseline))
+        draw(indies, at: NSPoint(x: x + CTLineGetTypographicBounds(by, nil, nil, nil), y: baseline))
+    }
+
+    private static func line(_ text: String, font: NSFont, color hex: String) -> CTLine {
+        CTLineCreateWithAttributedString(NSAttributedString(string: text, attributes: [
+            .font: font, .foregroundColor: color(hex)
+        ]))
+    }
+
+    private static func draw(_ line: CTLine, at baseline: NSPoint) {
+        guard let context = NSGraphicsContext.current?.cgContext else { return }
+        context.textPosition = baseline
+        CTLineDraw(line, context)
     }
 
     private static func png(width: Int, height: Int, background: String, drawing: () -> Void) throws -> Data {
@@ -79,8 +121,12 @@ enum SocialPreview {
     }
 
     private static func draw(_ text: String, at point: NSPoint, size: CGFloat, color hex: String, weight: NSFont.Weight = .regular) {
+        draw(text, at: point, font: NSFont.systemFont(ofSize: size, weight: weight), color: hex)
+    }
+
+    private static func draw(_ text: String, at point: NSPoint, font: NSFont, color hex: String) {
         (text as NSString).draw(at: point, withAttributes: [
-            .font: NSFont.systemFont(ofSize: size, weight: weight), .foregroundColor: color(hex)
+            .font: font, .foregroundColor: color(hex)
         ])
     }
 
@@ -91,5 +137,5 @@ enum SocialPreview {
                        blue: CGFloat(value & 255) / 255, alpha: 1)
     }
 
-    enum RenderError: Error { case unavailableGraphics }
+    enum RenderError: Error { case unavailableGraphics, unavailableFont }
 }

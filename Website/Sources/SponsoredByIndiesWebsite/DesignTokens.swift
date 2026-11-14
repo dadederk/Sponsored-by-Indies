@@ -28,6 +28,11 @@ enum DesignTokens {
     static let productIconSize = 64
     static let productIconRadius = 14
     static let brandAssetNames = ["logo.svg", "logo-inverse.svg", "favicon.svg", "favicon-shared-imprint-01.svg"]
+    static let brandMarkSize = 76.0
+    static let brandLabelSize = 20.0
+    static let brandNameSize = 42.4
+    static let brandGap = 12.0
+    static let brandLineGap = 2.0
 
     // Base scale, then semantic roles. Keep page composition free of repeated values.
     static let spacing = """
@@ -53,7 +58,14 @@ enum DesignTokens {
       --action-gap: 1.7rem;
       --action-row-gap: .6rem;
       --eyebrow-gap: 1.4rem;
-      --brand-gap: .65rem;
+      --brand-base-size: min(1rem, 4vw);
+      --brand-gap: \(brandGap / 16)em;
+      --brand-mark-size: \(brandMarkSize / 16)em;
+      --brand-label-size: \(brandLabelSize / 16)em;
+      --brand-name-size: \(brandNameSize / 16)em;
+      --brand-line-gap: \(brandLineGap / 16)em;
+      --brand-line-height: 1.05;
+      --brand-signature-gap: .3em;
       --button-inset-block: .8rem;
       --button-inset-inline: var(--space-5);
       --control-inset-block: .65rem;

@@ -64,9 +64,6 @@ extension Pages {
                 "More editions are on the way. Explore our conferences and their bundles in the meantime."
             ).id("next-edition-empty")
             if featured == nil { empty } else { empty.attribute("hidden") }
-            Section {
-                Link("Conferences", target: "/conferences/")
-            }.class("actions")
             Script(file: "/next-edition.mjs").attribute("type", "module")
         }.id("next-edition").aria(.labelledBy, "next-edition-title")
     }

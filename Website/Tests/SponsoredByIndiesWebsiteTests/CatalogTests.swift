@@ -4,6 +4,32 @@ import Testing
 @testable import SponsoredByIndiesWebsite
 
 struct CatalogTests {
+    @Test(arguments: ["missing quote", "blank quote", "blank author", "unsafe source"])
+    func attributedQuotesRequireTextAuthorAndSafeSource(problem: String) throws {
+        var catalog = CatalogFixture.make()
+        catalog.participations[0].quoteAttribution = QuoteAttribution(name: "Sample maker", sourceURL: "https://example.org/quote")
+        switch problem {
+        case "missing quote": catalog.participations[0].quote = nil
+        case "blank quote": catalog.participations[0].quote = " "
+        case "blank author": catalog.participations[0].quoteAttribution?.name = " "
+        default: catalog.participations[0].quoteAttribution?.sourceURL = "javascript:alert(1)"
+        }
+        #expect(throws: CatalogError.self) { try catalog.validate() }
+    }
+
+    @Test(arguments: ["empty", "blank name", "unsafe URL", "duplicate URL"])
+    func makerProfilesRequireValidDistinctLinks(problem: String) throws {
+        var catalog = CatalogFixture.make()
+        let person = IndiePerson(name: "Sample maker", websiteURL: "https://example.org/profile")
+        switch problem {
+        case "empty": catalog.indies[0].people = []
+        case "blank name": catalog.indies[0].people = [IndiePerson(name: " ", websiteURL: person.websiteURL)]
+        case "unsafe URL": catalog.indies[0].people = [IndiePerson(name: person.name, websiteURL: "javascript:alert(1)")]
+        default: catalog.indies[0].people = [person, person]
+        }
+        #expect(throws: CatalogError.self) { try catalog.validate() }
+    }
+
     private var directory: URL {
         URL(fileURLWithPath: #filePath).deletingLastPathComponent()
             .deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("Data")

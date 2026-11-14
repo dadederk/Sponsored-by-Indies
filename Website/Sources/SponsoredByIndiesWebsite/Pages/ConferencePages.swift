@@ -14,6 +14,7 @@ extension Pages {
                 }
             }.class("container", "section-space")
             Components.audienceBenefits(for: [.conferences, .indies], title: "Get", emphasis: "involved.")
+            Components.attendeeThanks
         }
     }
 

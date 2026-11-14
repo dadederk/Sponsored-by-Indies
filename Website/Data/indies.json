@@ -5,7 +5,13 @@
     "company": "Accessibility up to 11!",
     "websiteURL": "https://accessibilityupto11.com/",
     "socials": [],
-    "initials": "DD"
+    "initials": "DD",
+    "people": [
+      {
+        "name": "Dani Devesa",
+        "websiteURL": "https://accessibilityupto11.com/"
+      }
+    ]
   },
   {
     "id": "noam-efergan",
@@ -13,7 +19,13 @@
     "company": "Dee Training",
     "websiteURL": "https://dee.training/",
     "socials": [],
-    "initials": "NE"
+    "initials": "NE",
+    "people": [
+      {
+        "name": "Noam Efergan",
+        "websiteURL": "https://nowham.dev/"
+      }
+    ]
   },
   {
     "id": "antoine-van-der-lee",
@@ -21,6 +33,12 @@
     "company": "SwiftLee",
     "websiteURL": "https://www.avanderlee.com/",
     "socials": [],
-    "initials": "AL"
+    "initials": "AL",
+    "people": [
+      {
+        "name": "Antoine van der Lee",
+        "websiteURL": "https://www.avanderlee.com/"
+      }
+    ]
   }
 ]

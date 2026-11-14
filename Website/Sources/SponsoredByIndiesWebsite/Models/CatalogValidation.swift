@@ -87,6 +87,14 @@ extension Catalog {
         for indie in indies {
             try nonempty([indie.id, indie.name, indie.initials], "indie \(indie.id)")
             if let url = indie.websiteURL { try Self.validateURL(url) }
+            if let people = indie.people {
+                try require(!people.isEmpty, "Named maker profiles cannot be empty.")
+                for person in people {
+                    try nonempty([person.name], "maker profile for \(indie.id)")
+                    if let url = person.websiteURL { try Self.validateURL(url) }
+                }
+                try unique(people.compactMap(\.websiteURL), "maker profile URL for \(indie.id)")
+            }
             for link in indie.socials {
                 try nonempty([link.label], "social link for \(indie.id)")
                 try Self.validateURL(link.url)
@@ -95,8 +103,14 @@ extension Catalog {
         for participation in participations {
             try require(editions.contains { $0.id == participation.editionID }, "Unknown participation edition")
             try require(indies.contains { $0.id == participation.indieID }, "Unknown participation indie")
-            if participation.quote != nil {
+            if let quote = participation.quote {
                 try require(participation.publicationApproved, "Quotes require publication approval.")
+                try nonempty([quote], "conference quote")
+            }
+            if let attribution = participation.quoteAttribution {
+                try require(participation.quote != nil, "Quote attribution requires a quote.")
+                try nonempty([attribution.name], "quote attribution")
+                try Self.validateURL(attribution.sourceURL)
             }
         }
         for offer in offers {

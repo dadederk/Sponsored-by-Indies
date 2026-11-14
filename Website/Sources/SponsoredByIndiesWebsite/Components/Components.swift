@@ -18,10 +18,13 @@ enum Components {
         Span {
             Image(decorative: "/logo.svg?v=shared-imprint-01-\(assetVersion)").class("brand-mark")
             Span {
-                Span("Sponsored by").class("brand-by")
-                Span("Indies").class("brand-name")
+                Span("Sponsored").class("brand-sponsored")
+                Span {
+                    Span("by ").class("brand-by")
+                    Span("Indies").class("title-accent", "brand-name")
+                }.class("brand-signature")
             }.class("brand-wordmark")
-        }
+        }.foregroundStyle(Color(hex: DesignTokens.palette.blue))
     }
 
     static func header(assetVersion: String) -> some HTML {
@@ -30,7 +33,7 @@ enum Components {
             Tag("header") {
                 Link(brand(assetVersion: assetVersion), target: "/").class("brand").aria(.label, "Sponsored by Indies. Home")
                 Tag("nav") {
-                    Link("Conferences", target: "/conferences/")
+                    Link("All Conferences", target: "/conferences/")
                     Link("Get involved", target: "/participate/")
                 }.aria(.label, "Main navigation")
             }.class("container", "site-header")
@@ -40,10 +43,10 @@ enum Components {
     static func footer(assetVersion: String) -> some HTML {
         Tag("footer") {
             HStack(alignment: .center, spacing: .none) {
-                Link(brand(assetVersion: assetVersion), target: "/").class("brand")
+                Link(brand(assetVersion: assetVersion), target: "/").class("brand").aria(.label, "Sponsored by Indies. Home")
                 Section {
+                    Text("Amazing conferences.")
                     Text("A little extra.")
-                    Text("From your community.")
                 }
             }.class("footer-identity")
             Text {
@@ -52,10 +55,9 @@ enum Components {
             }
             .foregroundStyle(.secondary)
             Tag("nav") {
-                Link("Conferences", target: "/conferences/")
-                Link("For organisers", target: "/participate/conferences/")
+                Link("For conferences", target: "/participate/conferences/")
                 Link("For indies", target: "/participate/indies/")
-                Link("Terms and conditions", target: "/terms/")
+                Link("Terms &amp; conditions", target: "/terms/")
             }.aria(.label, "Footer navigation")
         }.class("container", "site-footer")
     }
@@ -150,11 +152,31 @@ enum Components {
             }.class("product-card-benefits").attribute("role", "list")
             Section {
                 if let quote = participation.quote {
-                    Quote { Text("“" + escaped(quote) + "”").font(.small).margin(0) }
-                        .margin(.top, 0).margin(.bottom, .small)
+                    Quote {
+                        Text {
+                            "“" + escaped(quote) + "”"
+                            if let attribution = participation.quoteAttribution {
+                                Span(" — ")
+                                Link(escaped(attribution.name), target: escaped(attribution.sourceURL))
+                            }
+                        }.font(.small).margin(0)
+                    }.margin(.top, 0).margin(.bottom, .small)
                 }
                 Text {
-                    Span(escaped(indie.name)).fontWeight(.semibold)
+                    if let people = indie.people {
+                        Span {
+                            InlineForEach(Array(people.enumerated())) { index, person in
+                                if index > 0 { Span(" &amp; ") }
+                                if let url = person.websiteURL {
+                                    Span { Link(escaped(person.name), target: escaped(url)) }
+                                } else {
+                                    Span(escaped(person.name))
+                                }
+                            }
+                        }.fontWeight(.semibold)
+                    } else {
+                        Span(escaped(indie.name)).fontWeight(.semibold)
+                    }
                     if let website = indie.websiteURL {
                         Span {
                             " · "

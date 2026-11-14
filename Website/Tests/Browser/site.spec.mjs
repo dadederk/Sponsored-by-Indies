@@ -250,7 +250,19 @@ test('direct email and native terms work without JavaScript', async ({ browser, 
   }
 });
 
-for (const path of ['/', '/conferences/', bundlePath, '/participate/', '/participate/conferences/', formPath, '/terms/']) {
+test('the wordmark remains visible when text is enlarged', async ({ page }) => {
+  await page.goto('/');
+  await page.addStyleTag({ content: 'html { font-size: 200%; }' });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  for (const brand of await page.locator('.brand').all()) {
+    const bounds = await brand.boundingBox();
+    expect(bounds.x).toBeGreaterThanOrEqual(0);
+    expect(bounds.x + bounds.width).toBeLessThanOrEqual(page.viewportSize().width);
+    await expect(brand).toHaveAccessibleName(/Sponsored by Indies/);
+  }
+});
+
+for (const path of ['/', '/conferences/', `/conferences/${record.conference.slug}/`, bundlePath, `${bundlePath}access/`, '/participate/', '/participate/conferences/', formPath, '/terms/']) {
   test(`page is accessible and fits the viewport: ${path}`, async ({ page }) => {
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));

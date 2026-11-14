@@ -14,6 +14,33 @@ struct PublishingTests {
             .deletingLastPathComponent().deletingLastPathComponent()
     }
 
+    @Test func makerCreditsLinkEachPersonSeparatelyFromTheCompany() async throws {
+        var catalog = CatalogFixture.make()
+        catalog.indies[0].people = [
+            IndiePerson(name: "Ada & <Friends>", websiteURL: "https://example.org/ada?event=one&copy;=yes"),
+            IndiePerson(name: "Ben Example", websiteURL: "https://example.org/ben")
+        ]
+        catalog.participations[0].quoteAttribution = QuoteAttribution(name: "Ben & <Team>", sourceURL: "https://example.org/quote?issue=81&copy;=yes")
+        try catalog.validate()
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        var site = IndiesSite(catalog: catalog, preview: true, url: try #require(URL(string: "https://example.org")))
+        try await site.generate(sourceDirectory: source, buildDirectory: root)
+        let html = try String(contentsOf: root.appending(path: "conferences/sample/2027/index.html"), encoding: .utf8)
+        let card = try #require(html.firstMatch(of: /<article class="panel product-card">[\s\S]*?<\/article>/))
+        let text = String(card.output)
+        #expect(text.contains("href=\"https://example.org/ada?event=one&amp;copy;=yes\""))
+        #expect(text.contains(">Ada &amp; &lt;Friends&gt;</a>"))
+        #expect(text.range(of: #"<a[^>]*href="https://example.org/ben"[^>]*>Ben Example</a>"#, options: .regularExpression) != nil)
+        #expect(text.contains("href=\"https://example.org/maker\""))
+        #expect(text.contains("Sample Company"))
+        #expect(!text.contains("<Friends>"))
+        let quote = try #require(text.firstMatch(of: /<blockquote[\s\S]*?<\/blockquote>/))
+        #expect(String(quote.output).contains("href=\"https://example.org/quote?issue=81&amp;copy;=yes\""))
+        #expect(String(quote.output).contains("Ben &amp; &lt;Team&gt;"))
+        #expect(!String(quote.output).contains("<Team>"))
+    }
+
     @Test(arguments: [true, false])
     func populatedPagesRespectApprovalAndEditionBoundaries(preview: Bool) async throws {
         var catalog = CatalogFixture.make()
@@ -96,6 +123,10 @@ struct PublishingTests {
             let accessPosition = try #require(html.range(of: "id=\"access\""))
             #expect(bundlePosition.lowerBound < valuePosition.lowerBound)
             #expect(valuePosition.lowerBound < accessPosition.lowerBound)
+            let thanksPosition = try #require(html.range(of: "id=\"support-indies\""))
+            let archivePosition = try #require(html.range(of: "id=\"other-editions\""))
+            #expect(accessPosition.lowerBound < thanksPosition.lowerBound)
+            #expect(thanksPosition.lowerBound < archivePosition.lowerBound)
             let bundleSection = String(html[bundlePosition.lowerBound..<valuePosition.lowerBound])
             let bundleHeading = try #require(bundleSection.firstMatch(of: /<h2[^>]*>[\s\S]*?<\/h2>/))
             #expect(String(bundleHeading.output).contains("Included with your"))
@@ -377,6 +408,43 @@ struct PublishingTests {
             #expect(!lifetime.contains("Claim the yearly licence."))
             #expect(yearly.contains("Claim the yearly licence."))
             #expect(!yearly.contains(instructions))
+        }
+    }
+
+    @Test(arguments: ["approved", "unapproved", "empty", "archived"])
+    func attendeeThanksFollowsVisibleEditionOffers(state: String) async throws {
+        var catalog = CatalogFixture.make()
+        if state == "unapproved" { catalog.offers[0].publicationApproved = false }
+        if state == "empty" { catalog.offers.removeAll() }
+        if state == "archived" {
+            catalog.editions[0].startDate = "2000-02-02"
+            catalog.editions[0].endDate = "2000-02-04"
+            catalog.editions[0].dateLabel = "2–4 February 2000"
+            catalog.editions[0].slug = "2000"
+            catalog.editions[0].label = "2000"
+        }
+        try catalog.validate()
+        let root = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        var site = IndiesSite(catalog: catalog, preview: true, url: try #require(URL(string: "https://example.org")))
+        try await site.generate(sourceDirectory: source, buildDirectory: root)
+        let slug = catalog.editions[0].slug
+        let shouldShow = state == "approved" || state == "archived"
+        for path in ["conferences/sample/index.html", "conferences/sample/\(slug)/index.html", "conferences/sample/\(slug)/access/index.html"] {
+            let html = try String(contentsOf: root.appending(path: path), encoding: .utf8)
+            #expect(html.contains("id=\"support-indies\"") == shouldShow)
+            if shouldShow {
+                #expect(html.components(separatedBy: "id=\"support-indies\"").count == 2)
+                #expect(html.contains("aria-labelledby=\"support-indies-title\""))
+                #expect(html.contains("an honest App Store rating or review after you’ve tried them"))
+                let access = try #require(html.range(of: "id=\"access-title\""))
+                let thanks = try #require(html.range(of: "id=\"support-indies\""))
+                #expect(access.lowerBound < thanks.lowerBound)
+            }
+        }
+        for path in ["index.html", "participate/index.html"] {
+            let html = try String(contentsOf: root.appending(path: path), encoding: .utf8)
+            #expect(!html.contains("id=\"support-indies\""))
         }
     }
 
