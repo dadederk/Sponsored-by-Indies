@@ -41,7 +41,8 @@
           "xarra-lifetime",
           "retrorapid-free",
           "passable-yearly",
-          "coca-yearly"
+          "coca-yearly",
+          "the-shed-lifetime"
         ]
       },
       "bundleNote": "We’re working on expanding the bundle and its value."
@@ -84,8 +85,12 @@
       "editionID": "arctic-2027",
       "indieID": "pocketshelf-team",
       "connection": "Organiser & Speaker ARCTIC 2025",
-      "quote": null,
-      "publicationApproved": true
+      "quote": "one of the best conferences out there 🫶",
+      "publicationApproved": true,
+      "quoteAttribution": {
+        "name": "Klemens",
+        "sourceURL": "https://mastodon.social/@klemensstrasser/115745375580477480"
+      }
     },
     {
       "connection": "Attendee ARCTIC 2026 & 2027",
@@ -96,6 +101,17 @@
       "quoteAttribution": {
         "name": "Angelo",
         "sourceURL": "https://x.com/ANGOmarcello/status/2022222524461748262"
+      }
+    },
+    {
+      "editionID": "arctic-2027",
+      "indieID": "peter-kurzok",
+      "connection": "Attendee ARCTIC 2025, 2026 & 2027",
+      "quote": "One of the coolest conferences out there.",
+      "publicationApproved": true,
+      "quoteAttribution": {
+        "name": "Peter",
+        "sourceURL": "https://kind.social/@filmaniac/115859465929508020"
       }
     }
   ],
@@ -414,6 +430,54 @@
         "verifiedOn": "2026-11-15"
       },
       "terms": "Patron yearly subscription."
+    },
+    {
+      "id": "the-shed-lifetime",
+      "editionID": "arctic-2027",
+      "projectID": "the-shed",
+      "benefit": "50% off lifetime Premium",
+      "terms": "One-time purchase.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through the conference.",
+      "publicationApproved": true,
+      "savingEstimate": {
+        "regularPriceUSD": 124.99,
+        "discountPercent": 50,
+        "plan": "The Shed Pro – Lifetime",
+        "period": "lifetime",
+        "discountedPeriods": 1,
+        "currency": "USD",
+        "storefront": "US",
+        "observedPricesUSD": [
+          124.99
+        ],
+        "review": "unambiguous",
+        "verifiedOn": "2026-11-15",
+        "sourceURL": "https://apps.apple.com/us/app/the-shed-stems-loop-tempo/id6825513490"
+      }
+    },
+    {
+      "id": "the-shed-yearly",
+      "editionID": "arctic-2027",
+      "projectID": "the-shed",
+      "benefit": "1 year of Premium free",
+      "terms": "Yearly Premium subscription.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through the conference.",
+      "publicationApproved": true,
+      "savingEstimate": {
+        "regularPriceUSD": 49.99,
+        "discountPercent": 100,
+        "plan": "The Shed Pro – Yearly",
+        "period": "year",
+        "discountedPeriods": 1,
+        "currency": "USD",
+        "storefront": "US",
+        "observedPricesUSD": [
+          49.99
+        ],
+        "review": "unambiguous",
+        "verifiedOn": "2026-11-15",
+        "sourceURL": "https://apps.apple.com/us/app/the-shed-stems-loop-tempo/id6825513490"
+      }
     }
   ]
 }

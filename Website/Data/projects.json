@@ -88,5 +88,14 @@
     "name": "Coca",
     "showcaseDescription": "Keep your Mac awake during downloads, presentations and long-running tasks. Use timers, Shortcuts and Focus filters, and check on your Mac from your other Apple devices.",
     "websiteURL": "https://coca.cammalleri.dev/"
+  },
+  {
+    "id": "the-shed",
+    "indieID": "peter-kurzok",
+    "name": "The Shed",
+    "websiteURL": "https://shed.peterkurzok.de/",
+    "iconPath": "/app-icons/the-shed.png",
+    "description": "Need help learning an instrument? Mute your part and play along with the band. Split songs into stems, loop a section, adjust the tempo or key, and follow the chords on iPad and Mac.",
+    "showcaseDescription": "Need help learning an instrument? Mute your part and play along with the band. Split songs into stems, loop a section, adjust the tempo or key, and follow the chords. Organise songs into setlists for rehearsals and gigs. Processing happens on your iPad or Mac, with no account or upload."
   }
 ]

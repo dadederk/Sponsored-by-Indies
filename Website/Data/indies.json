@@ -218,5 +218,35 @@
     ],
     "socials": [],
     "websiteURL": "https://cammalleri.dev/"
+  },
+  {
+    "id": "peter-kurzok",
+    "name": "Peter Kurzok",
+    "company": null,
+    "websiteURL": "https://apps.peterkurzok.de/",
+    "socials": [],
+    "initials": "PK",
+    "people": [
+      {
+        "name": "Peter Kurzok",
+        "websiteURL": "https://apps.peterkurzok.de/",
+        "bio": "Software architect and independent developer making focused apps for Apple platforms. He speaks about mobile development and security, and enjoys photography and music.",
+        "portraitPath": "/portraits/peter-kurzok.jpg",
+        "socials": [
+          {
+            "label": "Mastodon",
+            "url": "https://kind.social/@filmaniac"
+          },
+          {
+            "label": "GitHub",
+            "url": "https://github.com/pkurzok"
+          },
+          {
+            "label": "Instagram",
+            "url": "https://instagram.com/filmaniac"
+          }
+        ]
+      }
+    ]
   }
 ]
