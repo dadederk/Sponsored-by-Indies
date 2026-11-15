@@ -248,5 +248,73 @@
         ]
       }
     ]
+  },
+  {
+    "id": "danijela-vrzan",
+    "name": "Danijela Vrzan",
+    "company": "ChevApps Inc.",
+    "websiteURL": "https://chevapps.com/",
+    "socials": [],
+    "initials": "DV",
+    "people": [
+      {
+        "name": "Danijela Vrzan",
+        "websiteURL": "https://danijelavrzan.com/about/",
+        "bio": "iOS developer, conference speaker and writer who switched careers from civil engineering. She shares practical lessons about Swift, app development, career growth and the human side of software.",
+        "portraitPath": "/portraits/danijela-vrzan.jpg",
+        "socials": [
+          {
+            "label": "Mastodon",
+            "url": "https://iosdev.space/@dvrzan"
+          },
+          {
+            "label": "Bluesky",
+            "url": "https://bsky.app/profile/danijelavrzan.com"
+          },
+          {
+            "label": "Twitter",
+            "url": "https://x.com/dvrzan"
+          },
+          {
+            "label": "GitHub",
+            "url": "https://github.com/dvrzan"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "natalia-panferova",
+    "name": "Natalia Panferova",
+    "company": "Nil Coalescing",
+    "websiteURL": "https://nilcoalescing.com/",
+    "socials": [],
+    "initials": "NP",
+    "people": [
+      {
+        "name": "Natalia Panferova",
+        "websiteURL": "https://nilcoalescing.com/about/",
+        "bio": "Software engineer and author who previously designed and built APIs on Apple’s SwiftUI team. She creates native apps at Nil Coalescing and shares practical Swift and SwiftUI knowledge through books, articles and talks.",
+        "portraitPath": "/portraits/natalia-panferova.jpg",
+        "socials": [
+          {
+            "label": "Mastodon",
+            "url": "https://mastodon.social/@natpanferova"
+          },
+          {
+            "label": "Bluesky",
+            "url": "https://bsky.app/profile/natpanferova.bsky.social"
+          },
+          {
+            "label": "Twitter",
+            "url": "https://x.com/natpanferova"
+          },
+          {
+            "label": "GitHub",
+            "url": "https://github.com/nataliapanferova"
+          }
+        ]
+      }
+    ]
   }
 ]

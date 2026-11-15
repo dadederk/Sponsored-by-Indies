@@ -68,6 +68,9 @@ enum PriceVerification {
         for offer in offers {
             guard let evidence = offer.savingEstimate else { continue }
             do {
+                guard evidence.sourceFormat != .manual else {
+                    throw CatalogError.invalid("This source requires manual price review: \(evidence.sourceURL). Check the exact product and USD price; no automatic match is available.")
+                }
                 guard let url = URL(string: evidence.sourceURL), url.scheme == "https" else {
                     throw CatalogError.invalid("Price references require HTTPS.")
                 }

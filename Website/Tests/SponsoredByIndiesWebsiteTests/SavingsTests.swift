@@ -96,11 +96,32 @@ struct SavingsTests {
         let catalog = try Catalog.load(from: directory)
         let edition = try #require(catalog.editions.first { $0.id == "arctic-2027" })
         let products = catalog.visibleProductContributions(for: edition)
-        #expect(products.map(\.product.productName) == ["The Shed", "AI Fundamentals", "Passable", "Dee: Muay Thai Coach", "Helm", "PocketShelf", "RocketSim for Xcode", "RocketTrace for Xcode", "Xarra!", "Coca", "RetroRapid!"])
+        #expect(products.map(\.product.productName) == ["Swift & SwiftUI books", "The Shed", "Nunch", "AI Fundamentals", "Whio", "Passable", "Dee: Muay Thai Coach", "Helm", "PocketShelf", "RocketSim for Xcode", "RocketTrace for Xcode", "Xarra!", "Coca", "RetroRapid!"])
         let value = try #require(catalog.bundleValue(for: edition))
         #expect(value.totalUSD == products.reduce(0) { $0 + ($1.maximumSavingUSD ?? 0) })
-        #expect(value.totalUSD == Decimal(string: "304.55"))
-        #expect(value.amountLabel == "US$304")
+        #expect(value.totalUSD == Decimal(string: "477.03"))
+        #expect(value.amountLabel == "US$477")
+        let whio = try #require(products.first { $0.product.projectID == "whio" })
+        #expect(whio.offers.count == 2)
+        #expect(whio.maximumSavingUSD == Decimal(string: "44.99"))
+        #expect(value.offers.filter { $0.projectID == "whio" }.map(\.id) == ["whio-lifetime"])
+        let books = try #require(value.offers.first { $0.projectID == "nil-coalescing-books" }?.savingEstimate)
+        #expect(books.regularPriceUSD == 155)
+        #expect(books.amountUSD == Decimal(string: "77.50"))
+        #expect(books.plan == "The Full Bundle")
+        #expect(books.sourceFormat == .manual)
+        let nunch = try #require(products.first { $0.product.projectID == "nunch" })
+        #expect(nunch.offers.count == 2)
+        #expect(nunch.maximumSavingUSD == Decimal(string: "49.99"))
+        #expect(value.offers.filter { $0.projectID == "nunch" }.map(\.id) == ["nunch-lifetime"])
+        let nunchLifetime = try #require(nunch.offers.first { $0.id == "nunch-lifetime" }?.savingEstimate)
+        #expect(nunchLifetime.plan == "Nunch Lifetime")
+        #expect(nunchLifetime.discountPercent == 50)
+        #expect(nunchLifetime.offerPriceUSD == 50)
+        let nunchYear = try #require(nunch.offers.first { $0.id == "nunch-yearly" }?.savingEstimate)
+        #expect(nunchYear.discountPercent == 100)
+        #expect(nunchYear.amountUSD == Decimal(string: "34.99"))
+        #expect(nunchYear.offerPriceUSD == 0)
         let shed = try #require(products.first { $0.product.projectID == "the-shed" })
         #expect(shed.offers.count == 2)
         #expect(shed.maximumSavingUSD == Decimal(string: "62.49"))
@@ -256,6 +277,22 @@ struct SavingsTests {
         #expect(throws: CatalogError.self) { try catalog.validate() }
         catalog.offers[0].savingEstimate?.sourceProductName = "Sample course"
         try catalog.validate()
+    }
+
+    @Test @MainActor
+    func manualPriceReferencesNeverReportAnAutomaticMatch() async throws {
+        var catalog = CatalogFixture.make()
+        catalog.offers[0].savingEstimate?.sourceFormat = .manual
+        catalog.offers[0].savingEstimate?.sourceURL = "https://example.com/books"
+        catalog.editions[0].valueSummary = ValueSummary(explanation: "Reviewed reference.", offerIDs: [catalog.offers[0].id])
+        try catalog.validate()
+        #expect(catalog.bundleValue(for: catalog.editions[0])?.totalUSD == 10)
+        do {
+            try await PriceVerification.verify(catalog, on: Date("2026-11-13", strategy: Edition.dayStyle))
+            Issue.record("A manually reviewed source must not report an automatic match.")
+        } catch {
+            #expect(String(describing: error).contains("requires manual price review"))
+        }
     }
 
     @Test(arguments: [true, false])

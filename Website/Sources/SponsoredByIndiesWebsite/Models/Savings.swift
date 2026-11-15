@@ -5,7 +5,7 @@ import Foundation
 struct SavingEstimate: Decodable {
     enum Period: String, Decodable { case year, lifetime, oneTime }
     enum Review: String, Decodable { case unambiguous, provisional }
-    enum SourceFormat: String, Decodable { case appStore, schemaOrg }
+    enum SourceFormat: String, Decodable { case appStore, schemaOrg, manual }
 
     var regularPriceUSD: Decimal
     var discountPercent: Int

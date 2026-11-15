@@ -97,5 +97,32 @@
     "iconPath": "/app-icons/the-shed.png",
     "description": "Need help learning an instrument? Mute your part and play along with the band. Split songs into stems, loop a section, adjust the tempo or key, and follow the chords on iPad and Mac.",
     "showcaseDescription": "Need help learning an instrument? Mute your part and play along with the band. Split songs into stems, loop a section, adjust the tempo or key, and follow the chords. Organise songs into setlists for rehearsals and gigs. Processing happens on your iPad or Mac, with no account or upload."
+  },
+  {
+    "id": "nunch",
+    "indieID": "danijela-vrzan",
+    "name": "Nunch",
+    "websiteURL": "https://nunch.app/",
+    "iconPath": "/app-icons/nunch.png",
+    "description": "Track calories, macros and weight in one clear dashboard. Log meals, save foods and recipes, and explore nutrition trends with offline tracking and iCloud sync.",
+    "showcaseDescription": "Track calories, macros and weight in one clear dashboard. Save your foods, meals and recipes, and explore how your habits change over time. Track offline and sync with iCloud, with no account, ads or third-party trackers."
+  },
+  {
+    "id": "whio",
+    "indieID": "natalia-panferova",
+    "name": "Whio",
+    "websiteURL": "https://nilcoalescing.com/apps/whio/",
+    "iconPath": "/app-icons/whio.png",
+    "description": "Read technical EPUBs and PDFs on iPhone and iPad with clear code examples. Adjust text and code separately, use reading guides, and collect highlights and notes.",
+    "showcaseDescription": "Read technical EPUBs and PDFs on iPhone and iPad with syntax highlighting and readable code examples. Adjust text and code separately, choose reading aids, and collect highlights, notes and bookmarks in your Notebook."
+  },
+  {
+    "id": "nil-coalescing-books",
+    "indieID": "natalia-panferova",
+    "name": "Swift & SwiftUI books",
+    "websiteURL": "https://books.nilcoalescing.com/bundles",
+    "iconPath": "/app-icons/nil-coalescing-books.png",
+    "description": "Practical books on Swift, SwiftUI and Swift Charts. Explore language techniques, core concepts, interface patterns, data visualisation and bringing SwiftUI into UIKit apps.",
+    "showcaseDescription": "Practical books for Swift and SwiftUI developers, available individually or in bundles. Learn language techniques, core SwiftUI concepts, interface patterns, Swift Charts and ways to bring SwiftUI into UIKit apps."
   }
 ]

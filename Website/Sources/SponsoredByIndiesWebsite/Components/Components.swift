@@ -156,49 +156,51 @@ enum Components {
                                 Span(" – " + escaped(attribution.name))
                             }
                         }.font(.small).margin(0)
-                    }.margin(.top, 0).margin(.bottom, .small)
+                    }.margin(0)
                 }
-                Text {
-                    if let people = indie.people {
-                        Span {
-                            InlineForEach(Array(people.enumerated())) { index, person in
-                                if index > 0 { Span(" &amp; ") }
-                                if let url = person.websiteURL {
-                                    Span { Link(escaped(person.creditName ?? person.name), target: escaped(url)) }
+                Section {
+                    Text {
+                        if let people = indie.people {
+                            Span {
+                                InlineForEach(Array(people.enumerated())) { index, person in
+                                    if index > 0 { Span(" &amp; ") }
+                                    if let url = person.websiteURL {
+                                        Span { Link(escaped(person.creditName ?? person.name), target: escaped(url)) }
+                                    }
+                                    if person.websiteURL == nil {
+                                        Span(escaped(person.creditName ?? person.name))
+                                    }
                                 }
-                                if person.websiteURL == nil {
-                                    Span(escaped(person.creditName ?? person.name))
-                                }
+                            }.fontWeight(.semibold)
+                        } else {
+                            Span(escaped(indie.name)).fontWeight(.semibold)
+                        }
+                        if let website = indie.websiteURL {
+                            Span {
+                                " · "
+                                Link(escaped(indie.company ?? "Website"), target: website)
                             }
-                        }.fontWeight(.semibold)
-                    } else {
-                        Span(escaped(indie.name)).fontWeight(.semibold)
-                    }
-                    if let website = indie.websiteURL {
+                        } else if let company = indie.company {
+                            Span(" · " + escaped(company))
+                        }
+                        if let connection = participation.connection {
+                            Span(" · " + escaped(connection))
+                        }
                         Span {
                             " · "
-                            Link(escaped(indie.company ?? "Website"), target: website)
-                        }
-                    } else if let company = indie.company {
-                        Span(" · " + escaped(company))
-                    }
-                    if let connection = participation.connection {
-                        Span(" · " + escaped(connection))
-                    }
-                    Span {
-                        " · "
-                        // Bootstrap's data API restores focus to this link when the modal closes.
-                        Link(target: "#" + termsID) {
-                            "Terms"
-                            Span(" for " + escaped(product.productName)).class("visually-hidden")
-                        }.attribute("data-bs-toggle", "modal")
-                            .class("offer-terms-link")
-                            .aria(.hasPopup, "dialog").aria(.controls, termsID)
-                    }.attribute("data-offer-terms-trigger", "true").attribute("hidden")
-                }.font(.small).margin(0)
-                for social in indie.socials { Link(escaped(social.label), target: social.url).font(.small) }
-                productTerms(product, offers: offers, id: termsID)
-                offerSharingFallback
+                            // Bootstrap's data API restores focus to this link when the modal closes.
+                            Link(target: "#" + termsID) {
+                                "Terms"
+                                Span(" for " + escaped(product.productName)).class("visually-hidden")
+                            }.attribute("data-bs-toggle", "modal")
+                                .class("offer-terms-link")
+                                .aria(.hasPopup, "dialog").aria(.controls, termsID)
+                        }.attribute("data-offer-terms-trigger", "true").attribute("hidden")
+                    }.font(.small).margin(0)
+                    for social in indie.socials { Link(escaped(social.label), target: social.url).font(.small) }
+                    productTerms(product, offers: offers, id: termsID)
+                    offerSharingFallback
+                }.class("product-card-footer")
             }.foregroundStyle(.secondary).class("product-card-maker")
         }.class("panel", "product-card")
     }

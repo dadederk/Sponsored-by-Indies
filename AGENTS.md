@@ -24,9 +24,12 @@ Read [README.md](README.md) for project structure, local preview and verificatio
 ## Card content
 
 - Lead with the product: one card per product, linked icon and name, grouped alternative offers. Keep builder details and quotes smaller and secondary.
+- Prefer original App Store artwork for listed apps, using the square 512-pixel or larger asset rather than padded or pre-rounded store thumbnails. Use the maker’s press kit or website for other products; keep a local copy.
 - Align section starts within each row; support narrow screens and enlarged text. Give compact conference-bundle links their own divider.
+- Align bundle maker credits within each row, independently of quote length or absence. Keep quotes above the credits and let single-column cards follow their natural content height.
 - Write two short third-person bio sentences about the person’s role or approach, using their website and supplied facts. Cut filler and redundant mentions of the featured product.
 - Keep full names in builder profiles; use `creditName` for short bundle credits. Link collaborators individually and match the order of names and conference roles.
+- Keep builder profiles to five links at most, including Website. Choose the most relevant verified profiles rather than filling every social slot.
 - Try X portraits first, then the maker’s website or another verified profile. Store images locally, retain the social link, and use initials if needed. Never guess profile URLs.
 - Keep quotes brief and faithful. Omit attribution for a sole maker; use plain “– Name” for shared products. Leave quote credits unlinked; retain source URLs in the data.
 - Terms use one bullet per option: estimated payment, saving, linked regular US price and exact plan. Say “Choose one offer” once for alternatives; share identical redemption instructions once. Subscriptions return to the regular price at renewal unless an exception is specified.

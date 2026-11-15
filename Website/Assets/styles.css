@@ -151,7 +151,7 @@ input.form-control:focus-visible,textarea.form-control:focus-visible,select.form
 .product-card-benefits { display: flex; flex-wrap: wrap; align-content: start; align-items: flex-start; gap: var(--space-2); padding: 0; margin: 0; list-style: none; }
 .product-card-benefits .badge { white-space: normal; text-align: left; line-height: inherit; font-size: inherit; }
 .product-card-benefits li + li { margin-top: 0; }
-.product-card-maker { border-top: var(--border-width) solid var(--line); padding-top: var(--space-4); margin-top: 0; line-height: 1.5; }
+.product-card-maker { display: flex; flex-direction: column; gap: var(--space-3); border-top: var(--border-width) solid var(--line); padding-top: var(--space-4); margin-top: 0; line-height: 1.5; }
 .product-card-maker p a { min-height: 0; display: inline; }
 .offer-terms-link { white-space: nowrap; }
 /* Keep the heading flexible while reserving a full touch target for the small utility icon. */
@@ -191,5 +191,9 @@ input.form-control:focus-visible,textarea.form-control:focus-visible,select.form
   .showcase-contributions { margin-top: 0; align-self: start; }
   @media (min-width: 768px) {
     .product-grid,.showcase-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    /* Quotes share a row above the credits, including cards without a quote. */
+    .product-grid > .col,.product-card { grid-row: span 5; }
+    .product-card-maker { display: grid; grid-template-rows: subgrid; grid-row: span 2; row-gap: var(--space-3); }
+    .product-card-footer { grid-row: 2; align-self: start; }
   }
 }

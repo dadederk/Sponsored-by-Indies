@@ -31,6 +31,19 @@ struct CatalogTests {
         #expect(throws: CatalogError.self) { try catalog.validate() }
     }
 
+    @Test(arguments: [true, false])
+    func builderLinkLimitIncludesTheOptionalWebsite(hasWebsite: Bool) throws {
+        var catalog = CatalogFixture.make()
+        let socials = (1...(hasWebsite ? 4 : 5)).map {
+            SocialLink(label: "Profile \($0)", url: "https://example.org/profile/\($0)")
+        }
+        catalog.indies[0].people = [IndiePerson(
+            name: "Sample maker", websiteURL: hasWebsite ? "https://example.org" : nil, socials: socials)]
+        try catalog.validate()
+        catalog.indies[0].people?[0].socials?.append(SocialLink(label: "Extra", url: "https://example.org/extra"))
+        #expect(throws: CatalogError.self) { try catalog.validate() }
+    }
+
     private var directory: URL {
         URL(fileURLWithPath: #filePath).deletingLastPathComponent()
             .deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("Data")

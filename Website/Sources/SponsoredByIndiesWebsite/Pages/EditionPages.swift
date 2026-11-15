@@ -65,7 +65,7 @@ extension Pages {
             }.id("bundle").class("container", "section-space").aria(.labelledBy, "bundle-title")
             Tag("section") {
                 if let summary = catalog.bundleValue(for: edition), !offers.isEmpty {
-                    Components.heading("Potential bundle value:", summary.amountLabel, id: "value-title")
+                    Components.heading("Bundle value:", "up to " + summary.amountLabel, id: "value-title")
                     Text("The estimate reflects compatible offers in the current bundle. Your saving depends on eligibility and which offers you choose. US prices in USD are our baseline; local prices may vary.")
                     Tag("details") {
                         Tag("summary") { "How we estimate the bundle’s value" }

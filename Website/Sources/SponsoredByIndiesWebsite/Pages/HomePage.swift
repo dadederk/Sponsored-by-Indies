@@ -74,7 +74,7 @@ extension Pages {
                 Components.heading("How it", "works.", id: "how-title")
                 Components.processSteps([
                     ("Connected to the conference.",
-                     "Past speakers, current speakers, attendees, organisers… Indies connected to the conference choose what to share: a free product, a discount, or access to something useful."),
+                     "Past and current speakers, organisers, first-time and returning attendees, local developers… Indies connected to the conference choose what to share: a free product, a discount, or access to something useful."),
                     ("More value with every ticket.",
                      "We work with the conference to bring those contributions together as one bundle. Organisers get something extra to offer with every ticket and another reason for people to attend."),
                     ("One more thing… for every attendee.",

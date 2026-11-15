@@ -8,6 +8,8 @@ extension Components {
                 if let icon {
                     Image(decorative: icon)
                         .frame(width: .px(DesignTokens.productIconSize), height: .px(DesignTokens.productIconSize))
+                        // Book covers and other non-square artwork keep their original proportions.
+                        .style(.objectFit, "contain")
                         .cornerRadius(DesignTokens.productIconRadius)
                 }
                 Span {

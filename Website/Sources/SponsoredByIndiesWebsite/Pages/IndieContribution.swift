@@ -85,7 +85,7 @@ struct IndieContribution {
                 Tag("details") {
                     Tag("summary") { "Your connection and quote (optional)" }
                     FormFields.multiline("Your connection to this conference (optional)", id: "connection", limit: 700, helpID: "connection-help", placeholder: "I ran a workshop at the first edition.")
-                    Text("Tell us how you’re connected (speaker, attendee, organiser…) and which year(s).").id("connection-help").class("field-help")
+                    Text("For example: a past or current speaker, organiser, first-time or returning attendee, or local developer. Include any relevant years.").id("connection-help").class("field-help")
                     FormFields.multiline("A quote about what the conference means to you (optional)", id: "conference-quote", limit: 800, placeholder: "The quality took us by surprise for a first edition. Many of us came back the next year!")
                 }
             }

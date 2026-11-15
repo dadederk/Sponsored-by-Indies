@@ -168,6 +168,8 @@ test('invalid optional fields are revealed and focused before a draft is prepare
   const name = page.getByLabel('Name (required)', { exact: true });
   // Dismiss the native validation bubble before clearing a second field.
   await page.keyboard.press('Escape');
+  await name.click();
+  await expect(name).toBeFocused();
   await name.fill('');
   await expect(name).toHaveValue('');
   await more.click();
@@ -318,6 +320,40 @@ test('direct email and native terms work without JavaScript', async ({ browser, 
   } finally {
     await context.close();
   }
+});
+
+test('bundle maker credits align across rows with different quotes', async ({ page }) => {
+  await page.setViewportSize({width:1280, height:900});
+  await page.goto(bundlePath);
+  await page.evaluate(() => document.fonts.ready);
+  const cards = page.locator('.product-grid .product-card');
+  const count = await cards.count();
+  expect(count).toBeGreaterThan(1);
+  for (const scale of ['100%', '200%']) {
+    await page.addStyleTag({content:`html { font-size: ${scale} !important; }`});
+    for (let index=0; index+1<count; index+=2) {
+      const left = cards.nth(index);
+      const right = cards.nth(index+1);
+      const a = await left.locator('.product-card-footer > p').boundingBox();
+      const b = await right.locator('.product-card-footer > p').boundingBox();
+      expect(Math.abs(a.y-b.y), `maker credits in row ${index/2+1} at ${scale}`).toBeLessThan(1);
+      const leftBox = await left.boundingBox();
+      const rightBox = await right.boundingBox();
+      expect(Math.abs(leftBox.height-rightBox.height)).toBeLessThan(1);
+    }
+  }
+  await page.setViewportSize({width:320, height:800});
+  const quotedCard = cards.filter({has: page.locator('blockquote')}).first();
+  const withQuote = await quotedCard.boundingBox();
+  await quotedCard.locator('blockquote').evaluate(quote => quote.remove());
+  const withoutQuote = await quotedCard.boundingBox();
+  expect(withoutQuote.height).toBeLessThan(withQuote.height);
+  for (let index=0; index+1<count; index++) {
+    const a = await cards.nth(index).boundingBox();
+    const b = await cards.nth(index+1).boundingBox();
+    expect(b.y).toBeGreaterThanOrEqual(a.y+a.height);
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
 test('the wordmark remains visible when text is enlarged', async ({ page }) => {

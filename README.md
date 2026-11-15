@@ -51,6 +51,10 @@ Keep existing page addresses and add only approved conference and offer details.
 
 Builder cards use the same profile across a person's projects. Write a short third-person bio, usually two sentences and 25–40 words: their role or focus, then concrete work or interests. Use their own website and linked profiles as sources. Describe the person rather than repeat the app description; avoid unsupported credentials, promotional claims and filler. Use their preferred name and a current, recognisable portrait. Try their linked X profile first, then their website or another linked public profile; use initials when no suitable image is available. Keep product icons separate from portraits. Each collaborator gets their own profile and links. An optional `creditName` shortens bundle credits without changing the name shown in builder profiles. Keep research notes and unapproved profiles in private planning.
 
+Keep each builder profile to five links at most, including Website. Choose the most relevant verified profiles from the agreed link order.
+
+Prefer original square App Store artwork for app icons, at 512 pixels or larger when available. Avoid store thumbnails with baked-in padding or rounded corners; the card applies its own corner radius. Use the maker’s press kit or website for products without a store listing, and keep images locally.
+
 Read [AGENTS.md](AGENTS.md) for coding conventions and verification guidance.
 
 Bundle cards appear in descending order of potential saving, using US prices in USD as the shared baseline. Each price record identifies the exact store plan, regular price, discount percentage, eligible period, source, observed prices and check date. Savings use decimal arithmetic and round down to cents; both ranking and bundle totals use that same calculation. Alternative offers for one product are not added together. Equal savings use app name, maker ID and product URL for stable ordering.
@@ -66,6 +70,8 @@ swift run --package-path Website --force-resolved-versions SponsoredByIndiesWebs
 ```
 
 This read-only command checks approved offers for current and upcoming editions, leaving archived evidence intact. It compares exact App Store plan labels, or an exact product name in Schema.org JSON-LD offers, and all distinct matching USD prices against the recorded observations. For structured sources, set `sourceFormat` to `schemaOrg` and record `sourceProductName`; App Store sources are the default. Structured checks read the named product’s USD offer, not unrelated promotional text or team prices. Use the regular price applicable to the conference period, rather than an introductory offer that ends before it. Missing or changed prices fail the check; it never picks the first or largest price, changes content, or refreshes dates automatically. Multiple prices under one plan name require an explicitly marked provisional selection. Record the reasoning and any maker-confirmation task in private planning, outside the website repository. Matching a public listing does not confirm which price a particular customer or offer is eligible for; confirm ambiguous plans with the maker. After reviewing a successful check, update the evidence and check date together. Use `--verify-prices` and `--validate-only` separately; validation stays offline.
+
+For an official price page without supported machine-readable offers, use `sourceFormat: "manual"` after reviewing the exact product and USD price. This keeps the same calculation and freshness checks; the live verifier explicitly requests manual review instead of reporting an automatic match.
 
 The repository maintainer reviews scheduled price-check failures, confirms ambiguous plans with the maker, and updates the evidence and check date together. Run this offline check for seven days of notice before evidence expires:
 

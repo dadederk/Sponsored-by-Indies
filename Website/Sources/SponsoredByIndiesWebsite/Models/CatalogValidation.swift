@@ -99,6 +99,7 @@ extension Catalog {
                     try nonempty([person.name], "maker profile for \(indie.id)")
                     if let creditName = person.creditName { try nonempty([creditName], "maker credit for \(indie.id)") }
                     if let url = person.websiteURL { try Self.validateURL(url) }
+                    try require(person.showcaseLinks.count <= 5, "Maker \(person.name) may have at most five profile links, including Website.")
                     if let bio = person.bio { try nonempty([bio], "maker bio for \(indie.id)") }
                     if let path = person.portraitPath {
                         try require(path.range(of: "^/portraits/[a-z0-9-]+\\.(png|jpg|webp)$", options: .regularExpression) != nil,

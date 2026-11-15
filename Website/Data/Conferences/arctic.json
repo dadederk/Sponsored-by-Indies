@@ -42,7 +42,10 @@
           "retrorapid-free",
           "passable-yearly",
           "coca-yearly",
-          "the-shed-lifetime"
+          "the-shed-lifetime",
+          "nunch-lifetime",
+          "whio-lifetime",
+          "nil-coalescing-books"
         ]
       },
       "bundleNote": "We’re working on expanding the bundle and its value."
@@ -113,6 +116,28 @@
         "name": "Peter",
         "sourceURL": "https://kind.social/@filmaniac/115859465929508020"
       }
+    },
+    {
+      "editionID": "arctic-2027",
+      "indieID": "danijela-vrzan",
+      "connection": "Speaker ARCTIC 2026",
+      "quote": "Come for the code. Stay for the view. And friends.",
+      "publicationApproved": true,
+      "quoteAttribution": {
+        "name": "Danijela",
+        "sourceURL": "https://iosdev.space/@dvrzan/116034728106834669"
+      }
+    },
+    {
+      "editionID": "arctic-2027",
+      "indieID": "natalia-panferova",
+      "connection": "Speaker ARCTIC 2026",
+      "quote": "The conference itself was also fantastic, and I'm really glad I had the opportunity to be part of it.",
+      "quoteAttribution": {
+        "name": "Natalia",
+        "sourceURL": "https://nilcoalescing.com/newsletter/2026-02-28/"
+      },
+      "publicationApproved": true
     }
   ],
   "offers": [
@@ -168,7 +193,7 @@
       "id": "retrorapid-free",
       "editionID": "arctic-2027",
       "benefit": "RetroRapid! Unlimited for free",
-      "terms": "Unlimited Plays is assumed to be included; confirmation pending.",
+      "terms": "Includes the Unlimited plan.",
       "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through the conference.",
       "publicationApproved": true,
       "savingEstimate": {
@@ -435,7 +460,7 @@
       "id": "the-shed-lifetime",
       "editionID": "arctic-2027",
       "projectID": "the-shed",
-      "benefit": "50% off lifetime Premium",
+      "benefit": "50% off lifetime Pro",
       "terms": "One-time purchase.",
       "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through the conference.",
       "publicationApproved": true,
@@ -459,8 +484,8 @@
       "id": "the-shed-yearly",
       "editionID": "arctic-2027",
       "projectID": "the-shed",
-      "benefit": "1 year of Premium free",
-      "terms": "Yearly Premium subscription.",
+      "benefit": "1 year of Pro free",
+      "terms": "Yearly Pro subscription.",
       "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through the conference.",
       "publicationApproved": true,
       "savingEstimate": {
@@ -477,6 +502,128 @@
         "review": "unambiguous",
         "verifiedOn": "2026-11-15",
         "sourceURL": "https://apps.apple.com/us/app/the-shed-stems-loop-tempo/id6825513490"
+      }
+    },
+    {
+      "id": "nunch-lifetime",
+      "editionID": "arctic-2027",
+      "projectID": "nunch",
+      "benefit": "50% off lifetime access",
+      "terms": "One-time purchase of Nunch Lifetime.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through the conference.",
+      "publicationApproved": true,
+      "savingEstimate": {
+        "regularPriceUSD": 99.99,
+        "discountPercent": 50,
+        "plan": "Nunch Lifetime",
+        "period": "lifetime",
+        "discountedPeriods": 1,
+        "currency": "USD",
+        "storefront": "US",
+        "observedPricesUSD": [
+          99.99
+        ],
+        "review": "unambiguous",
+        "verifiedOn": "2026-11-15",
+        "sourceURL": "https://apps.apple.com/us/app/nunch-calorie-tracker/id6670322395"
+      }
+    },
+    {
+      "id": "nunch-yearly",
+      "editionID": "arctic-2027",
+      "projectID": "nunch",
+      "benefit": "1 year of Pro free",
+      "terms": "Nunch Pro yearly subscription.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through the conference.",
+      "publicationApproved": true,
+      "savingEstimate": {
+        "regularPriceUSD": 34.99,
+        "discountPercent": 100,
+        "plan": "Pro Yearly",
+        "period": "year",
+        "discountedPeriods": 1,
+        "currency": "USD",
+        "storefront": "US",
+        "observedPricesUSD": [
+          34.99
+        ],
+        "review": "unambiguous",
+        "verifiedOn": "2026-11-15",
+        "sourceURL": "https://apps.apple.com/us/app/nunch-calorie-tracker/id6670322395"
+      }
+    },
+    {
+      "id": "whio-lifetime",
+      "editionID": "arctic-2027",
+      "projectID": "whio",
+      "benefit": "50% off lifetime Unlimited",
+      "terms": "One-time purchase of Whio Unlimited.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through the conference.",
+      "publicationApproved": true,
+      "savingEstimate": {
+        "regularPriceUSD": 89.99,
+        "discountPercent": 50,
+        "plan": "Lifetime Unlimited",
+        "period": "lifetime",
+        "discountedPeriods": 1,
+        "currency": "USD",
+        "storefront": "US",
+        "observedPricesUSD": [
+          89.99
+        ],
+        "review": "unambiguous",
+        "verifiedOn": "2026-11-15",
+        "sourceURL": "https://apps.apple.com/us/app/whio-epub-pdf-reader/id6813818431"
+      }
+    },
+    {
+      "id": "whio-yearly",
+      "editionID": "arctic-2027",
+      "projectID": "whio",
+      "benefit": "50% off your first year",
+      "terms": "Whio Unlimited yearly subscription.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through the conference.",
+      "publicationApproved": true,
+      "savingEstimate": {
+        "regularPriceUSD": 39.99,
+        "discountPercent": 50,
+        "plan": "Whio Unlimited yearly",
+        "period": "year",
+        "discountedPeriods": 1,
+        "currency": "USD",
+        "storefront": "US",
+        "observedPricesUSD": [
+          39.99
+        ],
+        "review": "unambiguous",
+        "verifiedOn": "2026-11-15",
+        "sourceURL": "https://nilcoalescing.com/apps/whio/press/",
+        "sourceFormat": "manual"
+      }
+    },
+    {
+      "id": "nil-coalescing-books",
+      "editionID": "arctic-2027",
+      "projectID": "nil-coalescing-books",
+      "benefit": "50% off any book or book bundle",
+      "terms": "Choose any book or bundle. This estimate uses The Full Bundle, which includes all five books; purchases are not added together.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through the conference.",
+      "publicationApproved": true,
+      "savingEstimate": {
+        "regularPriceUSD": 155,
+        "discountPercent": 50,
+        "plan": "The Full Bundle",
+        "period": "oneTime",
+        "discountedPeriods": 1,
+        "currency": "USD",
+        "storefront": "US",
+        "observedPricesUSD": [
+          155
+        ],
+        "review": "unambiguous",
+        "verifiedOn": "2026-11-15",
+        "sourceURL": "https://books.nilcoalescing.com/bundles",
+        "sourceFormat": "manual"
       }
     }
   ]
