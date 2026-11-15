@@ -97,6 +97,7 @@ extension Catalog {
                 try require(!people.isEmpty, "Named maker profiles cannot be empty.")
                 for person in people {
                     try nonempty([person.name], "maker profile for \(indie.id)")
+                    if let creditName = person.creditName { try nonempty([creditName], "maker credit for \(indie.id)") }
                     if let url = person.websiteURL { try Self.validateURL(url) }
                     if let bio = person.bio { try nonempty([bio], "maker bio for \(indie.id)") }
                     if let path = person.portraitPath {
@@ -139,6 +140,10 @@ extension Catalog {
                 $0.editionID == offer.editionID && $0.indieID == offer.indieID
             }, "Offer \(offer.id) has no participation in its edition.")
             try Self.validateURL(offer.productURL)
+            if let renewalTerms = offer.renewalTerms {
+                try nonempty([renewalTerms], "renewal terms for \(offer.id)")
+                try require(offer.savingEstimate?.period == .year, "Renewal terms require a yearly subscription.")
+            }
             if let estimate = offer.savingEstimate {
                 func money(_ value: Decimal) -> Bool {
                     guard !value.isNaN, value >= 0 else { return false }

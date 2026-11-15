@@ -30,14 +30,18 @@
       "accessIntroduction": "Redemption details are being arranged with the conference team. There is nothing to claim here yet. Once the bundle is ready, this page will explain how ticket holders receive their offers and how to redeem each one.",
       "accessURL": null,
       "valueSummary": {
-        "explanation": "The total counts one compatible offer per app. Xarra’s free yearly subscription and discounted lifetime purchase are alternatives, so only the larger saving is counted. RetroRapid’s contribution is assumed to include Unlimited Plays. Final offer pricing, eligibility, and redemption details are still being arranged.",
+        "explanation": "The total counts the largest compatible saving per app. Free yearly subscriptions and discounted lifetime purchases for the same app are alternatives, so they are not added together. Final offer pricing, eligibility and redemption details are still being arranged.",
         "offerIDs": [
           "ai-fundamentals-course",
           "dee-yearly",
+          "pocketshelf-lifetime",
           "rocketsim-yearly",
           "rockettrace-yearly",
+          "helm-yearly",
           "xarra-lifetime",
-          "retrorapid-free"
+          "retrorapid-free",
+          "passable-yearly",
+          "coca-yearly"
         ]
       },
       "bundleNote": "We’re working on expanding the bundle and its value."
@@ -64,19 +68,48 @@
       "connection": "Speaker ARCTIC 2027",
       "quote": null,
       "publicationApproved": true
+    },
+    {
+      "editionID": "arctic-2027",
+      "indieID": "anima-software",
+      "connection": "Speakers ARCTIC 2025",
+      "quote": "The location is incredible, the vibe is second to none…",
+      "publicationApproved": true,
+      "quoteAttribution": {
+        "name": "Pol",
+        "sourceURL": "https://www.ioscinewsletter.com/issues/81"
+      }
+    },
+    {
+      "editionID": "arctic-2027",
+      "indieID": "pocketshelf-team",
+      "connection": "Organiser & Speaker ARCTIC 2025",
+      "quote": null,
+      "publicationApproved": true
+    },
+    {
+      "connection": "Attendee ARCTIC 2026 & 2027",
+      "editionID": "arctic-2027",
+      "indieID": "angelo-cammalleri",
+      "publicationApproved": true,
+      "quote": "ARCtic was a fantastic conference. I met many amazing people with unique stories and different success, be it pro or indy.",
+      "quoteAttribution": {
+        "name": "Angelo",
+        "sourceURL": "https://x.com/ANGOmarcello/status/2022222524461748262"
+      }
     }
   ],
   "offers": [
     {
       "id": "xarra-lifetime",
       "editionID": "arctic-2027",
-      "benefit": "50% off lifetime Premium",
-      "terms": "One-time purchase. Choose this or the free year.",
-      "redemptionInstructions": "Not open yet. Eligibility and deadline to be confirmed; instructions will come through the conference.",
+      "benefit": "70% off lifetime Premium",
+      "terms": "One-time purchase.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through the conference.",
       "publicationApproved": true,
       "savingEstimate": {
         "regularPriceUSD": 29.99,
-        "discountPercent": 50,
+        "discountPercent": 70,
         "plan": "Lifetime Access",
         "period": "lifetime",
         "discountedPeriods": 1,
@@ -95,8 +128,8 @@
       "id": "xarra-yearly",
       "editionID": "arctic-2027",
       "benefit": "1 year of Premium free",
-      "terms": "Yearly subscription; renewal terms to be confirmed. An alternative to the lifetime discount.",
-      "redemptionInstructions": "Not open yet. Eligibility and deadline to be confirmed; instructions will come through the conference.",
+      "terms": "Yearly Premium subscription.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through the conference.",
       "publicationApproved": true,
       "savingEstimate": {
         "regularPriceUSD": 9.99,
@@ -120,7 +153,7 @@
       "editionID": "arctic-2027",
       "benefit": "RetroRapid! Unlimited for free",
       "terms": "Unlimited Plays is assumed to be included; confirmation pending.",
-      "redemptionInstructions": "Not open yet. Eligibility and deadline to be confirmed; instructions will come through the conference.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through the conference.",
       "publicationApproved": true,
       "savingEstimate": {
         "regularPriceUSD": 2.99,
@@ -143,8 +176,8 @@
       "id": "dee-yearly",
       "editionID": "arctic-2027",
       "benefit": "1 year of Dee Pro free",
-      "terms": "Yearly App Store subscription; renewal terms to be confirmed.",
-      "redemptionInstructions": "Not open yet. Eligibility and deadline to be confirmed; instructions will come through the conference.",
+      "terms": "Dee Pro yearly subscription.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through the conference.",
       "publicationApproved": true,
       "savingEstimate": {
         "regularPriceUSD": 29.99,
@@ -167,8 +200,8 @@
       "id": "rocketsim-yearly",
       "editionID": "arctic-2027",
       "benefit": "30% off your first year",
-      "terms": "Individual annual plan; first year only. Renewal price to be confirmed.",
-      "redemptionInstructions": "Not open yet. Eligibility and deadline to be confirmed; instructions will come through the conference.",
+      "terms": "Individual annual plan.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through the conference.",
       "publicationApproved": true,
       "savingEstimate": {
         "regularPriceUSD": 69.99,
@@ -190,11 +223,11 @@
     },
     {
       "editionID": "arctic-2027",
-      "redemptionInstructions": "Not open yet. Eligibility and deadline to be confirmed; instructions will come through the conference.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through the conference.",
       "publicationApproved": true,
       "id": "rockettrace-yearly",
       "benefit": "30% off your first year",
-      "terms": "Yearly Pro subscription; first year only. Renewal price to be confirmed.",
+      "terms": "Pro yearly subscription.",
       "savingEstimate": {
         "regularPriceUSD": 69.99,
         "discountPercent": 30,
@@ -214,11 +247,11 @@
     },
     {
       "editionID": "arctic-2027",
-      "redemptionInstructions": "Not open yet. Eligibility and deadline to be confirmed; instructions will come through the conference.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through the conference.",
       "publicationApproved": true,
       "id": "ai-fundamentals-course",
       "benefit": "25% off lifetime course access",
-      "terms": "Discount on the regular course price. One payment for lifetime access; taxes added at checkout.",
+      "terms": "One payment for lifetime access. Taxes are added at checkout.",
       "savingEstimate": {
         "regularPriceUSD": 199,
         "discountPercent": 25,
@@ -237,6 +270,150 @@
         "sourceProductName": "AI Fundamentals: agentic coding fundamentals for developers"
       },
       "projectID": "ai-fundamentals"
+    },
+    {
+      "id": "helm-yearly",
+      "editionID": "arctic-2027",
+      "benefit": "50% off your first year",
+      "terms": "Helm Pro yearly subscription.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through the conference.",
+      "publicationApproved": true,
+      "savingEstimate": {
+        "regularPriceUSD": 54.99,
+        "discountPercent": 50,
+        "plan": "Helm Pro Year",
+        "period": "year",
+        "discountedPeriods": 1,
+        "currency": "USD",
+        "storefront": "US",
+        "observedPricesUSD": [
+          54.99
+        ],
+        "review": "unambiguous",
+        "verifiedOn": "2026-11-14",
+        "sourceURL": "https://apps.apple.com/us/app/helm-for-app-store-connect/id6479357934"
+      },
+      "projectID": "helm"
+    },
+    {
+      "id": "pocketshelf-lifetime",
+      "editionID": "arctic-2027",
+      "projectID": "pocketshelf",
+      "benefit": "50% off lifetime Premium",
+      "terms": "One-time purchase.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through the conference.",
+      "publicationApproved": true,
+      "savingEstimate": {
+        "regularPriceUSD": 49.99,
+        "discountPercent": 50,
+        "plan": "Lifetime",
+        "period": "lifetime",
+        "discountedPeriods": 1,
+        "currency": "USD",
+        "storefront": "US",
+        "observedPricesUSD": [
+          49.99
+        ],
+        "review": "unambiguous",
+        "verifiedOn": "2026-11-15",
+        "sourceURL": "https://apps.apple.com/us/app/pocketshelf-tbr-book-tracker/id6745476834"
+      }
+    },
+    {
+      "id": "pocketshelf-yearly",
+      "editionID": "arctic-2027",
+      "projectID": "pocketshelf",
+      "benefit": "1 year of Premium free",
+      "terms": "Yearly Premium subscription.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through the conference.",
+      "publicationApproved": true,
+      "savingEstimate": {
+        "regularPriceUSD": 19.99,
+        "discountPercent": 100,
+        "plan": "Yearly",
+        "period": "year",
+        "discountedPeriods": 1,
+        "currency": "USD",
+        "storefront": "US",
+        "observedPricesUSD": [
+          19.99
+        ],
+        "review": "unambiguous",
+        "verifiedOn": "2026-11-15",
+        "sourceURL": "https://apps.apple.com/us/app/pocketshelf-tbr-book-tracker/id6745476834"
+      }
+    },
+    {
+      "benefit": "1 year of Gold free",
+      "editionID": "arctic-2027",
+      "id": "passable-yearly",
+      "projectID": "passable",
+      "publicationApproved": true,
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through the conference.",
+      "savingEstimate": {
+        "currency": "USD",
+        "discountPercent": 100,
+        "discountedPeriods": 1,
+        "observedPricesUSD": [
+          39.99
+        ],
+        "period": "year",
+        "plan": "Gold Yearly",
+        "regularPriceUSD": 39.99,
+        "review": "unambiguous",
+        "sourceURL": "https://apps.apple.com/us/app/passable/id6756588944",
+        "storefront": "US",
+        "verifiedOn": "2026-11-14"
+      },
+      "terms": "Gold yearly subscription."
+    },
+    {
+      "benefit": "30% off lifetime Gold",
+      "editionID": "arctic-2027",
+      "id": "passable-lifetime",
+      "projectID": "passable",
+      "publicationApproved": true,
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through the conference.",
+      "savingEstimate": {
+        "currency": "USD",
+        "discountPercent": 30,
+        "discountedPeriods": 1,
+        "observedPricesUSD": [
+          79.99
+        ],
+        "period": "lifetime",
+        "plan": "Gold Lifetime",
+        "regularPriceUSD": 79.99,
+        "review": "unambiguous",
+        "sourceURL": "https://apps.apple.com/us/app/passable/id6756588944",
+        "storefront": "US",
+        "verifiedOn": "2026-11-14"
+      },
+      "terms": "One-time purchase."
+    },
+    {
+      "benefit": "30% off your first year",
+      "editionID": "arctic-2027",
+      "id": "coca-yearly",
+      "projectID": "coca",
+      "publicationApproved": true,
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through the conference.",
+      "savingEstimate": {
+        "currency": "USD",
+        "discountPercent": 30,
+        "discountedPeriods": 1,
+        "observedPricesUSD": [
+          12.99
+        ],
+        "period": "year",
+        "plan": "Patron Yearly",
+        "regularPriceUSD": 12.99,
+        "review": "unambiguous",
+        "sourceURL": "https://apps.apple.com/us/app/coca/id1000808993",
+        "storefront": "US",
+        "verifiedOn": "2026-11-15"
+      },
+      "terms": "Patron yearly subscription."
     }
   ]
 }

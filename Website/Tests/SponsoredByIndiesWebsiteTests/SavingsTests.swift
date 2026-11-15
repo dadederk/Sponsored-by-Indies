@@ -8,6 +8,66 @@ struct SavingsTests {
     func savingsUseDecimalArithmeticAndConservativeCents(price: String, percent: Int, saving: String) throws {
         let evidence = CatalogFixture.saving(price: try #require(Decimal(string: price)), percent: percent)
         #expect(evidence.amountUSD == Decimal(string: saving))
+        #expect(evidence.offerPriceUSD + evidence.amountUSD == evidence.regularPriceUSD)
+    }
+
+    @Test(arguments: [("29.99", 50, "15.00"), ("69.99", 30, "49.00"), ("29.99", 100, "0"), ("0.01", 30, "0.01")])
+    func estimatedPaymentDoesNotOverstateTheDiscount(price: String, percent: Int, payment: String) throws {
+        let evidence = CatalogFixture.saving(price: try #require(Decimal(string: price)), percent: percent)
+        #expect(evidence.offerPriceUSD == Decimal(string: payment))
+    }
+
+    @Test func renewalUsesTheFutureRegularPriceUnlessAnOfferSpecifiesOtherwise() throws {
+        var catalog = CatalogFixture.make()
+        #expect(catalog.offers[0].renewalDescription == "After the first year, the regular price at renewal applies.")
+        catalog.offers[0].renewalTerms = "The discount continues at renewal."
+        try catalog.validate()
+        #expect(catalog.offers[0].renewalDescription == "The discount continues at renewal.")
+        catalog.offers[0].renewalTerms = " "
+        #expect(throws: CatalogError.self) { try catalog.validate() }
+        catalog.offers[0].renewalTerms = nil
+        catalog.offers[0].savingEstimate?.period = .lifetime
+        #expect(catalog.offers[0].renewalDescription == nil)
+        catalog.offers[0].renewalTerms = "Renew next year."
+        #expect(throws: CatalogError.self) { try catalog.validate() }
+    }
+
+    @Test func loadingPreservesAnOffersCustomRenewalTerms() throws {
+        let files = FileManager.default
+        let website = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+            .deletingLastPathComponent().deletingLastPathComponent()
+        let root = files.temporaryDirectory.appending(path: UUID().uuidString)
+        defer { try? files.removeItem(at: root) }
+        try files.createDirectory(at: root, withIntermediateDirectories: true)
+        for folder in ["Data", "Assets"] {
+            try files.copyItem(at: website.appending(path: folder), to: root.appending(path: folder))
+        }
+        let recordURL = root.appending(path: "Data/Conferences/arctic.json")
+        let source = try String(contentsOf: recordURL, encoding: .utf8)
+        let offerID = #""id": "xarra-yearly","#
+        try #require(source.contains(offerID))
+        let renewalTerms = "This offer does not renew automatically."
+        let encodedTerms = String(decoding: try JSONEncoder().encode(renewalTerms), as: UTF8.self)
+        // Preserve decimal price literals while adding the optional field.
+        try source.replacingOccurrences(of: offerID, with: "\(offerID)\n      \"renewalTerms\": \(encodedTerms),")
+            .write(to: recordURL, atomically: true, encoding: .utf8)
+
+        let catalog = try Catalog.load(from: root.appending(path: "Data"))
+        let offer = try #require(catalog.offers.first { $0.id == "xarra-yearly" })
+        #expect(offer.renewalDescription == renewalTerms)
+    }
+
+    @Test func priceLabelsDistinguishAnnualLifetimeAndOneTimeOffers() throws {
+        var estimate = CatalogFixture.saving(price: Decimal(string: "29.99")!, percent: 100)
+        #expect(estimate.offerPriceLabel == "Free for the first year")
+        estimate.period = .lifetime
+        estimate.discountPercent = 50
+        #expect(estimate.offerPriceLabel == "US$15.00 for lifetime access")
+        estimate.period = .oneTime
+        estimate.discountPercent = 100
+        #expect(estimate.offerPriceLabel == "Free")
+        estimate.discountPercent = 50
+        #expect(estimate.offerPriceLabel == "US$15.00 one-time purchase")
     }
 
     @Test func bundleValueIsComputedAndCannotCountAlternativeOffersTwice() throws {
@@ -36,11 +96,24 @@ struct SavingsTests {
         let catalog = try Catalog.load(from: directory)
         let edition = try #require(catalog.editions.first { $0.id == "arctic-2027" })
         let products = catalog.visibleProductContributions(for: edition)
-        #expect(products.map(\.product.productName) == ["AI Fundamentals", "Dee: Muay Thai Coach", "RocketSim for Xcode", "RocketTrace for Xcode", "Xarra!", "RetroRapid!"])
+        #expect(products.map(\.product.productName) == ["AI Fundamentals", "Passable", "Dee: Muay Thai Coach", "Helm", "PocketShelf", "RocketSim for Xcode", "RocketTrace for Xcode", "Xarra!", "Coca", "RetroRapid!"])
         let value = try #require(catalog.bundleValue(for: edition))
         #expect(value.totalUSD == products.reduce(0) { $0 + ($1.maximumSavingUSD ?? 0) })
-        #expect(value.totalUSD == Decimal(string: "139.70"))
-        #expect(value.amountLabel == "US$139")
+        #expect(value.totalUSD == Decimal(string: "242.06"))
+        #expect(value.amountLabel == "US$242")
+        let shelf = try #require(products.first { $0.product.projectID == "pocketshelf" })
+        #expect(shelf.offers.count == 2)
+        #expect(shelf.maximumSavingUSD == Decimal(string: "24.99"))
+        #expect(value.offers.filter { $0.projectID == "pocketshelf" }.map(\.id) == ["pocketshelf-lifetime"])
+        let passable = try #require(products.first { $0.product.projectID == "passable" })
+        #expect(passable.offers.count == 2)
+        #expect(passable.maximumSavingUSD == Decimal(string: "39.99"))
+        #expect(value.offers.filter { $0.projectID == "passable" }.map(\.id) == ["passable-yearly"])
+        #expect(value.offers.first { $0.projectID == "coca" }?.savingEstimate?.amountUSD == Decimal(string: "3.89"))
+        let xarra = try #require(value.offers.first { $0.id == "xarra-lifetime" }?.savingEstimate)
+        #expect(xarra.discountPercent == 70)
+        #expect(xarra.amountUSD == Decimal(string: "20.99"))
+        #expect(xarra.offerPriceUSD == 9)
         #expect(value.offers.first { $0.id == "rocketsim-yearly" }?.savingEstimate?.review == .provisional)
         let course = try #require(value.offers.first { $0.id == "ai-fundamentals-course" }?.savingEstimate)
         #expect(course.regularPriceUSD == 199)
@@ -52,6 +125,21 @@ struct SavingsTests {
         #expect(trace.discountPercent == 30)
         #expect(trace.period == .year)
         #expect(trace.amountUSD == Decimal(string: "20.99"))
+        let helm = try #require(value.offers.first { $0.id == "helm-yearly" }?.savingEstimate)
+        #expect(helm.regularPriceUSD == Decimal(string: "54.99"))
+        #expect(helm.discountPercent == 50)
+        #expect(helm.period == .year)
+        #expect(helm.discountedPeriods == 1)
+        #expect(helm.plan == "Helm Pro Year")
+        #expect(helm.amountUSD == Decimal(string: "27.49"))
+        #expect(helm.offerPriceUSD == Decimal(string: "27.50"))
+        let maker = catalog.indie(withID: "anima-software")
+        #expect(maker.name == "Hidde & Pol")
+        #expect(maker.company == "Anima Software")
+        #expect(maker.websiteURL == "https://helm-app.com/")
+        #expect(maker.people?.map(\.name) == ["Hidde van der Ploeg", "Pol Piella"])
+        #expect(maker.people?.map(\.websiteURL) == ["https://hidde.design/", "https://www.polpiella.dev/"])
+        #expect(catalog.visibleParticipations(for: edition).first { $0.indieID == maker.id }?.connection == "Speakers ARCTIC 2025")
     }
 
     @Test(arguments: ["currency", "storefront", "percentage zero", "percentage too large", "duration", "missing plan", "missing observations", "wrong selection", "duplicate observation", "unreviewed ambiguity", "foreign storefront link"])

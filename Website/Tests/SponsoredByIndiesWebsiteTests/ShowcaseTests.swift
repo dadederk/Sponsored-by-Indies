@@ -5,15 +5,18 @@ import Testing
 struct ShowcaseTests {
     @Test func builderLinksKeepTheRequestedOrderWithOptionalProfiles() {
         var person = IndiePerson(name: "A builder", websiteURL: "https://example.org", socials: [
+            SocialLink(label: "Community", url: "https://community.example.org"),
+            SocialLink(label: "LinkedIn", url: "https://www.linkedin.com/in/example"),
+            SocialLink(label: "Instagram", url: "https://www.instagram.com/example"),
             SocialLink(label: "GitHub", url: "https://github.com/example"),
             SocialLink(label: "Twitter", url: "https://x.com/example"),
             SocialLink(label: "Bluesky", url: "https://bsky.app/profile/example.org"),
             SocialLink(label: "Mastodon", url: "https://example.social/@builder")
         ])
-        #expect(person.showcaseLinks.map(\.label) == ["Website", "Mastodon", "Bluesky", "Twitter", "GitHub"])
+        #expect(person.showcaseLinks.map(\.label) == ["Website", "Mastodon", "Bluesky", "Twitter", "GitHub", "Instagram", "LinkedIn", "Community"])
         person.websiteURL = nil
         person.socials?.removeAll { $0.label == "Bluesky" }
-        #expect(person.showcaseLinks.map(\.label) == ["Mastodon", "Twitter", "GitHub"])
+        #expect(person.showcaseLinks.map(\.label) == ["Mastodon", "Twitter", "GitHub", "Instagram", "LinkedIn", "Community"])
         person.socials = nil
         #expect(person.showcaseLinks.isEmpty)
     }
@@ -93,7 +96,8 @@ struct ShowcaseTests {
         try files.createDirectory(at: root, withIntermediateDirectories: true)
         try files.copyItem(at: website.appending(path: "Data"), to: root.appending(path: "Data"))
         try files.copyItem(at: website.appending(path: "Assets"), to: root.appending(path: "Assets"))
-        #expect(try Catalog.load(from: root.appending(path: "Data")).showcaseProjects.count == 6)
+        let original = try Catalog.load(from: website.appending(path: "Data"))
+        #expect(try Catalog.load(from: root.appending(path: "Data")).showcaseProjects.count == original.showcaseProjects.count)
         let conference = root.appending(path: "Data/Conferences/arctic.json")
         let source = try String(contentsOf: conference, encoding: .utf8)
         try source.replacingOccurrences(of: "\"projectID\": \"xarra\"", with: "\"projectID\": \"missing\"")

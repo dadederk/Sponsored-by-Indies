@@ -53,6 +53,7 @@ extension Pages {
                 Text("Making something you’d love to share? Join a conference bundle and become part of this community.").class("lead")
                 Components.button("Contribute your project", href: sponsoredRoot + "/participate/indies/")
             }.class("container", "section-space").aria(.labelledBy, "contribute-title")
+            Components.attendeeThanks
         }
     }
 }

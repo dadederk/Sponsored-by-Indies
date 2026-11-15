@@ -110,6 +110,19 @@ test('offer dialogs have a name, contain keyboard focus and restore it on Escape
   await expect(dialog).toBeVisible();
   await expect(dialog).toHaveAttribute('aria-modal', 'true');
   await expect(dialog).toBeFocused();
+  const offers = record.offers.filter(offer => offer.publicationApproved && offer.editionID === edition.id && offer.projectID === project.id);
+  const options = dialog.getByRole('list', { name: 'Offer options', exact: true }).getByRole('listitem');
+  await expect(options).toHaveCount(offers.length);
+  if (offers.length > 1) await expect(dialog.getByText('Choose one offer:', { exact: true })).toBeVisible();
+  for (let index = 0; index < offers.length; index++) {
+    const option = options.nth(index);
+    await expect(option).toContainText(offers[index].benefit);
+    if (offers[index].savingEstimate) {
+      await expect(option).toContainText('Estimated price:');
+      await expect(option).toContainText('Regular US price:');
+      await expect(option.getByRole('link')).toHaveAttribute('href', offers[index].savingEstimate.sourceURL);
+    }
+  }
   const close = dialog.getByRole('button', { name: 'Close', exact: true });
   await close.press('Shift+Tab');
   // macOS WebKit may require Option to include links in keyboard navigation.

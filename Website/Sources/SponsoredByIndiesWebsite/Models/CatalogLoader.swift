@@ -73,6 +73,7 @@ private struct OfferRecord: Decodable {
     let terms: String
     let redemptionInstructions: String
     let publicationApproved: Bool
+    let renewalTerms: String?
 
     func resolve(in projects: [String: Project]) throws -> Offer {
         guard let project = projects[projectID] else {
@@ -83,6 +84,6 @@ private struct OfferRecord: Decodable {
             productName: project.name, productURL: project.websiteURL, productIconPath: project.iconPath,
             savingEstimate: savingEstimate, description: project.description, benefit: benefit,
             terms: terms, redemptionInstructions: redemptionInstructions,
-            publicationApproved: publicationApproved, projectID: project.id)
+            publicationApproved: publicationApproved, projectID: project.id, renewalTerms: renewalTerms)
     }
 }

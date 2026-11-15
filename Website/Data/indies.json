@@ -84,5 +84,139 @@
         ]
       }
     ]
+  },
+  {
+    "id": "anima-software",
+    "name": "Hidde & Pol",
+    "company": "Anima Software",
+    "websiteURL": "https://helm-app.com/",
+    "socials": [],
+    "initials": "AS",
+    "people": [
+      {
+        "name": "Hidde van der Ploeg",
+        "websiteURL": "https://hidde.design/",
+        "bio": "Product designer and SwiftUI developer who brings design and code together to craft thoughtful software.",
+        "socials": [
+          {
+            "label": "Mastodon",
+            "url": "https://mastodon.design/@hidde"
+          },
+          {
+            "label": "Bluesky",
+            "url": "https://bsky.app/profile/hiddevdploeg.bsky.social"
+          },
+          {
+            "label": "Twitter",
+            "url": "https://x.com/hiddevdploeg"
+          }
+        ],
+        "portraitPath": "/portraits/hidde-van-der-ploeg.jpg",
+        "creditName": "Hidde"
+      },
+      {
+        "name": "Pol Piella",
+        "websiteURL": "https://www.polpiella.dev/",
+        "bio": "App developer, speaker and writer building experiences for Apple platforms and sharing what he learns along the way.",
+        "socials": [
+          {
+            "label": "Mastodon",
+            "url": "https://iosdev.space/@polpielladev"
+          },
+          {
+            "label": "Twitter",
+            "url": "https://x.com/polpielladev"
+          },
+          {
+            "label": "GitHub",
+            "url": "https://github.com/polpielladev"
+          }
+        ],
+        "portraitPath": "/portraits/pol-piella.jpg",
+        "creditName": "Pol"
+      }
+    ]
+  },
+  {
+    "id": "pocketshelf-team",
+    "name": "Frank & Klemens",
+    "company": null,
+    "websiteURL": null,
+    "socials": [],
+    "initials": "FK",
+    "people": [
+      {
+        "name": "Frank Solleveld",
+        "websiteURL": "https://seriousappcompany.com/",
+        "bio": "Apple-platform developer behind Serious App Company. He focuses on practical software that solves everyday problems and collaborates with other engineers.",
+        "portraitPath": "/portraits/frank-solleveld.png",
+        "socials": [
+          {
+            "label": "Twitter",
+            "url": "https://x.com/FrankSolleveld"
+          },
+          {
+            "label": "Instagram",
+            "url": "https://www.instagram.com/seriousappcompany"
+          },
+          {
+            "label": "LinkedIn",
+            "url": "https://www.linkedin.com/company/seriousappcompany"
+          }
+        ],
+        "creditName": "Frank"
+      },
+      {
+        "name": "Klemens Strasser",
+        "websiteURL": "https://strasser.app/",
+        "bio": "Independent app and game developer, and an Apple Design Award winner. Creator of Art of Fauna, Study Snacks and Letter Rooms.",
+        "portraitPath": "/portraits/klemens-strasser.jpg",
+        "socials": [
+          {
+            "label": "Mastodon",
+            "url": "https://mastodon.social/@klemensstrasser"
+          },
+          {
+            "label": "Bluesky",
+            "url": "https://bsky.app/profile/strasser.bsky.social"
+          },
+          {
+            "label": "Twitter",
+            "url": "https://twitter.com/klemensstrasser"
+          }
+        ],
+        "creditName": "Klemens"
+      }
+    ]
+  },
+  {
+    "company": null,
+    "id": "angelo-cammalleri",
+    "initials": "AC",
+    "name": "Angelo Cammalleri",
+    "people": [
+      {
+        "bio": "Apple developer and speaker turning ideas into useful apps. Creator of Passable, Coca, Bluetooth Browser and Eidetic.",
+        "name": "Angelo Cammalleri",
+        "portraitPath": "/portraits/angelo-cammalleri.jpg",
+        "socials": [
+          {
+            "label": "Mastodon",
+            "url": "https://iosdev.space/@angomarcello"
+          },
+          {
+            "label": "Bluesky",
+            "url": "https://bsky.app/profile/angomarcello.bsky.social"
+          },
+          {
+            "label": "Twitter",
+            "url": "https://x.com/ANGOmarcello"
+          }
+        ],
+        "websiteURL": "https://cammalleri.dev/"
+      }
+    ],
+    "socials": [],
+    "websiteURL": "https://cammalleri.dev/"
   }
 ]

@@ -152,9 +152,8 @@ enum Components {
                     Quote {
                         Text {
                             "“" + escaped(quote) + "”"
-                            if let attribution = participation.quoteAttribution {
-                                Span(" — ")
-                                Link(escaped(attribution.name), target: escaped(attribution.sourceURL))
+                            if let attribution = participation.quoteAttribution, (indie.people?.count ?? 1) > 1 {
+                                Span(" – " + escaped(attribution.name))
                             }
                         }.font(.small).margin(0)
                     }.margin(.top, 0).margin(.bottom, .small)
@@ -165,10 +164,10 @@ enum Components {
                             InlineForEach(Array(people.enumerated())) { index, person in
                                 if index > 0 { Span(" &amp; ") }
                                 if let url = person.websiteURL {
-                                    Span { Link(escaped(person.name), target: escaped(url)) }
+                                    Span { Link(escaped(person.creditName ?? person.name), target: escaped(url)) }
                                 }
                                 if person.websiteURL == nil {
-                                    Span(escaped(person.name))
+                                    Span(escaped(person.creditName ?? person.name))
                                 }
                             }
                         }.fontWeight(.semibold)
@@ -224,20 +223,36 @@ enum Components {
     private static func productTermsContent(_ offers: [Offer]) -> some HTML {
         let sharedInstructions = Set(offers.map(\.redemptionInstructions)).count == 1 ? offers.first?.redemptionInstructions : nil
         return Group {
-            for offer in offers {
-                Section {
+            if offers.count > 1 {
+                Text("Choose one offer:").fontWeight(.semibold).margin(.bottom, .small)
+            }
+            List(offers) { offer in
+                ListItem {
                     Text(escaped(offer.benefit)).fontWeight(.semibold).margin(.bottom, 0)
                     if let estimate = offer.savingEstimate {
                         Text {
-                            Span("US reference price: ").fontWeight(.semibold)
+                            Span("Estimated price: ")
+                            Span(escaped(estimate.offerPriceLabel)).fontWeight(.semibold)
+                            Span(" · Save " + escaped(estimate.amountUSD.usdLabel) + " (\(estimate.discountPercent)%).")
+                        }.margin(.bottom, 0)
+                        Text {
+                            Span("Regular US price: ")
                             Link(escaped(estimate.referencePriceLabel), target: estimate.sourceURL)
                             Span(" · " + escaped(estimate.plan))
                         }.margin(.bottom, 0)
                     }
                     Text(escaped(offer.terms)).margin(.bottom, 0)
-                    if sharedInstructions == nil { Text(escaped(offer.redemptionInstructions)) }
+                    if let renewal = offer.renewalDescription {
+                        Text(escaped(renewal)).margin(.bottom, 0)
+                    }
+                    if sharedInstructions == nil {
+                        Text {
+                            Span("Redemption: ").fontWeight(.semibold)
+                            escaped(offer.redemptionInstructions)
+                        }.margin(.bottom, 0)
+                    }
                 }.margin(.bottom, .small)
-            }
+            }.aria(.label, "Offer options").margin(.bottom, .small)
             // Shared redemption instructions only need to appear once per app.
             if let sharedInstructions {
                 Text {

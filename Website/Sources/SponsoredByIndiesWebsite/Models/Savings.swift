@@ -30,6 +30,19 @@ struct SavingEstimate: Decodable {
         return rounded
     }
 
+    // Complement the conservative saving so displayed prices and savings add up.
+    // This rounds the estimated payment up, never increasing the claimed saving.
+    var offerPriceUSD: Decimal { regularPriceUSD - amountUSD }
+
+    var offerPriceLabel: String {
+        let price = offerPriceUSD == 0 ? "Free" : offerPriceUSD.usdLabel
+        switch period {
+        case .year: return price + " for the first year"
+        case .lifetime: return price + " for lifetime access"
+        case .oneTime: return offerPriceUSD == 0 ? "Free" : price + " one-time purchase"
+        }
+    }
+
     var referencePriceLabel: String {
         switch period {
         case .year: "\(regularPriceUSD.usdLabel) per year"

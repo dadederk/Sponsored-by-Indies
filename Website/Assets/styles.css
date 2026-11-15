@@ -167,8 +167,7 @@ input.form-control:focus-visible,textarea.form-control:focus-visible,select.form
 .product-card .modal .btn-close { width: var(--target-size); height: var(--target-size); min-width: var(--target-size); min-height: var(--target-size); padding: 0; margin: 0; margin-inline-start: auto; flex-shrink: 0; border: var(--border-width) solid var(--rule); border-radius: 50%; background-color: var(--tint); opacity: 1; }
 .product-card .modal .btn-close:hover { background-color: var(--line); }
 
-/* Separate showcase rows support longer bios and multi-person teams without
-   inheriting the offer grid's four-row subgrid. Shared selectors style descendants. */
+/* Showcase tracks accommodate longer bios and teams of different sizes. */
 .showcase-grid > .col,.discovery-grid > .col { align-self: stretch !important; display: flex; }
 .showcase-card { gap: var(--space-6); }
 .showcase-project-title { font-size: var(--project-heading-size); max-width: none; }
@@ -182,16 +181,15 @@ input.form-control:focus-visible,textarea.form-control:focus-visible,select.form
 .builder-portrait { object-fit: cover; }
 .builder-initials { display: flex; align-items: center; justify-content: center; }
 .builder-links { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-4); }
-.showcase-bundles { padding-inline-start: var(--space-5); }
-.showcase-bundles li + li { margin-top: var(--space-1); }
 
-/* Shared intrinsic rows align offers despite different title/description lengths.
-   Ignite provides the grid markup; subgrid supplies alignment across card interiors. */
+/* Ignite supplies grid markup; native subgrid aligns section starts across each row. */
 @supports (grid-template-rows: subgrid) {
-  .product-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-4); margin: 0; }
-  .product-grid > .col { display: grid; grid-template-rows: subgrid; grid-row: span 4; width: auto; min-width: 0; padding: 0; margin: 0; }
-  .product-card { display: grid; grid-template-rows: subgrid; grid-row: span 4; }
+  .product-grid,.showcase-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-4); margin: 0; }
+  .showcase-grid { row-gap: var(--space-6); }
+  .product-grid > .col,.showcase-grid > .col { display: grid; grid-template-rows: subgrid; grid-row: span 4; width: auto; min-width: 0; padding: 0; margin: 0; }
+  .product-card,.showcase-card { display: grid; grid-template-rows: subgrid; grid-row: span 4; }
+  .showcase-contributions { margin-top: 0; align-self: start; }
   @media (min-width: 768px) {
-    .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .product-grid,.showcase-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
 }

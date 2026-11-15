@@ -66,10 +66,10 @@ struct PublishingTests {
     @Test func makerCreditsLinkEachPersonSeparatelyFromTheCompany() async throws {
         var catalog = CatalogFixture.make()
         catalog.indies[0].people = [
-            IndiePerson(name: "Ada & <Friends>", websiteURL: "https://example.org/ada?event=one&copy;=yes"),
-            IndiePerson(name: "Ben Example", websiteURL: "https://example.org/ben")
+            IndiePerson(name: "Hidde & <Friends>", websiteURL: "https://example.org/hidde?event=one&copy;=yes"),
+            IndiePerson(name: "Pol Piella", websiteURL: "https://example.org/pol", creditName: "Pol")
         ]
-        catalog.participations[0].quoteAttribution = QuoteAttribution(name: "Ben & <Team>", sourceURL: "https://example.org/quote?issue=81&copy;=yes")
+        catalog.participations[0].quoteAttribution = QuoteAttribution(name: "Pol & <Team>", sourceURL: "https://example.org/quote?issue=81&copy;=yes")
         try catalog.validate()
         let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: root) }
@@ -78,16 +78,36 @@ struct PublishingTests {
         let html = try String(contentsOf: root.appending(path: "conferences/sample/2027/index.html"), encoding: .utf8)
         let card = try #require(html.firstMatch(of: /<article class="panel product-card">[\s\S]*?<\/article>/))
         let text = String(card.output)
-        #expect(text.contains("href=\"https://example.org/ada?event=one&amp;copy;=yes\""))
-        #expect(text.contains(">Ada &amp; &lt;Friends&gt;</a>"))
-        #expect(text.range(of: #"<a[^>]*href="https://example.org/ben"[^>]*>Ben Example</a>"#, options: .regularExpression) != nil)
+        #expect(text.contains("href=\"https://example.org/hidde?event=one&amp;copy;=yes\""))
+        #expect(text.contains(">Hidde &amp; &lt;Friends&gt;</a>"))
+        #expect(text.range(of: #"<a[^>]*href="https://example.org/pol"[^>]*>Pol</a>"#, options: .regularExpression) != nil)
+        #expect(!text.contains("Pol Piella"))
         #expect(text.contains("href=\"https://example.org/maker\""))
         #expect(text.contains("Sample Company"))
         #expect(!text.contains("<Friends>"))
         let quote = try #require(text.firstMatch(of: /<blockquote[\s\S]*?<\/blockquote>/))
-        #expect(String(quote.output).contains("href=\"https://example.org/quote?issue=81&amp;copy;=yes\""))
-        #expect(String(quote.output).contains("Ben &amp; &lt;Team&gt;"))
+        #expect(!String(quote.output).contains("<a"))
+        #expect(String(quote.output).contains(" – Pol &amp; &lt;Team&gt;"))
         #expect(!String(quote.output).contains("<Team>"))
+    }
+
+    @Test(arguments: [true, false])
+    func aSoleMakersQuoteDoesNotRepeatTheirName(explicitProfile: Bool) async throws {
+        var catalog = CatalogFixture.make()
+        if explicitProfile {
+            catalog.indies[0].people = [IndiePerson(name: "Sole maker", websiteURL: "https://example.org/profile")]
+        }
+        catalog.participations[0].quoteAttribution = QuoteAttribution(name: "Sole maker", sourceURL: "https://example.org/quote")
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        var site = IndiesSite(catalog: catalog, preview: true, url: try #require(URL(string: "https://example.org")))
+        try await site.generate(sourceDirectory: source, buildDirectory: root)
+        let html = try String(contentsOf: root.appending(path: "conferences/sample/2027/index.html"), encoding: .utf8)
+        let quote = try #require(html.firstMatch(of: /<blockquote[\s\S]*?<\/blockquote>/))
+        #expect(String(quote.output).contains("A welcoming community."))
+        #expect(!String(quote.output).contains("Sole maker"))
+        #expect(!String(quote.output).contains("<a"))
+        #expect(html.contains(explicitProfile ? "href=\"https://example.org/profile\"" : "href=\"https://example.org/maker\""))
     }
 
     @Test(arguments: [true, false])
@@ -190,7 +210,7 @@ struct PublishingTests {
             #expect(valueSection[breakdown].contains("US$10.00 × 100% = US$10.00"))
             let visibleValue = valueSection.replacingCharacters(in: breakdown, with: "")
             #expect(!visibleValue.contains("Tool &amp; &lt;Kit&gt;"))
-            #expect(visibleValue.contains("Potential value:"))
+            #expect(visibleValue.contains("Potential bundle value:"))
             #expect(visibleValue.components(separatedBy: "US$10").count == 2)
             #expect(!visibleValue.contains("About US$"))
             #expect(!visibleValue.contains("About US$10 in savings"))
@@ -203,7 +223,7 @@ struct PublishingTests {
             let deals = try #require(toolCard.firstMatch(of: /<ul[^>]*class="product-card-benefits"[^>]*>/))
             #expect(String(deals.output).contains("role=\"list\""))
             #expect(toolCard.contains("One year free."))
-            #expect(toolCard.contains("US reference price:"))
+            #expect(toolCard.contains("Regular US price:"))
             #expect(toolCard.contains("for Tool &amp; &lt;Kit&gt;"))
             #expect(toolCard.contains("US$10.00 per year"))
             #expect(toolCard.contains("Sample plan"))
@@ -340,7 +360,7 @@ struct PublishingTests {
         #expect(contribution.contains("1. Offer"))
         #expect(contribution.contains("placeholder=\"Dani Devesa\""))
         #expect(contribution.contains("placeholder=\"ARCTIC 2027\""))
-        #expect(contribution.contains("placeholder=\"Get 50% off lifetime Premium for Xarra!"))
+        #expect(contribution.contains("placeholder=\"Get 70% off lifetime Premium for Xarra!"))
         #expect(contribution.contains("aria-describedby=\"connection-help\""))
         #expect(!contribution.contains("RocketSim"))
         #expect(!contribution.contains("<details open"))
@@ -447,12 +467,17 @@ struct PublishingTests {
         let instructions = "Open the lifetime &amp; member portal."
         let fallback = try #require(String(card.output).firstMatch(of: /<details[\s\S]*?<\/details>/))
         let dialog = String(card.output).components(separatedBy: String(fallback.output))[0]
+        #expect(dialog.contains("Choose one offer:"))
+        #expect(String(fallback.output).contains("Choose one offer:"))
+        let options = try #require(dialog.firstMatch(of: /<ul[^>]*aria-label="Offer options"[^>]*>[\s\S]*?<\/ul>/))
+        let items = String(options.output).matches(of: /<li[^>]*>[\s\S]*?<\/li>/).map { String($0.output) }
+        #expect(items.count == 2)
+        #expect(items.allSatisfy { $0.contains("Estimated price:") && $0.contains("Regular US price:") && $0.contains("Save US$10.00 (100%).") })
         #expect(dialog.components(separatedBy: instructions).count == 2)
         #expect(String(fallback.output).components(separatedBy: instructions).count == 2)
         if !shared {
-            let sections = String(card.output).matches(of: /<div class="mb-[^"]*">[\s\S]*?<\/div>/).map { String($0.output) }
-            let lifetime = try #require(sections.first { $0.contains("Lifetime discount") })
-            let yearly = try #require(sections.first { $0.contains("Free year") })
+            let lifetime = try #require(items.first { $0.contains("Lifetime discount") })
+            let yearly = try #require(items.first { $0.contains("Free year") })
             #expect(lifetime.contains(instructions))
             #expect(!lifetime.contains("Claim the yearly licence."))
             #expect(yearly.contains("Claim the yearly licence."))
@@ -614,7 +639,7 @@ extension PublishingTests {
     func showcasePublishesProjectsBuildersAndDirectBundleLinks(preview: Bool) async throws {
         var catalog = CatalogFixture.showcase()
         catalog.indies[0].people = [
-            IndiePerson(name: "One & <Builder>", websiteURL: "https://example.org/one?x=1&y=2", bio: "Makes useful & <thoughtful> things.", portraitPath: "/portraits/dani-devesa.jpg"),
+            IndiePerson(name: "One & <Builder>", websiteURL: "https://example.org/one?x=1&y=2", bio: "Makes useful & <thoughtful> things.", portraitPath: "/portraits/dani-devesa.jpg", creditName: "Short credit"),
             IndiePerson(name: "Two Builder", websiteURL: nil, socials: [SocialLink(label: "Social & <more>", url: "https://example.org/social")])
         ]
         catalog.discoveryResources = [DiscoveryResource(name: "More & <indies>", url: "https://example.org/discover", description: "A little & <discovery>.")]
@@ -628,6 +653,7 @@ extension PublishingTests {
         #expect(html.contains("By Indies. Home"))
         #expect(!html.contains("brand-sponsored"))
         #expect(html.contains("One &amp; &lt;Builder&gt;"))
+        #expect(!html.contains("Short credit"))
         #expect(html.contains("Makes useful &amp; &lt;thoughtful&gt; things."))
         #expect(html.contains("A longer project story &amp; &lt;details&gt;."))
         #expect(html.contains("/portraits/dani-devesa.jpg"))

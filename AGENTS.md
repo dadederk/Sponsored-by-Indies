@@ -21,6 +21,29 @@ Read [README.md](README.md) for project structure, local preview and verificatio
 - Bind brand SVG paints to palette variables with preview fallbacks, resolving them during generation. Keep conference palettes in their conference JSON records.
 - After changing the logo, palette or artwork renderer, rebuild and copy `Website/Build/readme-banner.png` to `Images/readme-banner.png` to refresh the README banner.
 
+## Card content
+
+- Lead with the product: one card per product, linked icon and name, grouped alternative offers. Keep builder details and quotes smaller and secondary.
+- Align section starts within each row; support narrow screens and enlarged text. Give compact conference-bundle links their own divider.
+- Write two short third-person bio sentences about the person’s role or approach, using their website and supplied facts. Cut filler and redundant mentions of the featured product.
+- Keep full names in builder profiles; use `creditName` for short bundle credits. Link collaborators individually and match the order of names and conference roles.
+- Try X portraits first, then the maker’s website or another verified profile. Store images locally, retain the social link, and use initials if needed. Never guess profile URLs.
+- Keep quotes brief and faithful. Omit attribution for a sole maker; use plain “– Name” for shared products. Leave quote credits unlinked; retain source URLs in the data.
+- Terms use one bullet per option: estimated payment, saving, linked regular US price and exact plan. Say “Choose one offer” once for alternatives; share identical redemption instructions once. Subscriptions return to the regular price at renewal unless an exception is specified.
+- Use US/USD references and the same conservative calculation for ranking and totals. Count only the largest compatible saving per product; round the headline down to whole dollars. Follow the README’s evidence and rounding rules.
+- Keep check dates in the collapsed value calculation. Keep internal approval discussions and provisional price-review notes in private planning.
+
+## Public copy
+
+- Write for iOS, Swift and Apple-platform conference communities. Avoid “pilot”, “we’re starting with” and speculative expansion plans in visitor copy.
+- Make the ticket relationship explicit: free products and discounts are included with the named conference’s ticket. Distinguish free access from a discount.
+- Keep outreach, draft examples and internal assumptions in private planning. Mention uncertainty only when visitors need it, such as redemption dates, eligibility or renewal terms. Confirmation of an offer does not mean redemption is open.
+- Separate what attendees, organisers and indies get. Keep conference benefits distinct from what we ask in return. Describe indie visibility as an opportunity, without promising downloads or sales.
+- Prefer one clear heading per section; remove repeated eyebrow text and duplicate invitations. Reuse audience cards and copy across pages, choosing the audiences and order appropriate to each page.
+- Name link destinations accurately: a conference bundle, the conference’s own website, or an in-page section. Keep the main call to action distinct from section navigation.
+- Use “Terms” for offer details and the discreet permalink control for sharing. Value breakdowns use one bullet per product, with its calculation and a short inline price-reference link.
+- Use warm, concrete language that includes solo makers and small teams. Conference quotes are optional. Keep conference-specific jokes, sign-offs and identity in conference data. Avoid all-caps prose while respecting official names such as ARCTIC.
+
 ## Content and generation
 
 - Load editorial content from `Website/Data`. Commit only approved content; filtering generated output does not hide source records in a public repository. Keep credentials and redemption codes out of source and generated assets.

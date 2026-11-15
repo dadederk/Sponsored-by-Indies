@@ -73,15 +73,16 @@ struct IndiePerson: Decodable {
     var bio: String? = nil
     var portraitPath: String? = nil
     var socials: [SocialLink]? = nil
+    var creditName: String? = nil
 
     var initials: String {
         name.split(separator: " ").prefix(2).compactMap(\.first).map(String.init).joined()
     }
 
     var showcaseLinks: [SocialLink] {
-        let order = ["Mastodon": 0, "Bluesky": 1, "Twitter": 2, "GitHub": 3]
+        let order = ["Mastodon": 0, "Bluesky": 1, "Twitter": 2, "GitHub": 3, "Instagram": 4, "LinkedIn": 5]
         let profiles = (socials ?? []).sorted {
-            (order[$0.label] ?? 4, $0.label, $0.url) < (order[$1.label] ?? 4, $1.label, $1.url)
+            (order[$0.label] ?? order.count, $0.label, $0.url) < (order[$1.label] ?? order.count, $1.label, $1.url)
         }
         return (websiteURL.map { [SocialLink(label: "Website", url: $0)] } ?? []) + profiles
     }
@@ -139,6 +140,12 @@ struct Offer {
     var redemptionInstructions: String
     var publicationApproved: Bool
     var projectID: String? = nil
+    var renewalTerms: String? = nil
+
+    var renewalDescription: String? {
+        renewalTerms ?? (savingEstimate?.period == .year
+            ? "After the first year, the regular price at renewal applies." : nil)
+    }
 
     var bundleAnchor: String {
         projectID.map { "project-" + $0 } ?? "offer-" + id.utf8.map { String($0, radix: 16) }.joined(separator: "-")

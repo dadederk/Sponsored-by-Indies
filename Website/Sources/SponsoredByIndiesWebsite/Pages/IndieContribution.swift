@@ -138,7 +138,7 @@ struct IndieContribution {
     var offer: some HTML {
         Tag("fieldset") {
             Tag("legend") { "1. Offer" }
-            FormFields.multiline("What would you like to offer? (required)", id: "resource-1-offer-1-proposal", rows: 3, required: true, limit: 3000, resourceKey: "proposal", helpID: "resource-1-offer-1-proposal-help", placeholder: "Get 50% off lifetime Premium for Xarra! at ARCTIC 2027: https://accessibilityupto11.com/apps/xarra/")
+            FormFields.multiline("What would you like to offer? (required)", id: "resource-1-offer-1-proposal", rows: 3, required: true, limit: 3000, resourceKey: "proposal", helpID: "resource-1-offer-1-proposal-help", placeholder: "Get 70% off lifetime Premium for Xarra! at ARCTIC 2027: https://accessibilityupto11.com/apps/xarra/")
             Text("Include the name and a link. Plain text or Markdown is fine.")
                 .id("resource-1-offer-1-proposal-help").class("field-help")
             FormFields.actionButton("Remove offer 1", icon: "trash", role: .danger).customAttribute(name: "data-remove-offer", value: "true").customAttribute(name: "hidden", value: "hidden")

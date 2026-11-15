@@ -8,6 +8,38 @@ test.beforeEach(async ({page}) => {
 });
 
 for (const path of [showcase, '/by-indies-preview/']) {
+  test(`project sections align within each row and stack on narrow screens: ${path}`, async ({page}) => {
+    await page.setViewportSize({width:1280, height:900});
+    await page.goto(path);
+    await page.evaluate(() => document.fonts.ready);
+    const cards = page.locator('.showcase-card');
+    const count = await cards.count();
+    expect(count).toBeGreaterThan(1);
+    for (const scale of ['100%', '200%']) {
+      await page.addStyleTag({content:`html { font-size: ${scale} !important; }`});
+      for (let index=0; index+1<count; index+=2) {
+        const left = cards.nth(index);
+        const right = cards.nth(index+1);
+        const leftBox = await left.boundingBox();
+        const rightBox = await right.boundingBox();
+        expect(rightBox.x).toBeGreaterThanOrEqual(leftBox.x + leftBox.width);
+        expect(Math.abs(leftBox.height-rightBox.height)).toBeLessThan(1);
+        for (const section of ['.product-card-header', ':scope > p', '.showcase-builders', '.showcase-contributions']) {
+          const a = await left.locator(section).boundingBox();
+          const b = await right.locator(section).boundingBox();
+          expect(Math.abs(a.y-b.y), `${section} at ${scale}`).toBeLessThan(1);
+        }
+      }
+    }
+    await page.setViewportSize({width:320, height:800});
+    for (let index=0; index+1<count; index++) {
+      const a = await cards.nth(index).boundingBox();
+      const b = await cards.nth(index+1).boundingBox();
+      expect(b.y).toBeGreaterThanOrEqual(a.y+a.height);
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  });
+
   test(`project permalinks copy and navigate to the selected card: ${path}`, async ({page}) => {
     await page.addInitScript(() => {
       Object.defineProperty(navigator, 'clipboard', {value:{writeText:async value => { window.copiedProjectLink = value; }}});
@@ -118,13 +150,13 @@ test('showcase introduces the projects and individual builders accessibly', asyn
   await expect(page.getByRole('link', {name:'By Indies. Home'})).toHaveCount(2);
   await expect(page.locator('header').getByRole('link', {name:'Sponsored by Indies', exact:true}))
     .toHaveAttribute('href', 'https://sponsored.byindies.com/');
-  const dee = page.locator('#project-dee');
-  await expect(page.locator('.showcase-card')).toHaveCount(6);
-  await expect(dee.locator('.builder-row')).toHaveCount(1);
-  await expect(dee.getByText('Noam Efergan', {exact:true})).toBeVisible();
-  await expect(dee.getByRole('link', {name:'Website for Noam Efergan', exact:true})).toHaveAttribute('href', 'https://nowham.dev/');
-  await expect(dee.getByRole('link', {name:'Twitter for Noam Efergan', exact:true})).toHaveAttribute('href', 'https://x.com/No_Wham');
-  await expect(dee.locator('.showcase-builders').getByText('Dee Training', {exact:true})).toHaveCount(0);
+  const helm = page.locator('#project-helm');
+  await expect(helm.locator('.builder-row')).toHaveCount(2);
+  await expect(helm.getByText('Hidde van der Ploeg', {exact:true})).toBeVisible();
+  await expect(helm.getByText('Pol Piella', {exact:true})).toBeVisible();
+  await expect(helm.getByRole('link', {name:'Website for Hidde van der Ploeg', exact:true})).toHaveAttribute('href', 'https://hidde.design/');
+  await expect(helm.getByRole('link', {name:'Twitter for Pol Piella', exact:true})).toHaveAttribute('href', 'https://x.com/polpielladev');
+  await expect(helm.locator('.showcase-builders').getByText('Anima Software', {exact:true})).toHaveCount(0);
   await expect(page.locator('.showcase-card .product-card-benefits')).toHaveCount(0);
   await expect(page.locator('footer nav a')).toHaveText(['Sponsored by Indies','Terms & conditions']);
   await expect(page.getByRole('heading', {name:'More indie discoveries.'})).toBeVisible();
@@ -156,7 +188,7 @@ test('visitors can review the showcase entirely on the Sponsored site', async ({
   await expect(homeLinks.first()).toHaveAttribute('href','/by-indies-preview/');
   await expect(page.locator('header').getByRole('link', {name:'Sponsored by Indies',exact:true})).toHaveAttribute('href','/');
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content','noindex, follow');
-  await expect(page.locator('.showcase-card')).toHaveCount(6);
+  await expect(page.locator('#project-helm .builder-row')).toHaveCount(2);
   const result = await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze();
   expect(result.violations).toEqual([]);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);

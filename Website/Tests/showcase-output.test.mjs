@@ -24,10 +24,10 @@ for (const [directory, sponsoredDirectory, origin, sponsoredOrigin, preview] of 
     const html = await read(`${directory}/index.html`);
     assert.ok(!html.includes('MEET THE INDIES'));
     assert.ok(!html.includes('A little generosity, a lot of independent spirit.'));
-    const linkOrder = ['Website', 'Mastodon', 'Bluesky', 'Twitter', 'GitHub'];
+    const linkOrder = ['Website', 'Mastodon', 'Bluesky', 'Twitter', 'GitHub', 'Instagram', 'LinkedIn'];
     for (const block of html.matchAll(/<div\b[^>]*class="[^"]*\bbuilder-links\b[^"]*"[^>]*>([\s\S]*?)<\/div>/g)) {
       const labels = [...block[1].matchAll(/<a\b[^>]*>([^<]+)/g)].map(match => match[1]);
-      assert.ok(labels.length <= 5 && labels.every(label => linkOrder.includes(label)), 'use the five agreed builder link labels');
+      assert.ok(labels.length <= linkOrder.length && labels.every(label => linkOrder.includes(label)), 'use the agreed builder link labels');
       assert.deepEqual(labels, [...labels].sort((a, b) => linkOrder.indexOf(a) - linkOrder.indexOf(b)), 'builder link order');
     }
     assertCanonicalURL(html, `${origin}/`, directory);

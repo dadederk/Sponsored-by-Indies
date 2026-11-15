@@ -65,17 +65,22 @@ extension Pages {
             }.id("bundle").class("container", "section-space").aria(.labelledBy, "bundle-title")
             Tag("section") {
                 if let summary = catalog.bundleValue(for: edition), !offers.isEmpty {
-                    Components.heading("Potential value:", summary.amountLabel, id: "value-title")
+                    Components.heading("Potential bundle value:", summary.amountLabel, id: "value-title")
                     Text("The estimate reflects compatible offers in the current bundle. Your saving depends on eligibility and which offers you choose. US prices in USD are our baseline; local prices may vary.")
                     Tag("details") {
                         Tag("summary") { "How we estimate the bundle’s value" }
                         Text(escaped(summary.explanation))
                         Text("Prices checked \(escaped(summary.verifiedOn)). Individual offer terms apply.")
-                        for offer in summary.offers {
-                            if let estimate = offer.savingEstimate {
-                                Section {
-                                    Text(escaped(offer.productName + " — " + estimate.calculationDescription))
-                                    Text { Link("US price reference: " + escaped(offer.productName), target: estimate.sourceURL) }
+                        List {
+                            for offer in summary.offers {
+                                if let estimate = offer.savingEstimate {
+                                    ListItem {
+                                        escaped(offer.productName + " — " + estimate.calculationDescription) + " "
+                                        Link(target: escaped(estimate.sourceURL)) {
+                                            "Price reference"
+                                            Span(" for " + escaped(offer.productName)).class("visually-hidden")
+                                        }.style(.display, "inline")
+                                    }
                                 }
                             }
                         }

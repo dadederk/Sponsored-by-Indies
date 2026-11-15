@@ -52,5 +52,41 @@
     "iconPath": "/app-icons/ai-fundamentals.png",
     "description": "A practical course on working with AI coding agents. Learn to give clear context and instructions, check results, and build repeatable workflows across tools.",
     "showcaseDescription": "A practical course on working with AI coding agents. Learn to give clear context and instructions, check results, and build repeatable workflows across tools. Explore the habits behind agent-assisted development, from preparing a task to reviewing the work and making the process repeatable."
+  },
+  {
+    "id": "helm",
+    "indieID": "anima-software",
+    "name": "Helm",
+    "websiteURL": "https://helm-app.com/",
+    "iconPath": "/app-icons/helm.png",
+    "description": "Manage App Store Connect from your Mac or iPhone. Prepare app updates, translate listings, manage TestFlight, and reply to reviews in one place.",
+    "showcaseDescription": "Manage App Store Connect from your Mac or iPhone. Prepare app updates, translate listings, manage TestFlight, and reply to reviews in one place. Bring the work around shipping an app into a native client, with your listings, releases, testers and customer feedback close at hand."
+  },
+  {
+    "id": "pocketshelf",
+    "indieID": "pocketshelf-team",
+    "name": "PocketShelf",
+    "websiteURL": "https://pocketshelf.app/",
+    "iconPath": "/app-icons/pocketshelf.png",
+    "description": "Track your books and reading sessions, collect notes, and pick up where you left off with a recap. Keep characters and places close to hand in a personal glossary.",
+    "showcaseDescription": "Track your books and reading sessions, collect notes, and pick up where you left off with a recap. Add books by scanning a barcode or searching, then keep characters, places and ideas close to hand in your personal glossary."
+  },
+  {
+    "description": "Create business, social, website and app cards for Apple Wallet. Share your details in person and keep shared passes up to date.",
+    "iconPath": "/app-icons/passable.png",
+    "id": "passable",
+    "indieID": "angelo-cammalleri",
+    "name": "Passable",
+    "showcaseDescription": "Create business, social, website and app cards for Apple Wallet. Share your details in person and keep shared passes up to date.",
+    "websiteURL": "https://passable.app/"
+  },
+  {
+    "description": "Keep your Mac awake during downloads, presentations and long-running tasks. Use timers, Shortcuts and Focus filters, and check on your Mac from your other Apple devices.",
+    "iconPath": "/app-icons/coca.png",
+    "id": "coca",
+    "indieID": "angelo-cammalleri",
+    "name": "Coca",
+    "showcaseDescription": "Keep your Mac awake during downloads, presentations and long-running tasks. Use timers, Shortcuts and Focus filters, and check on your Mac from your other Apple devices.",
+    "websiteURL": "https://coca.cammalleri.dev/"
   }
 ]

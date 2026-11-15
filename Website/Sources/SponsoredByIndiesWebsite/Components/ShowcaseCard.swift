@@ -7,12 +7,14 @@ extension Components {
     ) -> some HTML {
         let people = indie.people ?? [IndiePerson(name: indie.name, websiteURL: indie.websiteURL, socials: indie.socials)]
         return Tag("article") {
-            HStack(alignment: .top, spacing: .small) {
-                projectHeading(project.name, url: project.websiteURL, icon: project.iconPath, level: .title2)
-                    .class("showcase-project-title")
-                projectSharing(project, showcasePath: showcasePath)
-            }.class("product-card-header")
-            sharingFallback(label: "Link to " + project.name)
+            Section {
+                HStack(alignment: .top, spacing: .small) {
+                    projectHeading(project.name, url: project.websiteURL, icon: project.iconPath, level: .title2)
+                        .class("showcase-project-title")
+                    projectSharing(project, showcasePath: showcasePath)
+                }.class("product-card-header")
+                sharingFallback(label: "Link to " + project.name).margin(.top, .small)
+            }
             Text(escaped(project.showcaseDescription)).margin(0)
             Section {
                 Text(people.count == 1 ? "Meet the builder" : "Meet the builders")
@@ -20,17 +22,15 @@ extension Components {
                 for person in people { builderRow(person) }
             }.class("showcase-builders")
             Section {
-                Text("Find it in a conference bundle").fontWeight(.semibold).margin(.bottom, .small)
-                List(editions) { edition in
-                    return ListItem {
+                for edition in editions {
+                    Text {
                         Link(
                             escaped(catalog.conference(for: edition).name + " " + edition.label) + " bundle",
                             target: escaped(sponsoredRoot + edition.path(in: catalog) + "#" + project.bundleAnchor))
                         Span(" · " + escaped(edition.dateLabel))
-                            .font(.small).foregroundStyle(.secondary)
-                    }
-                }.margin(0).class("showcase-bundles")
-            }.class("showcase-contributions")
+                    }.margin(0)
+                }
+            }.font(.small).foregroundStyle(.secondary).class("showcase-contributions", "showcase-bundles")
         }.id(project.bundleAnchor).attribute("data-offer-sharing", "true").class("panel", "showcase-card")
     }
 
