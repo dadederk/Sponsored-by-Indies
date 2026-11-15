@@ -41,6 +41,8 @@ jobs:
       DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
     steps:
       - uses: actions/checkout@v6
+      - name: Install lossless PNG optimiser
+        run: brew install optipng
       - name: Check public repository boundaries
         run: swift Scripts/CheckPublicRepository.swift
       - uses: actions/setup-node@v4

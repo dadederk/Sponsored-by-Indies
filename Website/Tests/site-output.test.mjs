@@ -43,7 +43,7 @@ for (const [directory, origin, preview] of [
       const html = await readFile(join(root, file), 'utf8');
       const version = html.match(/design-tokens\.css\?v=([a-f0-9]+)/)?.[1];
       assert.ok(version, `${file}: versioned brand assets`);
-      for (const path of ['favicon.ico', 'favicon-shared-imprint-01.svg', 'apple-touch-icon.png']) {
+      for (const path of ['favicon.ico', 'favicon-shared-imprint-01.svg', 'favicon-32.png', 'apple-touch-icon.png']) {
         assert.ok(html.includes(`href="/${path}?v=${version}"`), `${file}: current ${path}`);
       }
       assert.match(html, /name="theme-color" content="#[a-fA-F0-9]{6}"/, `${file}: browser theme colour`);

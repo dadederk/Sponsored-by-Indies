@@ -32,6 +32,15 @@ for (const [directory, sponsoredDirectory, origin, sponsoredOrigin, preview] of 
       assert.deepEqual(labels, [...labels].sort((a, b) => linkOrder.indexOf(a) - linkOrder.indexOf(b)), 'builder link order');
     }
     assertCanonicalURL(html, `${origin}/`, directory);
+    const pngIcon = (html.match(/<link\b[^>]*>/g) ?? []).find(tag =>
+      attributes(tag, 'rel').includes('icon') && attributes(tag, 'type').includes('image/png'));
+    assert.ok(pngIcon, 'declare a raster tab icon alongside the SVG and ICO');
+    assert.deepEqual(attributes(pngIcon, 'sizes'), ['32x32']);
+    const pngURL = new URL(attributes(pngIcon, 'href')[0], origin);
+    const png = await readFile(join(website, directory, pngURL.pathname));
+    assert.equal(png.subarray(0, 8).toString('hex'), '89504e470d0a1a0a');
+    assert.equal(png.readUInt32BE(16), 32);
+    assert.equal(png.readUInt32BE(20), 32);
     assert.equal((html.match(/<h1\b/g) ?? []).length, 1);
     assert.equal((html.match(/<main\b/g) ?? []).length, 1);
     assert.equal(new Set(attributes(html, 'id')).size, attributes(html, 'id').length);

@@ -230,7 +230,7 @@ struct PublishingTests {
             #expect(toolCard.contains("Sample plan"))
             #expect(!toolCard.contains("2026-11-13"))
             #expect(toolCard.contains("href=\"https://example.org/price\""))
-            #expect(toolCard.range(of: #"<a href="https://example.org/tool"[^>]*>\s*<img[^>]*src="/app-icons/xarra.png""#, options: .regularExpression) != nil)
+            #expect(toolCard.range(of: #"<a href="https://example.org/tool"[^>]*>\s*<img[^>]*src="/optimized/app-icons/xarra.png""#, options: .regularExpression) != nil)
             #expect(!toolCard.contains("Free game."))
             #expect(toolCard.contains("data-offer-terms-fallback=\"true\""))
             let gameCard = try #require(cards.first { $0.contains("A racing game") })
@@ -259,7 +259,7 @@ struct PublishingTests {
                 #expect(card.contains("modal-dialog-scrollable"))
             }
             #expect(html.contains("src=\"/offer-terms.mjs\""))
-            #expect(html.components(separatedBy: "src=\"/app-icons/xarra.png\"").count == 2)
+            #expect(html.components(separatedBy: "src=\"/optimized/app-icons/xarra.png\"").count == 2)
             #expect(html.contains("One year free."))
             #expect(html.contains("Sample Company"))
             #expect(html.contains("noindex, nofollow") == preview)

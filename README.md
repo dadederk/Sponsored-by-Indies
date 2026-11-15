@@ -12,7 +12,7 @@ Visit [sponsored.byindies.com](https://sponsored.byindies.com). This repository 
 
 The site uses [Ignite](https://github.com/Ignite-Swift/Ignite), a tool that turns code written in the Swift programming language into website pages.
 
-You’ll need a Mac with Xcode 26.3 or later, which includes Swift, and Python 3 for the preview server. Install the [Ignite command-line tool](https://github.com/Ignite-Swift/Ignite/tree/0.7.2#getting-started), then run these commands in Terminal:
+You’ll need a Mac with Xcode 26.3 or later, which includes Swift, Python 3 for the preview server, and OptiPNG (`brew install optipng`). Install the [Ignite command-line tool](https://github.com/Ignite-Swift/Ignite/tree/0.7.2#getting-started), then run these commands in Terminal:
 
 ```sh
 git clone https://github.com/dadederk/Sponsored-by-Indies.git
@@ -82,6 +82,24 @@ swift run --package-path Website --force-resolved-versions SponsoredByIndiesWebs
 The maintenance check reports provisional selections without treating them as confirmed. Neither it nor the live check updates dates or content. Keep current evidence under review at least every three weeks; archived editions keep their original evidence.
 
 ## Build and check
+
+Builds require [OptiPNG](https://optipng.sourceforge.net/) for lossless PNG compression:
+
+```sh
+brew install optipng
+```
+
+Original icons and portraits stay in `Website/Assets`. Each build generates smaller
+copies under `optimized/` for the 64px icon and 56px portrait slots, capped at 3×
+their display size without enlarging smaller sources. Resampled copies use 8-bit
+colour with preserved RGB profiles, transparency and aspect ratios. JPEG portraits use high-quality JPEG copies;
+WebP inputs use PNG copies. The shared Ignite components select these files and
+provide dimensions and asynchronous decoding, while portraits remain lazy-loaded.
+OptiPNG then compresses all published PNGs, including sharing artwork and original
+fallbacks, without quantisation or stripping colour profiles. No image tools run
+in visitors’ browsers. Compressed PNGs are cached by input content under
+`Website/.build/optimized-pngs`; changed inputs get fresh results. Both the cache
+and generated files stay out of source control.
 
 For the full checks, also install [Node.js 22.12 or later](https://nodejs.org/) to test the code that runs in visitors’ browsers.
 

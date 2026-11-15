@@ -55,6 +55,9 @@ struct MarketingLayout: Layout {
             MetaLink(href: "/favicon-shared-imprint-01.svg?v=\(assetVersion)", rel: "icon")
                 .customAttribute(name: "type", value: "image/svg+xml")
                 .customAttribute(name: "sizes", value: "any")
+            MetaLink(href: "/favicon-32.png?v=\(assetVersion)", rel: "icon")
+                .customAttribute(name: "type", value: "image/png")
+                .customAttribute(name: "sizes", value: "32x32")
             if preview {
                 MetaTag(name: "robots", content: "noindex, nofollow")
             } else if searchIndex?.isIndexable(page.url) == false {

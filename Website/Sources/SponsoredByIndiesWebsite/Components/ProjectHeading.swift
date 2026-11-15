@@ -6,8 +6,11 @@ extension Components {
         Text {
             Link(target: escaped(url)) {
                 if let icon {
-                    Image(decorative: icon)
+                    Image(decorative: ImageOptimization.path(for: icon))
                         .frame(width: .px(DesignTokens.productIconSize), height: .px(DesignTokens.productIconSize))
+                        .attribute("width", String(DesignTokens.productIconSize))
+                        .attribute("height", String(DesignTokens.productIconSize))
+                        .attribute("decoding", "async")
                         // Book covers and other non-square artwork keep their original proportions.
                         .style(.objectFit, "contain")
                         .cornerRadius(DesignTokens.productIconRadius)

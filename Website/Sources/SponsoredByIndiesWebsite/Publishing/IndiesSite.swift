@@ -33,10 +33,25 @@ struct IndiesSite: Site {
     /// Keep all generated assets and indexing policy inside the staged publication.
     mutating func generate(sourceDirectory: URL, buildDirectory: URL) async throws {
         assetVersion = try AssetFingerprint.make(in: sourceDirectory)
-        try await publish(sourceDirectory: sourceDirectory, buildDirectory: buildDirectory)
+        let files = FileManager.default
+        let preparedSource = sourceDirectory.appending(path: ".build/image-source-\(UUID().uuidString)")
+        try files.createDirectory(at: preparedSource, withIntermediateDirectories: true)
+        defer { try? files.removeItem(at: preparedSource) }
+        for folder in ["Assets", "Content", "Includes", "Fonts"] {
+            let original = sourceDirectory.appending(path: folder)
+            if files.fileExists(atPath: original.path) {
+                try files.copyItem(at: original, to: preparedSource.appending(path: folder))
+            }
+        }
+        // Ignite discovers image variants in its source tree while rendering.
+        try ImageOptimization.prepare(in: preparedSource.appending(path: "Assets"))
+        try await publish(sourceDirectory: preparedSource, buildDirectory: buildDirectory)
         try DesignTokens.install(in: buildDirectory)
         try await SocialPreview.install(in: buildDirectory, identity: identity,
                                        bundles: pages.compactMap(\.bundleArtwork))
+        try ImageOptimization.compressPNGs(in: buildDirectory,
+                                          cacheDirectory: sourceDirectory.appending(path: ".build/optimized-pngs"))
+        try SocialPreview.installBrowserIcon(in: buildDirectory)
         try searchIndex.install(in: buildDirectory)
         if !preview && identity == .showcase {
             try ShowcasePublication.install(in: buildDirectory, url: url)

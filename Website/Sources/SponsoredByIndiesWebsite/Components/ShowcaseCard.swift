@@ -37,11 +37,12 @@ extension Components {
     private static func builderRow(_ person: IndiePerson) -> some HTML {
         HStack(alignment: .top, spacing: .medium) {
             if let portrait = person.portraitPath {
-                Image(decorative: portrait)
+                Image(decorative: ImageOptimization.path(for: portrait))
                     .frame(width: .px(DesignTokens.builderPortraitSize), height: .px(DesignTokens.builderPortraitSize))
                     .cornerRadius(DesignTokens.builderPortraitSize / 2)
                     .attribute("loading", "lazy").attribute("width", String(DesignTokens.builderPortraitSize))
                     .attribute("height", String(DesignTokens.builderPortraitSize))
+                    .attribute("decoding", "async")
                     .class("builder-portrait")
             } else {
                 Text(escaped(person.initials)).fontWeight(.semibold).margin(0)

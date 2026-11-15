@@ -61,6 +61,10 @@ enum SocialPreview {
                 icon.draw(in: NSRect(x: 0, y: 0, width: size, height: size))
             }.write(to: directory.appending(path: name), options: .atomic)
         }
+    }
+
+    /// Embed the final compressed PNG so both browser icon formats stay identical.
+    nonisolated static func installBrowserIcon(in directory: URL) throws {
         let iconPNG = try Data(contentsOf: directory.appending(path: "favicon-32.png"))
         // A single 32px PNG representation inside the standard ICO container.
         var ico = Data([0, 0, 1, 0, 1, 0, 32, 32, 0, 0, 1, 0, 32, 0])
