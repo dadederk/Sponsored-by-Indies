@@ -40,6 +40,7 @@ extension Components {
                 Image(decorative: ImageOptimization.path(for: portrait))
                     .frame(width: .px(DesignTokens.builderPortraitSize), height: .px(DesignTokens.builderPortraitSize))
                     .cornerRadius(DesignTokens.builderPortraitSize / 2)
+                    .border(Color(hex: DesignTokens.palette.line), width: DesignTokens.builderPortraitBorderWidth)
                     .attribute("loading", "lazy").attribute("width", String(DesignTokens.builderPortraitSize))
                     .attribute("height", String(DesignTokens.builderPortraitSize))
                     .attribute("decoding", "async")

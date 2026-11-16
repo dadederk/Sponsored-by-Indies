@@ -14,8 +14,8 @@
     "name": "RetroRapid!",
     "websiteURL": "https://accessibilityupto11.com/apps/retrorapid/",
     "iconPath": "/app-icons/retrorapid.png",
-    "description": "A little LCD nostalgia. Dodge traffic, chase a high score, or race a friend live with SharePlay. Released with love from ARCTIC in Oulu.",
-    "showcaseDescription": "A little LCD nostalgia. Dodge traffic, chase a high score, or race a friend live with SharePlay. Released with love from ARCTIC in Oulu. A compact racing game built around a simple idea: move between three lanes, overtake cars and see how far you can go."
+    "description": "A little LCD nostalgia. Dodge traffic, chase a high score, or race a friend live with SharePlay. Released with love from ARCtic in Oulu.",
+    "showcaseDescription": "A little LCD nostalgia. Dodge traffic, chase a high score, or race a friend live with SharePlay. Released with love from ARCtic in Oulu. A compact racing game built around a simple idea: move between three lanes, overtake cars and see how far you can go."
   },
   {
     "id": "dee",
@@ -124,5 +124,14 @@
     "iconPath": "/app-icons/nil-coalescing-books.png",
     "description": "Practical books on Swift, SwiftUI and Swift Charts. Explore language techniques, core concepts, interface patterns, data visualisation and bringing SwiftUI into UIKit apps.",
     "showcaseDescription": "Practical books for Swift and SwiftUI developers, available individually or in bundles. Learn language techniques, core SwiftUI concepts, interface patterns, Swift Charts and ways to bring SwiftUI into UIKit apps."
+  },
+  {
+    "id": "kickstart",
+    "indieID": "paul-hudson",
+    "name": "Kickstart",
+    "websiteURL": "https://www.kickstart.tools/",
+    "iconPath": "/app-icons/kickstart.png",
+    "description": "Get the app that turns shipped apps into successful ones. Find the gaps in your keywords, pricing, reviews, and marketing, then get clear next steps to close them.",
+    "showcaseDescription": "Get the app that turns shipped apps into successful ones. Find the gaps in your keywords, pricing, reviews, and marketing, then get clear next steps to close them."
   }
 ]

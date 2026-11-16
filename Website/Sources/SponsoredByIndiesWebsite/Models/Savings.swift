@@ -20,10 +20,12 @@ struct SavingEstimate: Decodable {
     var sourceURL: String
     var sourceFormat: SourceFormat? = nil
     var sourceProductName: String? = nil
+    var confirmedOfferPriceUSD: Decimal? = nil
 
-    /// Round savings down to cents rather than overstate a fractional-cent discount.
-    /// This is an estimate; the store's eligible checkout remains authoritative.
+    /// A maker-confirmed price takes precedence over percentage rounding.
+    /// Otherwise round savings down to cents rather than overstate the discount.
     var amountUSD: Decimal {
+        if let confirmedOfferPriceUSD { return regularPriceUSD - confirmedOfferPriceUSD }
         var raw = regularPriceUSD * Decimal(discountPercent) / 100
         var rounded = Decimal()
         NSDecimalRound(&rounded, &raw, 2, .down)
@@ -31,7 +33,7 @@ struct SavingEstimate: Decodable {
     }
 
     // Complement the conservative saving so displayed prices and savings add up.
-    // This rounds the estimated payment up, never increasing the claimed saving.
+    // Percentage-only estimates round the payment up; confirmed prices retain the maker's amount.
     var offerPriceUSD: Decimal { regularPriceUSD - amountUSD }
 
     var offerPriceLabel: String {
@@ -56,6 +58,9 @@ struct SavingEstimate: Decodable {
         case .year: "first year"
         case .lifetime: "lifetime purchase"
         case .oneTime: "one-time purchase"
+        }
+        if let confirmedOfferPriceUSD {
+            return "\(plan): \(regularPriceUSD.usdLabel) − \(confirmedOfferPriceUSD.usdLabel) maker-confirmed offer price = \(amountUSD.usdLabel) potential saving (\(duration))."
         }
         return "\(plan): \(regularPriceUSD.usdLabel) × \(discountPercent)% = \(amountUSD.usdLabel) potential saving (\(duration))."
     }

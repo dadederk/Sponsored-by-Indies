@@ -2,7 +2,7 @@
   "conference": {
     "id": "arctic",
     "slug": "arctic",
-    "name": "ARCTIC",
+    "name": "ARCtic",
     "location": "Oulu, Finland",
     "websiteURL": "https://arcticonference.com/",
     "description": "The northernmost, and therefore coolest, Apple developer conference.",
@@ -26,7 +26,7 @@
       "dateLabel": "2–4 February 2027",
       "startDate": "2027-02-02",
       "endDate": "2027-02-04",
-      "introduction": "Indies connected to ARCTIC are putting together a bundle to add a little more to every attendee’s ticket. Hey Ho!",
+      "introduction": "Indies connected to ARCtic are putting together a bundle to add a little more to every attendee’s ticket. Hey Ho!",
       "accessIntroduction": "Redemption details are being arranged with the conference team. There is nothing to claim here yet. Once the bundle is ready, this page will explain how ticket holders receive their offers and how to redeem each one.",
       "accessURL": null,
       "valueSummary": {
@@ -45,7 +45,8 @@
           "the-shed-lifetime",
           "nunch-lifetime",
           "whio-lifetime",
-          "nil-coalescing-books"
+          "nil-coalescing-books",
+          "kickstart-yearly"
         ]
       },
       "bundleNote": "We’re working on expanding the bundle and its value."
@@ -55,28 +56,28 @@
     {
       "editionID": "arctic-2027",
       "indieID": "dani-devesa",
-      "connection": "Workshop ARCTIC 2025",
+      "connection": "Workshop ARCtic 2025",
       "quote": "The quality, in every respect, took us by surprise for a first edition. Many of us came back the next year, and I’m planning to return for a third time!",
       "publicationApproved": true
     },
     {
       "editionID": "arctic-2027",
       "indieID": "noam-efergan",
-      "connection": "Speaker ARCTIC 2026",
+      "connection": "Speaker ARCtic 2026",
       "quote": null,
       "publicationApproved": true
     },
     {
       "editionID": "arctic-2027",
       "indieID": "antoine-van-der-lee",
-      "connection": "Speaker ARCTIC 2027",
+      "connection": "Speaker ARCtic 2027",
       "quote": null,
       "publicationApproved": true
     },
     {
       "editionID": "arctic-2027",
       "indieID": "anima-software",
-      "connection": "Speakers ARCTIC 2025",
+      "connection": "Speakers ARCtic 2025",
       "quote": "The location is incredible, the vibe is second to none…",
       "publicationApproved": true,
       "quoteAttribution": {
@@ -87,7 +88,7 @@
     {
       "editionID": "arctic-2027",
       "indieID": "pocketshelf-team",
-      "connection": "Organiser & Speaker ARCTIC 2025",
+      "connection": "Organiser & Speaker ARCtic 2025",
       "quote": "one of the best conferences out there 🫶",
       "publicationApproved": true,
       "quoteAttribution": {
@@ -96,7 +97,7 @@
       }
     },
     {
-      "connection": "Attendee ARCTIC 2026 & 2027",
+      "connection": "Attendee ARCtic 2026 & 2027",
       "editionID": "arctic-2027",
       "indieID": "angelo-cammalleri",
       "publicationApproved": true,
@@ -109,7 +110,7 @@
     {
       "editionID": "arctic-2027",
       "indieID": "peter-kurzok",
-      "connection": "Attendee ARCTIC 2025, 2026 & 2027",
+      "connection": "Attendee ARCtic 2025, 2026 & 2027",
       "quote": "One of the coolest conferences out there.",
       "publicationApproved": true,
       "quoteAttribution": {
@@ -120,7 +121,7 @@
     {
       "editionID": "arctic-2027",
       "indieID": "danijela-vrzan",
-      "connection": "Speaker ARCTIC 2026",
+      "connection": "Speaker ARCtic 2026",
       "quote": "Come for the code. Stay for the view. And friends.",
       "publicationApproved": true,
       "quoteAttribution": {
@@ -131,12 +132,19 @@
     {
       "editionID": "arctic-2027",
       "indieID": "natalia-panferova",
-      "connection": "Speaker ARCTIC 2026",
+      "connection": "Speaker ARCtic 2026",
       "quote": "The conference itself was also fantastic, and I'm really glad I had the opportunity to be part of it.",
       "quoteAttribution": {
         "name": "Natalia",
         "sourceURL": "https://nilcoalescing.com/newsletter/2026-02-28/"
       },
+      "publicationApproved": true
+    },
+    {
+      "editionID": "arctic-2027",
+      "indieID": "paul-hudson",
+      "connection": "Speaker ARCtic 2025",
+      "quote": "Great events focus on people first, and ARCtic does just that – and more.",
       "publicationApproved": true
     }
   ],
@@ -624,6 +632,31 @@
         "verifiedOn": "2026-11-15",
         "sourceURL": "https://books.nilcoalescing.com/bundles",
         "sourceFormat": "manual"
+      }
+    },
+    {
+      "id": "kickstart-yearly",
+      "editionID": "arctic-2027",
+      "projectID": "kickstart",
+      "benefit": "30% off your first year",
+      "terms": "Pro yearly subscription.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through the conference.",
+      "publicationApproved": true,
+      "savingEstimate": {
+        "regularPriceUSD": 69.99,
+        "discountPercent": 30,
+        "plan": "Kickstart Pro Yearly",
+        "period": "year",
+        "discountedPeriods": 1,
+        "currency": "USD",
+        "storefront": "US",
+        "observedPricesUSD": [
+          69.99
+        ],
+        "review": "unambiguous",
+        "verifiedOn": "2026-11-16",
+        "sourceURL": "https://apps.apple.com/us/app/kickstart-app-accelerator/id6758355178",
+        "confirmedOfferPriceUSD": 48.99
       }
     }
   ]

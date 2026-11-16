@@ -316,5 +316,31 @@
         ]
       }
     ]
+  },
+  {
+    "id": "paul-hudson",
+    "name": "Paul Hudson",
+    "company": "Hacking with Swift",
+    "websiteURL": "https://www.hackingwithswift.com/",
+    "socials": [],
+    "initials": "PH",
+    "people": [
+      {
+        "name": "Paul Hudson",
+        "websiteURL": "https://www.hackingwithswift.com/about",
+        "bio": "Developer, writer and speaker behind Hacking with Swift. He creates books, tutorials and tools that help people learn Swift and build apps for Apple platforms.",
+        "portraitPath": "/portraits/paul-hudson.jpg",
+        "socials": [
+          {
+            "label": "Mastodon",
+            "url": "https://mastodon.social/@twostraws"
+          },
+          {
+            "label": "Twitter",
+            "url": "https://x.com/twostraws"
+          }
+        ]
+      }
+    ]
   }
 ]

@@ -73,7 +73,7 @@ struct IndieContribution {
                 }
             }
             Section("Your conference") {
-                FormFields.field("Conference you’d like to contribute to", id: "conference", required: true, list: "conference-options", helpID: "conference-help", placeholder: "ARCTIC 2027")
+                FormFields.field("Conference you’d like to contribute to", id: "conference", required: true, list: "conference-options", helpID: "conference-help", placeholder: "ARCtic 2027")
                 Tag("datalist") {
                     for conference in catalog.conferences {
                         for label in catalog.editions(for: conference).filter({ $0.endDate >= date.formatted(Edition.dayStyle) }).map(\.label) {
@@ -138,7 +138,7 @@ struct IndieContribution {
     var offer: some HTML {
         Tag("fieldset") {
             Tag("legend") { "1. Offer" }
-            FormFields.multiline("What would you like to offer? (required)", id: "resource-1-offer-1-proposal", rows: 3, required: true, limit: 3000, resourceKey: "proposal", helpID: "resource-1-offer-1-proposal-help", placeholder: "Get 70% off lifetime Premium for Xarra! at ARCTIC 2027: https://accessibilityupto11.com/apps/xarra/")
+            FormFields.multiline("What would you like to offer? (required)", id: "resource-1-offer-1-proposal", rows: 3, required: true, limit: 3000, resourceKey: "proposal", helpID: "resource-1-offer-1-proposal-help", placeholder: "Get 70% off lifetime Premium for Xarra! at ARCtic 2027: https://accessibilityupto11.com/apps/xarra/")
             Text("Include the name and a link. Plain text or Markdown is fine.")
                 .id("resource-1-offer-1-proposal-help").class("field-help")
             FormFields.actionButton("Remove offer 1", icon: "trash", role: .danger).customAttribute(name: "data-remove-offer", value: "true").customAttribute(name: "hidden", value: "hidden")

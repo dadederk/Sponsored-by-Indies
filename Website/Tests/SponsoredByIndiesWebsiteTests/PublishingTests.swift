@@ -37,6 +37,32 @@ struct PublishingTests {
         #expect(BundleArtwork(conference: rebranded, edition: artwork.edition).imagePath != artwork.imagePath)
     }
 
+    @Test func confirmedPricesPublishInDialogFallbackAndBundleCalculation() async throws {
+        var catalog = CatalogFixture.make()
+        var evidence = CatalogFixture.saving(price: Decimal(string: "69.99")!, percent: 30)
+        evidence.confirmedOfferPriceUSD = Decimal(string: "48.99")!
+        catalog.offers[0].savingEstimate = evidence
+        catalog.offers[0].benefit = "30% off your first year"
+        catalog.editions[0].valueSummary = ValueSummary(explanation: "Compatible offers.", offerIDs: [catalog.offers[0].id])
+        try catalog.validate()
+        let root = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        var site = IndiesSite(catalog: catalog, preview: true, url: try #require(URL(string: "https://example.org")))
+        try await site.generate(sourceDirectory: source, buildDirectory: root)
+        let html = try String(contentsOf: root.appending(path: "conferences/sample/2027/index.html"), encoding: .utf8)
+        let card = try #require(html.firstMatch(of: /<article class="panel product-card">[\s\S]*?<\/article>/))
+        let text = String(card.output)
+        let fallback = try #require(text.firstMatch(of: /<details[\s\S]*?<\/details>/))
+        let dialog = text.components(separatedBy: String(fallback.output))[0]
+        for terms in [dialog, String(fallback.output)] {
+            #expect(terms.contains("US$48.99 for the first year"))
+            #expect(terms.contains("Save US$21.00 (30%)."))
+            #expect(!terms.contains("US$49.00"))
+        }
+        #expect(html.contains("up to US$21"))
+        #expect(html.contains("US$69.99 − US$48.99 maker-confirmed offer price = US$21.00"))
+    }
+
     private var source: URL {
         URL(fileURLWithPath: #filePath).deletingLastPathComponent()
             .deletingLastPathComponent().deletingLastPathComponent()
@@ -200,7 +226,7 @@ struct PublishingTests {
             let bundleHeading = try #require(bundleSection.firstMatch(of: /<h2[^>]*>[\s\S]*?<\/h2>/))
             #expect(String(bundleHeading.output).contains("Included with your"))
             #expect(String(bundleHeading.output).contains("Sample \"North\" &amp; &lt;Friends&gt; ticket."))
-            #expect(!String(bundleHeading.output).contains("ARCTIC"))
+            #expect(!String(bundleHeading.output).contains("ARCtic"))
             #expect(!bundleSection.contains("About US$10 in savings"))
             #expect(!bundleSection.contains("We’re adding more to the bundle."))
             let valueSection = String(html[valuePosition.lowerBound..<accessPosition.lowerBound])
@@ -360,7 +386,7 @@ struct PublishingTests {
         #expect(contribution.contains("1. App, game or other resource"))
         #expect(contribution.contains("1. Offer"))
         #expect(contribution.contains("placeholder=\"Dani Devesa\""))
-        #expect(contribution.contains("placeholder=\"ARCTIC 2027\""))
+        #expect(contribution.contains("placeholder=\"ARCtic 2027\""))
         #expect(contribution.contains("placeholder=\"Get 70% off lifetime Premium for Xarra!"))
         #expect(contribution.contains("aria-describedby=\"connection-help\""))
         #expect(!contribution.contains("RocketSim"))

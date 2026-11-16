@@ -24,14 +24,16 @@ Read [README.md](README.md) for project structure, local preview and verificatio
 ## Card content
 
 - Lead with the product: one card per product, linked icon and name, grouped alternative offers. Keep builder details and quotes smaller and secondary.
-- Prefer original App Store artwork for listed apps, using the square 512-pixel or larger asset rather than padded or pre-rounded store thumbnails. Use the maker’s press kit or website for other products; keep a local copy.
+- Prefer original App Store artwork for listed apps, using the square 512-pixel or larger asset rather than padded or pre-rounded store thumbnails. If Mac artwork includes extra canvas padding, prefer the maker’s unpadded press asset at the standard display size. Use the maker’s press kit or website for other products; keep a local copy.
 - Align section starts within each row; support narrow screens and enlarged text. Give compact conference-bundle links their own divider.
 - Align bundle maker credits within each row, independently of quote length or absence. Keep quotes above the credits and let single-column cards follow their natural content height.
 - Write two short third-person bio sentences about the person’s role or approach, using their website and supplied facts. Cut filler and redundant mentions of the featured product.
 - Keep full names in builder profiles; use `creditName` for short bundle credits. Link collaborators individually and match the order of names and conference roles.
 - Keep builder profiles to five links at most, including Website. Choose the most relevant verified profiles rather than filling every social slot.
 - Try X portraits first, then the maker’s website or another verified profile. Store images locally, retain the social link, and use initials if needed. Never guess profile URLs.
+- Give profile photos a thin, subtle border so pale backgrounds remain distinct from the card.
 - Keep quotes brief and faithful. Omit attribution for a sole maker; use plain “– Name” for shared products. Leave quote credits unlinked; retain source URLs in the data.
+- Treat supplied maker copy and confirmed offer prices as the source of truth. Record confirmed prices explicitly; keep the supporting correspondence private.
 - Terms use one bullet per option: estimated payment, saving, linked regular US price and exact plan. Say “Choose one offer” once for alternatives; share identical redemption instructions once. Subscriptions return to the regular price at renewal unless an exception is specified.
 - Use US/USD references and the same conservative calculation for ranking and totals. Count only the largest compatible saving per product; round the headline down to whole dollars. Follow the README’s evidence and rounding rules.
 - Keep check dates in the collapsed value calculation. Keep internal approval discussions and provisional price-review notes in private planning.
@@ -45,7 +47,7 @@ Read [README.md](README.md) for project structure, local preview and verificatio
 - Prefer one clear heading per section; remove repeated eyebrow text and duplicate invitations. Reuse audience cards and copy across pages, choosing the audiences and order appropriate to each page.
 - Name link destinations accurately: a conference bundle, the conference’s own website, or an in-page section. Keep the main call to action distinct from section navigation.
 - Use “Terms” for offer details and the discreet permalink control for sharing. Value breakdowns use one bullet per product, with its calculation and a short inline price-reference link.
-- Use warm, concrete language that includes solo makers and small teams. Conference quotes are optional. Keep conference-specific jokes, sign-offs and identity in conference data. Avoid all-caps prose while respecting official names such as ARCTIC.
+- Use warm, concrete language that includes solo makers and small teams. Conference quotes are optional. Keep conference-specific jokes, sign-offs and identity in conference data. Avoid all-caps prose while respecting official names such as ARCtic.
 
 ## Content and generation
 

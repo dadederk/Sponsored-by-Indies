@@ -29,6 +29,7 @@ enum DesignTokens {
     static let productIconSize = 64
     static let productIconRadius = 14
     static let builderPortraitSize = 56
+    static let builderPortraitBorderWidth = 1.0
     static let brandAssetNames = ["logo.svg", "logo-inverse.svg", "favicon.svg", "favicon-shared-imprint-01.svg"]
     static let brandMarkSize = 76.0
     static let brandLabelSize = 20.0

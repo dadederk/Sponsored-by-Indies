@@ -17,6 +17,48 @@ struct SavingsTests {
         #expect(evidence.offerPriceUSD == Decimal(string: payment))
     }
 
+    @Test func makerConfirmedPriceControlsPaymentSavingAndBundleValue() throws {
+        var catalog = CatalogFixture.make()
+        var evidence = CatalogFixture.saving(price: Decimal(string: "69.99")!, percent: 30)
+        evidence.confirmedOfferPriceUSD = Decimal(string: "48.99")!
+        catalog.offers[0].savingEstimate = evidence
+        catalog.editions[0].valueSummary = ValueSummary(explanation: "Confirmed offer.", offerIDs: [catalog.offers[0].id])
+        try catalog.validate()
+        #expect(evidence.offerPriceUSD == Decimal(string: "48.99"))
+        #expect(evidence.amountUSD == 21)
+        #expect(catalog.bundleValue(for: catalog.editions[0])?.totalUSD == 21)
+        #expect(evidence.calculationDescription.contains("US$69.99 − US$48.99"))
+    }
+
+    @Test(arguments: ["-1", "70", "48.991", "47.99", "NaN"])
+    func rejectsInvalidOrInconsistentConfirmedPrices(price: String) throws {
+        var catalog = CatalogFixture.make()
+        var evidence = CatalogFixture.saving(price: Decimal(string: "69.99")!, percent: 30)
+        if price == "NaN" {
+            evidence.confirmedOfferPriceUSD = .nan
+        } else {
+            let confirmedPrice: Decimal = try #require(Decimal(string: price))
+            evidence.confirmedOfferPriceUSD = confirmedPrice
+        }
+        catalog.offers[0].savingEstimate = evidence
+        #expect(throws: CatalogError.self) { try catalog.validate() }
+    }
+
+    @Test(arguments: ["0", "0.01"])
+    func confirmedFreeOffersCannotUseTheRoundingAllowance(price: String) throws {
+        var catalog = CatalogFixture.make()
+        var evidence = CatalogFixture.saving(price: Decimal(string: "0.01")!, percent: 100)
+        let confirmedPrice: Decimal = try #require(Decimal(string: price))
+        evidence.confirmedOfferPriceUSD = confirmedPrice
+        catalog.offers[0].savingEstimate = evidence
+        if price == "0" {
+            try catalog.validate()
+            #expect(evidence.offerPriceLabel == "Free for the first year")
+        } else {
+            #expect(throws: CatalogError.self) { try catalog.validate() }
+        }
+    }
+
     @Test func renewalUsesTheFutureRegularPriceUnlessAnOfferSpecifiesOtherwise() throws {
         var catalog = CatalogFixture.make()
         #expect(catalog.offers[0].renewalDescription == "After the first year, the regular price at renewal applies.")
@@ -96,11 +138,20 @@ struct SavingsTests {
         let catalog = try Catalog.load(from: directory)
         let edition = try #require(catalog.editions.first { $0.id == "arctic-2027" })
         let products = catalog.visibleProductContributions(for: edition)
-        #expect(products.map(\.product.productName) == ["Swift & SwiftUI books", "The Shed", "Nunch", "AI Fundamentals", "Whio", "Passable", "Dee: Muay Thai Coach", "Helm", "PocketShelf", "RocketSim for Xcode", "RocketTrace for Xcode", "Xarra!", "Coca", "RetroRapid!"])
+        #expect(products.map(\.product.productName) == ["Swift & SwiftUI books", "The Shed", "Nunch", "AI Fundamentals", "Whio", "Passable", "Dee: Muay Thai Coach", "Helm", "PocketShelf", "Kickstart", "RocketSim for Xcode", "RocketTrace for Xcode", "Xarra!", "Coca", "RetroRapid!"])
         let value = try #require(catalog.bundleValue(for: edition))
         #expect(value.totalUSD == products.reduce(0) { $0 + ($1.maximumSavingUSD ?? 0) })
-        #expect(value.totalUSD == Decimal(string: "477.03"))
-        #expect(value.amountLabel == "US$477")
+        #expect(value.totalUSD == Decimal(string: "498.03"))
+        #expect(value.amountLabel == "US$498")
+        let kickstart = try #require(value.offers.first { $0.projectID == "kickstart" }?.savingEstimate)
+        #expect(kickstart.plan == "Kickstart Pro Yearly")
+        #expect(kickstart.regularPriceUSD == Decimal(string: "69.99"))
+        #expect(kickstart.discountPercent == 30)
+        #expect(kickstart.period == .year)
+        #expect(kickstart.discountedPeriods == 1)
+        #expect(kickstart.confirmedOfferPriceUSD == Decimal(string: "48.99"))
+        #expect(kickstart.amountUSD == 21)
+        #expect(kickstart.offerPriceUSD == Decimal(string: "48.99"))
         let whio = try #require(products.first { $0.product.projectID == "whio" })
         #expect(whio.offers.count == 2)
         #expect(whio.maximumSavingUSD == Decimal(string: "44.99"))
@@ -171,7 +222,7 @@ struct SavingsTests {
         #expect(maker.websiteURL == "https://helm-app.com/")
         #expect(maker.people?.map(\.name) == ["Hidde van der Ploeg", "Pol Piella"])
         #expect(maker.people?.map(\.websiteURL) == ["https://hidde.design/", "https://www.polpiella.dev/"])
-        #expect(catalog.visibleParticipations(for: edition).first { $0.indieID == maker.id }?.connection == "Speakers ARCTIC 2025")
+        #expect(catalog.visibleParticipations(for: edition).first { $0.indieID == maker.id }?.connection == "Speakers ARCtic 2025")
     }
 
     @Test(arguments: ["currency", "storefront", "percentage zero", "percentage too large", "duration", "missing plan", "missing observations", "wrong selection", "duplicate observation", "unreviewed ambiguity", "foreign storefront link"])

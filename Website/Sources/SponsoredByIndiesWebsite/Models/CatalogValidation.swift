@@ -155,6 +155,14 @@ extension Catalog {
                 }
                 try require(money(estimate.regularPriceUSD), "Reference prices need non-negative USD amounts with at most two decimals.")
                 try require((1...100).contains(estimate.discountPercent), "Discount percentage must be between 1 and 100.")
+                if let price = estimate.confirmedOfferPriceUSD {
+                    try require(money(price) && price <= estimate.regularPriceUSD, "Confirmed offer prices must be valid USD amounts no higher than the regular price.")
+                    if estimate.discountPercent == 100 {
+                        try require(price == 0, "A 100% discount requires a zero offer price.")
+                    }
+                    let calculatedPrice = estimate.regularPriceUSD * Decimal(100 - estimate.discountPercent) / 100
+                    try require(abs(price - calculatedPrice) <= Decimal(1) / 100, "Confirmed offer prices must match the percentage discount within one cent.")
+                }
                 try require(!estimate.amountUSD.isNaN, "Savings calculation overflowed.")
                 try require(estimate.discountedPeriods == 1, "Savings count exactly one eligible purchase or first annual period.")
                 try require(estimate.currency == "USD" && estimate.storefront == "US", "Reference prices must use the US/USD baseline.")

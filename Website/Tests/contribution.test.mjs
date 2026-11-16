@@ -5,7 +5,7 @@ import { makeContributionEmail, makeEmailFile, LONG_EMAIL_HINT_LENGTH, validateI
 const recipient = "hello@accessibilityUpTo11.com";
 const offer = overrides => ({proposal:"Free access to Example App: https://example.com/app", ...overrides});
 const proposal = overrides => ({
-  name: "Alex Example", email: "alex@example.com", conference: "ARCTIC 2027",
+  name: "Alex Example", email: "alex@example.com", conference: "ARCtic 2027",
   connection: "Past speaker", quote: "A lovely community.",
   resources: [{product:"Example App",url:"https://example.com/app?a=1&b=2#details",category:"App",description:"A useful tool.",offers:[offer()]}],
   ...overrides
