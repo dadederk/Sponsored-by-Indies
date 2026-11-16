@@ -133,5 +133,23 @@
     "iconPath": "/app-icons/kickstart.png",
     "description": "Get the app that turns shipped apps into successful ones. Find the gaps in your keywords, pricing, reviews, and marketing, then get clear next steps to close them.",
     "showcaseDescription": "Get the app that turns shipped apps into successful ones. Find the gaps in your keywords, pricing, reviews, and marketing, then get clear next steps to close them."
+  },
+  {
+    "id": "lookup",
+    "indieID": "vidit-bhargava",
+    "name": "LookUp",
+    "websiteURL": "https://squircleapps.com/",
+    "iconPath": "/app-icons/lookup.png",
+    "description": "Learn new words every day through beautifully hand crafted illustrations and interactive quizzes. LookUp makes building vocabulary fun and enjoyable, creating it an ideal app for English learners.",
+    "showcaseDescription": "Learn new words every day through beautifully hand crafted illustrations and interactive quizzes. LookUp makes building vocabulary fun and enjoyable, creating it an ideal app for English learners."
+  },
+  {
+    "id": "movie-buzz",
+    "indieID": "vidit-bhargava",
+    "name": "Movie Buzz",
+    "websiteURL": "https://apps.apple.com/us/app/movie-buzz-movie-tracker-app/id524388922",
+    "iconPath": "/app-icons/movie-buzz.png",
+    "description": "A state of the art movie companion that helps you discover films worth your time, find where to watch them, and know whether you'll like them.",
+    "showcaseDescription": "A state of the art movie companion that helps you discover films worth your time, find where to watch them, and know whether you'll like them."
   }
 ]

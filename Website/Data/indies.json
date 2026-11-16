@@ -342,5 +342,35 @@
         ]
       }
     ]
+  },
+  {
+    "id": "vidit-bhargava",
+    "name": "Vidit Bhargava",
+    "company": "Squircle Apps",
+    "websiteURL": "https://squircleapps.com/",
+    "socials": [],
+    "initials": "VB",
+    "people": [
+      {
+        "name": "Vidit Bhargava",
+        "websiteURL": "https://viditb.com/",
+        "bio": "Interaction designer and prototyper exploring thoughtful ways to use emerging technology. He designs apps at Squircle Apps and researches interfaces that fit around the actions people want to take.",
+        "portraitPath": "/portraits/vidit-bhargava.jpg",
+        "socials": [
+          {
+            "label": "Mastodon",
+            "url": "https://mastodon.social/@Viditb"
+          },
+          {
+            "label": "Twitter",
+            "url": "https://x.com/viditb"
+          },
+          {
+            "label": "LinkedIn",
+            "url": "https://www.linkedin.com/in/viditbharg"
+          }
+        ]
+      }
+    ]
   }
 ]

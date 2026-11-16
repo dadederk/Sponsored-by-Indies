@@ -46,7 +46,9 @@
           "nunch-lifetime",
           "whio-lifetime",
           "nil-coalescing-books",
-          "kickstart-yearly"
+          "kickstart-yearly",
+          "lookup-yearly",
+          "movie-buzz-yearly"
         ]
       },
       "bundleNote": "We’re working on expanding the bundle and its value."
@@ -145,6 +147,13 @@
       "indieID": "paul-hudson",
       "connection": "Speaker ARCtic 2025",
       "quote": "Great events focus on people first, and ARCtic does just that – and more.",
+      "publicationApproved": true
+    },
+    {
+      "editionID": "arctic-2027",
+      "indieID": "vidit-bhargava",
+      "connection": "Speaker ARCtic 2025",
+      "quote": null,
       "publicationApproved": true
     }
   ],
@@ -657,6 +666,54 @@
         "verifiedOn": "2026-11-16",
         "sourceURL": "https://apps.apple.com/us/app/kickstart-app-accelerator/id6758355178",
         "confirmedOfferPriceUSD": 48.99
+      }
+    },
+    {
+      "id": "lookup-yearly",
+      "editionID": "arctic-2027",
+      "projectID": "lookup",
+      "benefit": "30% off your first year",
+      "terms": "LookUp+ yearly subscription.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through the conference.",
+      "publicationApproved": true,
+      "savingEstimate": {
+        "regularPriceUSD": 29.99,
+        "discountPercent": 30,
+        "plan": "LookUp+ Yearly",
+        "period": "year",
+        "discountedPeriods": 1,
+        "currency": "USD",
+        "storefront": "US",
+        "observedPricesUSD": [
+          29.99
+        ],
+        "review": "unambiguous",
+        "verifiedOn": "2026-11-16",
+        "sourceURL": "https://apps.apple.com/us/app/lookup-english-dictionary-app/id872564448"
+      }
+    },
+    {
+      "id": "movie-buzz-yearly",
+      "editionID": "arctic-2027",
+      "projectID": "movie-buzz",
+      "benefit": "50% off your first year",
+      "terms": "Movie Buzz 70mm annual subscription.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through the conference.",
+      "publicationApproved": true,
+      "savingEstimate": {
+        "regularPriceUSD": 19.99,
+        "discountPercent": 50,
+        "plan": "Movie Buzz 70mm Annual",
+        "period": "year",
+        "discountedPeriods": 1,
+        "currency": "USD",
+        "storefront": "US",
+        "observedPricesUSD": [
+          19.99
+        ],
+        "review": "unambiguous",
+        "verifiedOn": "2026-11-16",
+        "sourceURL": "https://apps.apple.com/us/app/movie-buzz-movie-tracker-app/id524388922"
       }
     }
   ]
