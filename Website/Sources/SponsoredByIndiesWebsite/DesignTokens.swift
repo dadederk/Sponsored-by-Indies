@@ -36,6 +36,10 @@ enum DesignTokens {
     static let brandNameSize = 42.4
     static let brandGap = 12.0
     static let brandLineGap = 2.0
+    static let brandExportWidth = 4800
+    static let brandExportHeight = 1400
+    static let brandExportMarkSize = 1200.0
+    static let brandExportOrigin = (x: 80.0, y: 100.0)
 
     // Base scale, then semantic roles. Keep page composition free of repeated values.
     static let spacing = """

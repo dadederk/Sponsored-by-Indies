@@ -10,6 +10,7 @@ Website/.ignite/
 Website/node_modules/
 Website/playwright-report/
 Website/test-results/
+/generated_images/
 
 # Working notes belong in the separate private planning repository.
 /docs/
@@ -18,3 +19,4 @@ Website/test-results/
 *.md
 !/README.md
 !/AGENTS.md
+!/assets/brand/README.md

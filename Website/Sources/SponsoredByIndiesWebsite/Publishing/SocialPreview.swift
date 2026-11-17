@@ -15,6 +15,23 @@ enum SocialPreview {
             throw RenderError.unavailableGraphics
         }
         let palette = DesignTokens.palette
+        if identity == .sponsored {
+            let width = DesignTokens.brandExportWidth
+            let height = DesignTokens.brandExportHeight
+            let origin = DesignTokens.brandExportOrigin
+            for (name, monochrome) in [("full-colour", false), ("black", true)] {
+                try png(width: width, height: height, background: nil) {
+                    wordmark(logo: logo, emphasis: emphasis, at: NSPoint(x: origin.x, y: origin.y),
+                             markSize: DesignTokens.brandExportMarkSize, identity: .sponsored)
+                    if monochrome {
+                        // Source-in preserves the original antialiased alpha, including counters.
+                        NSGraphicsContext.current?.compositingOperation = .sourceIn
+                        fill(NSRect(x: 0, y: 0, width: width, height: height), with: "#000000")
+                        NSGraphicsContext.current?.compositingOperation = .sourceOver
+                    }
+                }.write(to: directory.appending(path: "sponsored-by-indies-logo-\(name)-transparent.png"), options: .atomic)
+            }
+        }
         try png(width: 1200, height: 630, background: palette.paper) {
             wordmark(logo: logo, emphasis: emphasis, at: NSPoint(x: 65, y: 390), markSize: 160, identity: identity)
             headline(at: NSPoint(x: 70, y: 245), size: 74, emphasis: headlineEmphasis, identity: identity)
@@ -119,7 +136,7 @@ enum SocialPreview {
         CTLineDraw(line, context)
     }
 
-    private static func png(width: Int, height: Int, background: String, drawing: () -> Void) throws -> Data {
+    private static func png(width: Int, height: Int, background: String?, drawing: () -> Void) throws -> Data {
         guard let bitmap = NSBitmapImageRep(
             bitmapDataPlanes: nil, pixelsWide: width, pixelsHigh: height,
             bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true,
@@ -131,7 +148,9 @@ enum SocialPreview {
         defer { NSGraphicsContext.restoreGraphicsState() }
         NSGraphicsContext.current = context
         context.imageInterpolation = .high
-        fill(NSRect(x: 0, y: 0, width: width, height: height), with: background)
+        let bounds = NSRect(x: 0, y: 0, width: width, height: height)
+        context.cgContext.clear(bounds)
+        if let background { fill(bounds, with: background) }
         drawing()
         guard let data = bitmap.representation(using: .png, properties: [:]) else {
             throw RenderError.unavailableGraphics

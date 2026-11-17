@@ -42,6 +42,7 @@ For content review without another domain or server, open `/by-indies-preview/` 
 | `Website/Sources/SponsoredByIndiesWebsite/` | Code for the pages, shared elements and website generation |
 | `Website/Assets/` | Styles, logos and code that runs in the browser |
 | `Website/Tests/` | Automated checks |
+| `assets/brand/` | Transparent conference logos, social graphics and usage notes |
 
 Keep existing page addresses and add only approved conference and offer details. Each year’s participation and offers need fresh approval.
 

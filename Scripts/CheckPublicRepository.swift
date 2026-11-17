@@ -49,8 +49,14 @@ let rootFiles = Set(["README.md", "AGENTS.md", ".gitignore", ".github/workflows/
 let websiteFiles = Set(["Website/Package.swift", "Website/Package.resolved", "Website/package.json",
                         "Website/package-lock.json", "Website/playwright.config.mjs"])
 let websiteFolders = ["Website/Sources/", "Website/Tests/", "Website/Assets/", "Website/Data/"]
+let brandFiles = Set(["assets/brand/README.md",
+                      "assets/brand/sponsored-by-indies-logo-full-colour-transparent.png",
+                      "assets/brand/sponsored-by-indies-logo-black-transparent.png",
+                      "assets/brand/sponsored-by-indies-social-preview.png",
+                      "assets/brand/sponsored-by-indies-social-banner.png",
+                      "assets/brand/sponsored-by-indies-social-avatar.png"])
 let unexpected = paths.filter { path in
-    if rootFiles.contains(path) { return false }
+    if rootFiles.contains(path) || brandFiles.contains(path) { return false }
     if path.lowercased().hasSuffix(".md") { return true }
     return !websiteFiles.contains(path) && !websiteFolders.contains(where: { path.hasPrefix($0) })
 }

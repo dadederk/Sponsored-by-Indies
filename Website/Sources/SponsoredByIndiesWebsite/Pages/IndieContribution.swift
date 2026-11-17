@@ -11,7 +11,7 @@ struct IndieContribution {
             Tag("section") {
                 Components.title("A little of", emphasis: "what you make.")
                 Text("Share an app, game, book, course, tool… with a conference community you care about.").class("lead")
-                Text("Solo makers and small independent teams are welcome. Help support an iOS, Swift or Apple developer conference with something useful, playful or educational.")
+                Text("Solo makers and small independent teams are welcome. Contribute to an iOS, Swift or Apple developer conference you’re connected to (as a past or current speaker, organiser, first-time or returning attendee, or local developer…).")
                 if let contact = catalog.contactURL {
                     Components.button("Express indie interest", href: interestURL(contact))
                     if contact.hasPrefix("mailto:") {
@@ -31,7 +31,7 @@ struct IndieContribution {
                 }
             }
             Components.processSection("How we", emphasis: "put it together.", id: "process-title", steps: [
-                ("Share your contribution.", "Tell us which conference you’d like to support, the products you’d like to share and your proposed offers. You can also include a quote about what makes that conference special to you."),
+                ("Share your contribution.", "Tell us which conference you’d like to support and how you’re connected to it, along with the products you’d like to share and your proposed offers. You can also include a quote about what makes that conference special to you."),
                 ("Review your preview.", "We’ll prepare a preview of how your projects and offers will look in the conference bundle. We’ll work through any changes together until you’re happy."),
                 ("You’re in the bundle. Thank you!", "Once you approve it, we publish your contribution as part of the bundle. Then we work with the conference to get your offer codes or access instructions to attendees."),
             ])

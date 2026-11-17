@@ -372,5 +372,31 @@
         ]
       }
     ]
+  },
+  {
+    "id": "mohammad-azam",
+    "name": "Mohammad Azam",
+    "company": "AzamSharp School",
+    "websiteURL": "https://azamsharp.school/",
+    "socials": [],
+    "initials": "MA",
+    "people": [
+      {
+        "name": "Mohammad Azam",
+        "websiteURL": "https://azamsharp.com/",
+        "bio": "Developer, instructor and international speaker with over two decades of experience. At AzamSharp School, he teaches practical lessons from building real applications, helping developers understand how things work and apply them in their own apps.",
+        "portraitPath": "/portraits/mohammad-azam.png",
+        "socials": [
+          {
+            "label": "Twitter",
+            "url": "https://x.com/azamsharp"
+          },
+          {
+            "label": "LinkedIn",
+            "url": "https://www.linkedin.com/in/mohammad-azam-5537993/"
+          }
+        ]
+      }
+    ]
   }
 ]

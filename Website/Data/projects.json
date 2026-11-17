@@ -151,5 +151,23 @@
     "iconPath": "/app-icons/movie-buzz.png",
     "description": "A state of the art movie companion that helps you discover films worth your time, find where to watch them, and know whether you'll like them.",
     "showcaseDescription": "A state of the art movie companion that helps you discover films worth your time, find where to watch them, and know whether you'll like them."
+  },
+  {
+    "id": "swiftui-architecture",
+    "indieID": "mohammad-azam",
+    "name": "SwiftUI Architecture",
+    "websiteURL": "https://azamsharp.school/swiftui-architecture-book.html",
+    "iconPath": "/app-icons/swiftui-architecture.png",
+    "description": "Learn to structure SwiftUI apps around clear state and data flow. Explore navigation, communication between features, dependency management and testing, with practical patterns for applications that grow beyond demos.",
+    "showcaseDescription": "Learn to structure SwiftUI apps around clear state and data flow. Explore navigation, communication between features, dependency management and testing, with practical patterns for applications that grow beyond demos."
+  },
+  {
+    "id": "swiftdata-architecture",
+    "indieID": "mohammad-azam",
+    "name": "SwiftData Architecture",
+    "websiteURL": "https://azamsharp.school/swiftdata-architecture.html",
+    "iconPath": "/app-icons/swiftdata-architecture.png",
+    "description": "Build data-driven apps with SwiftData. Explore model relationships, queries, migrations, CloudKit sync, testing and performance, with practical guidance for managing persistence in real applications.",
+    "showcaseDescription": "Build data-driven apps with SwiftData. Explore model relationships, queries, migrations, CloudKit sync, testing and performance, with practical guidance for managing persistence in real applications."
   }
 ]
