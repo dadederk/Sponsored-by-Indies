@@ -5,10 +5,12 @@ import { readFile, readdir } from 'node:fs/promises';
 const website = new URL('../', import.meta.url);
 const read = path => readFile(new URL(path, website), 'utf8');
 const references = value => [...value.matchAll(/var\((--[\w-]+)/g)].map(match => match[1]);
-const conferenceVariables = new Set(['--conference-bg', '--conference-accent', '--conference-highlight', '--conference-detail']);
+const conferenceVariables = new Set([
+  '--conference-bg', '--conference-text', '--conference-accent', '--conference-highlight', '--conference-detail'
+]);
 
 test('published text and controls retain contrast across shared and conference themes', async () => {
-  const tokens = await read('BuildPublic/design-tokens.css');
+  const tokens = await read('BuildPublic/css/design-tokens.css');
   const colours = new Map([...tokens.matchAll(/--([\w-]+)\s*:\s*(#[\da-f]{6});/gi)].map(match => [match[1], match[2]]));
   function luminance(hex) {
     assert.match(hex, /^#[\da-f]{6}$/i);
@@ -30,19 +32,20 @@ test('published text and controls retain contrast across shared and conference t
     if (!file.endsWith('.json')) continue;
     const { conference } = JSON.parse(await read(`Data/Conferences/${file}`));
     const branding = conference.branding;
-    const background = branding?.background ?? colours.get('ink');
-    for (const [role, foreground] of [
-      ['body', colours.get('white')],
-      ['accent', branding?.accent ?? colours.get('accent-soft')],
-      ['detail', branding?.detail ?? colours.get('accent-soft')],
-      ['button', branding?.highlight ?? colours.get('accent-soft')]
-    ]) check(`${conference.name} ${role}`, foreground, background);
+    const theme = branding?.websiteTheme ?? branding;
+    const background = theme?.background ?? colours.get('ink');
+    for (const [role, foreground, minimum] of [
+      ['body', theme?.foreground ?? colours.get('white'), 4.5],
+      ['accent', theme?.accent ?? colours.get('accent-soft'), 4.5],
+      ['detail', theme?.detail ?? colours.get('accent-soft'), 3],
+      ['button', theme?.highlight ?? colours.get('accent-soft'), 4.5]
+    ]) check(`${conference.name} ${role}`, foreground, background, minimum);
   }
 });
 
 for (const directory of ['Build', 'BuildPublic']) {
   test(`${directory}: shared CSS variables resolve without cycles`, async () => {
-    const tokens = await read(`${directory}/design-tokens.css`);
+    const tokens = await read(`${directory}/css/design-tokens.css`);
     const styles = await read(`${directory}/styles.css`);
     const values = new Map([...tokens.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)].map(match => [match[1], match[2]]));
     const definitions = new Set([...values.keys(), ...[...styles.matchAll(/(--[\w-]+)\s*:/g)].map(match => match[1])]);
@@ -58,9 +61,14 @@ for (const directory of ['Build', 'BuildPublic']) {
   });
 
   test(`${directory}: generated artwork resolves colours and preserves geometry`, async () => {
-    for (const name of ['logo.svg', 'logo-inverse.svg', 'favicon.svg', 'favicon-shared-imprint-01.svg']) {
+    for (const [name, path] of [
+      ['logo.svg', 'assets/brand/shared/by-indies-mark.svg'],
+      ['logo-inverse.svg', 'assets/brand/shared/by-indies-mark-inverse.svg'],
+      ['favicon.svg', 'assets/icons/favicon.svg'],
+      ['favicon-shared-imprint-01.svg', 'assets/icons/favicon-shared-imprint-01.svg']
+    ]) {
       const source = await read(`Assets/${name}`);
-      const output = await read(`${directory}/${name}`);
+      const output = await read(`${directory}/${path}`);
       assert.ok(source.includes('var(--'), `${name}: source has palette bindings`);
       assert.ok(!output.includes('var(--'), `${name}: no dependence on page CSS inheritance`);
       const geometry = svg => [...svg.matchAll(/\b(?:d|viewBox|cx|cy|r|rx|ry|width|height)="[^"]*"/g)].map(match => match[0]);

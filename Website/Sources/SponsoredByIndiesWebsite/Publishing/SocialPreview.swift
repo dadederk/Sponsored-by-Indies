@@ -5,13 +5,15 @@ import CoreText
 @MainActor
 enum SocialPreview {
     static func install(in directory: URL, identity: SiteIdentity = .sponsored, bundles: [BundleArtwork] = []) throws {
+        try FileManager.default.createDirectory(at: directory.appending(path: ArtworkPaths.brandDirectory(for: identity)),
+                                                withIntermediateDirectories: true)
         guard let emphasis = NSFont(name: "Georgia-BoldItalic", size: 1),
               let headlineEmphasis = NSFont(name: "Georgia-Italic", size: 1) else {
             throw RenderError.unavailableFont
         }
-        guard let logo = NSImage(contentsOf: directory.appending(path: "logo.svg")),
-              let inverse = NSImage(contentsOf: directory.appending(path: "logo-inverse.svg")),
-              let icon = NSImage(contentsOf: directory.appending(path: "favicon.svg")) else {
+        guard let logo = NSImage(contentsOf: directory.appending(path: ArtworkPaths.mark)),
+              let inverse = NSImage(contentsOf: directory.appending(path: ArtworkPaths.inverseMark)),
+              let icon = NSImage(contentsOf: directory.appending(path: ArtworkPaths.favicon)) else {
             throw RenderError.unavailableGraphics
         }
         let palette = DesignTokens.palette
@@ -29,7 +31,7 @@ enum SocialPreview {
                         fill(NSRect(x: 0, y: 0, width: width, height: height), with: "#000000")
                         NSGraphicsContext.current?.compositingOperation = .sourceOver
                     }
-                }.write(to: directory.appending(path: "sponsored-by-indies-logo-\(name)-transparent.png"), options: .atomic)
+                }.write(to: directory.appending(path: ArtworkPaths.brandFile("logo-\(name)-transparent")), options: .atomic)
             }
         }
         try png(width: 1200, height: 630, background: palette.paper) {
@@ -37,22 +39,22 @@ enum SocialPreview {
             headline(at: NSPoint(x: 70, y: 245), size: 74, emphasis: headlineEmphasis, identity: identity)
             fill(NSRect(x: 0, y: 0, width: 1200, height: 80), with: palette.ink)
             draw(identity.summary, at: NSPoint(x: 70, y: 25), size: 28, color: palette.accentSoft)
-        }.write(to: directory.appending(path: "social-preview.png"), options: .atomic)
+        }.write(to: directory.appending(path: ArtworkPaths.brandFile("social-preview", for: identity)), options: .atomic)
         try png(width: 1024, height: 1024, background: palette.ink) {
             inverse.draw(in: NSRect(x: 155, y: 155, width: 714, height: 714))
-        }.write(to: directory.appending(path: "social-avatar.png"), options: .atomic)
+        }.write(to: directory.appending(path: ArtworkPaths.brandFile("social-avatar", for: identity)), options: .atomic)
         try png(width: 1500, height: 500, background: palette.paper) {
             wordmark(logo: logo, emphasis: emphasis, at: NSPoint(x: 60, y: 165), markSize: 190, identity: identity)
             headline(at: NSPoint(x: 850, y: 265), size: 50, emphasis: headlineEmphasis, identity: identity)
             fill(NSRect(x: 0, y: 0, width: 1500, height: 65), with: palette.ink)
             draw(identity.summary, at: NSPoint(x: 60, y: 19), size: 24, color: palette.accentSoft)
-        }.write(to: directory.appending(path: "social-banner.png"), options: .atomic)
+        }.write(to: directory.appending(path: ArtworkPaths.brandFile("social-banner", for: identity)), options: .atomic)
         try png(width: 1800, height: 450, background: palette.paper) {
             wordmark(logo: logo, emphasis: emphasis, at: NSPoint(x: 60, y: 140), markSize: 200, identity: identity)
             headline(at: NSPoint(x: 900, y: 230), size: 60, emphasis: headlineEmphasis, identity: identity)
             fill(NSRect(x: 0, y: 0, width: 1800, height: 60), with: palette.ink)
             draw(identity.summary, at: NSPoint(x: 80, y: 17), size: 25, color: palette.accentSoft)
-        }.write(to: directory.appending(path: "readme-banner.png"), options: .atomic)
+        }.write(to: directory.appending(path: ArtworkPaths.brandFile("readme-banner", for: identity)), options: .atomic)
         var renderedBundles = Set<String>()
         for bundle in bundles where renderedBundles.insert(bundle.imagePath).inserted {
             let target = directory.appending(path: String(bundle.imagePath.dropFirst()))
@@ -73,7 +75,8 @@ enum SocialPreview {
                 headline(at: NSPoint(x: 650, y: 85), size: 32, emphasis: headlineEmphasis, identity: .sponsored)
             }.write(to: target, options: .atomic)
         }
-        for (name, size) in [("favicon-32.png", 32), ("apple-touch-icon.png", 180)] {
+        // Browsers also request the touch icon and ICO at these standard root URLs.
+        for (name, size) in [(ArtworkPaths.faviconPNG, 32), ("apple-touch-icon.png", 180)] {
             try png(width: size, height: size, background: palette.ink) {
                 icon.draw(in: NSRect(x: 0, y: 0, width: size, height: size))
             }.write(to: directory.appending(path: name), options: .atomic)
@@ -82,7 +85,7 @@ enum SocialPreview {
 
     /// Embed the final compressed PNG so both browser icon formats stay identical.
     nonisolated static func installBrowserIcon(in directory: URL) throws {
-        let iconPNG = try Data(contentsOf: directory.appending(path: "favicon-32.png"))
+        let iconPNG = try Data(contentsOf: directory.appending(path: ArtworkPaths.faviconPNG))
         // A single 32px PNG representation inside the standard ICO container.
         var ico = Data([0, 0, 1, 0, 1, 0, 32, 32, 0, 0, 1, 0, 32, 0])
         for value in [UInt32(iconPNG.count), 22] {

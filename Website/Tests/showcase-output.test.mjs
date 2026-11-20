@@ -76,17 +76,17 @@ for (const [directory, sponsoredDirectory, origin, sponsoredOrigin, preview] of 
     assert.deepEqual(attributes(footer, 'href'), [sponsoredOrigin + '/', sponsoredOrigin + '/terms/']);
     const sitemap = await read(`${directory}/sitemap.xml`);
     assert.deepEqual([...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match => match[1]), [`${origin}/`]);
-    const image = await readFile(join(website, directory, 'social-preview.png'));
+    const image = await readFile(join(website, directory, 'assets/brand/by-indies/by-indies-social-preview.png'));
     assert.equal(image.readUInt32BE(16), 1200);
     assert.equal(image.readUInt32BE(20), 630);
-    assert.notDeepEqual(image, await readFile(join(website, sponsoredDirectory, 'social-preview.png')), 'site-specific sharing artwork');
+    assert.notDeepEqual(image, await readFile(join(website, sponsoredDirectory, 'assets/brand/sponsored-by-indies/sponsored-by-indies-social-preview.png')), 'site-specific sharing artwork');
     if (!preview) {
       assert.equal((await read(`${directory}/CNAME`)).trim(), 'byindies.com');
       const readme = await read(`${directory}/README.md`);
       assert.match(readme, /^# By Indies$/m);
       assert.ok(readme.includes('https://github.com/dadederk/Sponsored-by-Indies'));
       assert.ok(readme.includes('https://sponsored.byindies.com/participate/'));
-      assert.ok(readme.includes('](readme-banner.png)'));
+      assert.ok(readme.includes('](assets/brand/by-indies/by-indies-readme-banner.png)'));
       await stat(join(website, directory, '.nojekyll'));
     }
   });

@@ -45,18 +45,24 @@ func checkApprovals(_ data: Data, context: String) throws {
 let data = try gitOutput(["ls-files", "-z"])
 
 let paths = String(decoding: data, as: UTF8.self).split(separator: "\0").map(String.init)
-let rootFiles = Set(["README.md", "AGENTS.md", ".gitignore", ".github/workflows/pages.yml", "Scripts/CheckPublicRepository.swift", "Scripts/SetupByIndiesHosting.swift", "Images/readme-banner.png"])
+let rootFiles = Set(["README.md", "AGENTS.md", ".gitignore", ".github/workflows/pages.yml", "Scripts/CheckPublicRepository.swift", "Scripts/SetupByIndiesHosting.swift"])
 let websiteFiles = Set(["Website/Package.swift", "Website/Package.resolved", "Website/package.json",
                         "Website/package-lock.json", "Website/playwright.config.mjs"])
 let websiteFolders = ["Website/Sources/", "Website/Tests/", "Website/Assets/", "Website/Data/"]
 let brandFiles = Set(["assets/brand/README.md",
-                      "assets/brand/sponsored-by-indies-logo-full-colour-transparent.png",
-                      "assets/brand/sponsored-by-indies-logo-black-transparent.png",
-                      "assets/brand/sponsored-by-indies-social-preview.png",
-                      "assets/brand/sponsored-by-indies-social-banner.png",
-                      "assets/brand/sponsored-by-indies-social-avatar.png"])
+                      "assets/brand/sponsored-by-indies/sponsored-by-indies-logo-full-colour-transparent.png",
+                      "assets/brand/sponsored-by-indies/sponsored-by-indies-logo-black-transparent.png",
+                      "assets/brand/sponsored-by-indies/sponsored-by-indies-social-preview.png",
+                      "assets/brand/sponsored-by-indies/sponsored-by-indies-social-banner.png",
+                      "assets/brand/sponsored-by-indies/sponsored-by-indies-social-avatar.png",
+                      "assets/brand/sponsored-by-indies/sponsored-by-indies-readme-banner.png",
+                      "assets/brand/by-indies/by-indies-social-preview.png",
+                      "assets/brand/by-indies/by-indies-social-banner.png",
+                      "assets/brand/by-indies/by-indies-social-avatar.png",
+                      "assets/brand/by-indies/by-indies-readme-banner.png"])
 let unexpected = paths.filter { path in
     if rootFiles.contains(path) || brandFiles.contains(path) { return false }
+    if path.range(of: "^assets/social/[a-z0-9-]+/[a-z0-9-]+/partners/[a-z0-9-]+\\.png$", options: .regularExpression) != nil { return false }
     if path.lowercased().hasSuffix(".md") { return true }
     return !websiteFiles.contains(path) && !websiteFolders.contains(where: { path.hasPrefix($0) })
 }

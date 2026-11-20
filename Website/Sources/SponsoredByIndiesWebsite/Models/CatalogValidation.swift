@@ -47,10 +47,20 @@ extension Catalog {
             }
             try require(slug(conference.slug), "Invalid conference slug: \(conference.slug)")
             try Self.validateURL(conference.websiteURL)
+            if let link = conference.descriptionLink {
+                try nonempty([link.text], "description link for \(conference.id)")
+                try Self.validateURL(link.url)
+                try require(conference.description.components(separatedBy: link.text).count == 2,
+                            "Conference \(conference.id) description link text must occur exactly once.")
+            }
             if let branding = conference.branding {
                 try require(branding.colors.allSatisfy {
                     $0.range(of: "^#[0-9a-fA-F]{6}$", options: .regularExpression) != nil
                 }, "Conference \(conference.id) colours must be six-digit hex values.")
+                if let path = branding.logoPath {
+                    try require(path.range(of: "^/conference-logos/[a-z0-9-]+\\.svg$", options: .regularExpression) != nil,
+                                "Conference logos must use a local SVG in /conference-logos/.")
+                }
             }
         }
         for edition in editions {
@@ -65,6 +75,18 @@ extension Catalog {
             try require(edition.startDate <= edition.endDate, "Edition \(edition.id) ends before it starts.")
             if let url = edition.accessURL { try Self.validateURL(url) }
             if let note = edition.bundleNote { try nonempty([note], "bundle note for \(edition.id)") }
+            if let groups = edition.artworkGroups {
+                try unique(groups.map(\.id), "artwork group in \(edition.id)")
+                try unique(groups.flatMap(\.projectIDs), "grouped artwork product in \(edition.id)")
+                let visible = Set(visibleOffers(for: edition).compactMap(\.projectID))
+                for group in groups {
+                    try require(slug(group.id) && group.id != "sponsored-by-indies" && !projects.contains(where: { $0.id == group.id }),
+                                "Artwork groups need distinct stable IDs: \(group.id).")
+                    try require(group.projectIDs.count == 2 && group.projectIDs.allSatisfy { id in
+                        visible.contains(id) && projects.contains { $0.id == id && $0.iconPath != nil }
+                    }, "Artwork group \(group.id) needs two approved products with local artwork in \(edition.id).")
+                }
+            }
             for contribution in visibleProductContributions(for: edition) {
                 let product = contribution.product
                 try require(contribution.offers.allSatisfy {

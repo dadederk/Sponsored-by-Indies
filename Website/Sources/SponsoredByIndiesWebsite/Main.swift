@@ -24,6 +24,26 @@ struct SponsoredByIndiesWebsite {
             print("Price evidence has more than seven days remaining. No content or check dates were changed.")
             return
         }
+        if let editionID = options.partnerArtworkEditionID {
+            let assets = source.appending(path: "Assets")
+            let repository = source.deletingLastPathComponent()
+            let brand = repository.appending(path: ArtworkPaths.brandFile("logo-full-colour-transparent"))
+            if options.allPartners {
+                let artworks = try PartnerArtwork.batch(catalog: catalog, editionID: editionID)
+                let edition = artworks[0].edition
+                let conference = artworks[0].conference
+                let directory = repository.appending(path: ArtworkPaths.conferenceDirectory(conference, edition: edition) + "/partners")
+                try PartnerArtwork.installBatch(artworks, in: directory, assets: assets, brandLogo: brand)
+                print("\(artworks.count) partner graphics generated at \(directory.path)")
+            } else {
+                let artwork = try PartnerArtwork(catalog: catalog, editionID: editionID,
+                                                 projectID: options.partnerProjectID, groupID: options.partnerGroupID)
+                let directory = source.appending(path: "BuildArtwork/" + artwork.folder)
+                try artwork.install(in: directory, assets: assets, brandLogo: brand)
+                print("Partner artwork generated at \(directory.path)")
+            }
+            return
+        }
         // The evergreen showcase does not publish prices or savings.
         if options.identity == .sponsored { try catalog.validatePriceFreshness(on: .now) }
         if options.validateOnly {

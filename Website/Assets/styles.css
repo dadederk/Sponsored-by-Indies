@@ -71,9 +71,9 @@ main:focus { outline: none; }
 .panel { background: var(--surface); border: var(--border-width) solid var(--line); border-radius: var(--radius-card); padding: var(--card-inset); height: 100%; }
 .panel p:last-child { margin-bottom: 0; }
 .partnership-panels h2 .title-accent { display: block; }
-.conference-panel { background: var(--conference-bg,var(--ink)); color: var(--white); padding: var(--conference-inset); }
+.conference-panel { background: var(--conference-bg,var(--ink)); color: var(--conference-text,var(--white)); padding: var(--conference-inset); }
 section.conference-panel { padding: 0; }
-.conference-panel .lead { color: var(--white); }
+.conference-panel .lead { color: var(--conference-text,var(--white)); }
 .conference-panel .eyebrow,.conference-panel h1,.conference-panel h3,.conference-panel a { color: var(--conference-accent,var(--accent-soft)); }
 .conference-panel .conference-location { color: var(--conference-detail,var(--accent-soft)); text-transform: none; }
 .conference-panel .btn-primary { background: var(--conference-highlight,var(--accent-soft)); border-color: var(--conference-highlight,var(--accent-soft)); color: var(--conference-bg,var(--ink)); }
@@ -81,6 +81,14 @@ section.conference-panel { padding: 0; }
 .conference-panel .btn:hover { background: var(--white); color: var(--conference-bg,var(--ink)); border-color: var(--white); }
 .conference-card { border: var(--border-width) solid var(--line); border-radius: var(--radius-card); overflow: hidden; }
 .conference-card .panel { border: 0; border-radius: 0; }
+/* Unequal featured columns and the desktop breakpoint need more than Ignite's fixed grid API. */
+.conference-directory,.conference-card-grid { display: grid; gap: var(--space-6); }
+@media (min-width: 992px) {
+  .conference-card-featured { display: grid; grid-template-columns: minmax(0,2fr) minmax(0,3fr); }
+  .conference-card-featured > * { min-width: 0; }
+  .conference-card-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .conference-card-grid .conference-card { display: grid; grid-template-rows: auto 1fr; }
+}
 .edition-list { list-style: none; padding: 0; }
 .edition-list li { border-bottom: var(--border-width) solid var(--line); padding-block: var(--space-6); }
 .edition-list a { background: var(--conference-bg,var(--ink)); color: var(--conference-accent,var(--white)); padding: var(--edition-link-inset-block) var(--edition-link-inset-inline); border-radius: var(--radius-small); }

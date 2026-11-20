@@ -19,6 +19,8 @@ struct AssetFingerprintTests {
         try "Original site identities".write(to: identity, atomically: true, encoding: .utf8)
         let bundle = renderer.deletingLastPathComponent().appending(path: "BundleArtwork.swift")
         try "Original bundle artwork".write(to: bundle, atomically: true, encoding: .utf8)
+        let paths = renderer.deletingLastPathComponent().appending(path: "ArtworkPaths.swift")
+        try "Original asset paths".write(to: paths, atomically: true, encoding: .utf8)
         let original = try AssetFingerprint.make(in: root)
         #expect(try AssetFingerprint.make(in: root) == original)
         try "Updated layout".write(to: assets.appending(path: "styles.css"), atomically: true, encoding: .utf8)
@@ -36,5 +38,8 @@ struct AssetFingerprintTests {
         let changedIdentity = try AssetFingerprint.make(in: root)
         try "Changed bundle artwork".write(to: bundle, atomically: true, encoding: .utf8)
         #expect(try AssetFingerprint.make(in: root) != changedIdentity)
+        let changedBundle = try AssetFingerprint.make(in: root)
+        try "Changed asset paths".write(to: paths, atomically: true, encoding: .utf8)
+        #expect(try AssetFingerprint.make(in: root) != changedBundle)
     }
 }

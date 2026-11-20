@@ -9,6 +9,37 @@ import Testing
 @Suite(.serialized)
 @MainActor
 struct PublishingTests {
+    @Test(arguments: [true, false])
+    func conferenceDescriptionsLinkEscapedTextAndKeepMetadataPlain(hasEdition: Bool) async throws {
+        var catalog = CatalogFixture.make()
+        catalog.conferences[0].description = "A & <friendly> conference at Venue & <Hall>."
+        catalog.conferences[0].descriptionLink = .init(
+            text: "Venue & <Hall>", url: "https://example.org/venue?a=1&b=2")
+        if !hasEdition {
+            catalog.editions = []
+            catalog.participations = []
+            catalog.offers = []
+        }
+        try catalog.validate()
+        let root = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        var site = IndiesSite(catalog: catalog, preview: true, url: try #require(URL(string: "https://example.org")))
+        try await site.generate(sourceDirectory: source, buildDirectory: root)
+        let route = hasEdition ? "conferences/sample/2027/index.html" : "conferences/sample/index.html"
+        let html = try String(contentsOf: root.appending(path: route), encoding: .utf8)
+        let anchor = #"href="https://example.org/venue?a=1&amp;b=2">Venue &amp; &lt;Hall&gt;</a>"#
+        #expect(html.contains(anchor))
+        #expect(html.contains("A &amp; &lt;friendly&gt; conference at "))
+        if !hasEdition {
+            let description = try #require(html.firstMatch(of: /<meta name="description" content="([^"]*)"/)?.1)
+            #expect(description.contains("Venue &amp;"))
+            #expect(!description.contains("<a "))
+            #expect(!description.contains("https://example.org/venue"))
+            let directory = try String(contentsOf: root.appending(path: "conferences/index.html"), encoding: .utf8)
+            #expect(directory.contains(anchor))
+        }
+    }
+
     @Test func bundlesShareTheirOwnArtworkAcrossEditionHubAndAccessPages() async throws {
         let catalog = CatalogFixture.make()
         let artwork = BundleArtwork(conference: catalog.conferences[0], edition: catalog.editions[0])
@@ -326,8 +357,8 @@ struct PublishingTests {
         #expect(terms.contains("mailto:team%26events@example.org"))
         let assetVersion = try AssetFingerprint.make(in: source)
         #expect(home.contains("/styles.css?v=tokens-\(assetVersion)"))
-        #expect(home.contains("/logo.svg?v=shared-imprint-01-\(assetVersion)"))
-        #expect(home.contains("/favicon-shared-imprint-01.svg?v=\(assetVersion)"))
+        #expect(home.contains("/assets/brand/shared/by-indies-mark.svg?v=\(assetVersion)"))
+        #expect(home.contains("/assets/icons/favicon-shared-imprint-01.svg?v=\(assetVersion)"))
         #expect(home.contains("data-next-edition=\"sample-&quot;2027&quot;\""))
         let contribution = try page("participate/indies/index.html")
         let conferenceInterest = try page("participate/conferences/index.html")
@@ -457,7 +488,7 @@ struct PublishingTests {
         #expect(hub.components(separatedBy: "property=\"og:url\"").count == 2)
         let home = try String(contentsOf: root.appending(path: "index.html"), encoding: .utf8)
         #expect(home.contains("<title>Indie bundles for Swift &amp; iOS conferences"))
-        #expect(home.contains("content=\"https://custom.example.org/social-preview.png?v="))
+        #expect(home.contains("content=\"https://custom.example.org/assets/brand/sponsored-by-indies/sponsored-by-indies-social-preview.png?v="))
         let directory = try String(contentsOf: root.appending(path: "conferences/index.html"), encoding: .utf8)
         let contribution = try String(contentsOf: root.appending(path: "participate/indies/index.html"), encoding: .utf8)
         #expect(contribution.contains("value=\"Sample Conference 2027\"") == (day <= "2027-02-04"))
@@ -471,6 +502,62 @@ struct PublishingTests {
             #expect(sitemap.contains("<loc>https://custom.example.org/conferences/sample/\(year)/</loc>"))
             let edition = try String(contentsOf: root.appending(path: "conferences/sample/\(year)/index.html"), encoding: .utf8)
             #expect(edition.contains("href=\"https://custom.example.org/conferences/sample/\(year)/\" rel=\"canonical\""))
+        }
+    }
+
+    @Test(arguments: [
+        ("2026-11-19T12:00:00Z", "Sample Conference"),
+        ("2027-02-03T12:00:00Z", "Sample Conference"),
+        ("2027-03-01T12:00:00Z", "Later Conference"),
+        ("2028-01-01T12:00:00Z", nil)
+    ] as [(String, String?)])
+    func conferenceDirectoryKeepsEveryConferenceAsTheFeaturedEditionChanges(
+        dateString: String, featuredName: String?
+    ) async throws {
+        var catalog = CatalogFixture.make()
+        var laterConference = catalog.conferences[0]
+        laterConference.id = "later"
+        laterConference.slug = "later"
+        laterConference.name = "Later Conference"
+        catalog.conferences.insert(laterConference, at: 0)
+        var unannouncedConference = laterConference
+        unannouncedConference.id = "unannounced"
+        unannouncedConference.slug = "unannounced"
+        unannouncedConference.name = "Conference Without Editions"
+        catalog.conferences.append(unannouncedConference)
+        var laterEdition = catalog.editions[0]
+        laterEdition.id = "later-2027"
+        laterEdition.conferenceID = laterConference.id
+        laterEdition.slug = "later-2027"
+        laterEdition.label = "Later 2027"
+        laterEdition.startDate = "2027-05-10"
+        laterEdition.endDate = "2027-05-12"
+        catalog.editions.append(laterEdition)
+        try catalog.validate()
+        let root = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let date = try #require(ISO8601DateFormatter().date(from: dateString))
+        var site = IndiesSite(
+            catalog: catalog, preview: true, url: try #require(URL(string: "https://example.org")),
+            publicationDate: date)
+        try await site.generate(sourceDirectory: source, buildDirectory: root)
+        let html = try String(contentsOf: root.appending(path: "conferences/index.html"), encoding: .utf8)
+        let grid = try #require(html.range(of: "class=\"conference-card-grid\""))
+        let benefits = try #require(html.range(of: "id=\"benefits-title\""))
+        let remainingCards = html[grid.lowerBound..<benefits.lowerBound]
+        #expect(remainingCards.contains("Conference Without Editions"))
+        if let featuredName {
+            let featured = try #require(html.range(of: "class=\"conference-card conference-card-featured\""))
+            #expect(featured.lowerBound < grid.lowerBound)
+            let featuredCard = html[featured.lowerBound..<grid.lowerBound]
+            let otherName = featuredName == "Sample Conference" ? "Later Conference" : "Sample Conference"
+            #expect(featuredCard.contains(featuredName))
+            #expect(!featuredCard.contains(otherName))
+            #expect(remainingCards.contains(otherName))
+        } else {
+            #expect(!html.contains("conference-card-featured"))
+            #expect(remainingCards.contains("Sample Conference"))
+            #expect(remainingCards.contains("Later Conference"))
         }
     }
 

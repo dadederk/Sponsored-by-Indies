@@ -10,11 +10,17 @@ struct Conference: Decodable {
     var description: String
     var branding: ConferenceBranding?
     var connectionEditions: [String]? = nil
+    var descriptionLink: DescriptionLink? = nil
     var path: String { "/conferences/\(slug)/" }
 
     // Custom properties let one shared stylesheet style every conference. Ignite
     // Custom properties use validated values to inherit conference colours.
     var identityStyle: String { branding?.cssProperties ?? "" }
+
+    struct DescriptionLink: Decodable {
+        var text: String
+        var url: String
+    }
 }
 
 struct ConferenceBranding: Decodable {
@@ -22,10 +28,29 @@ struct ConferenceBranding: Decodable {
     var accent: String
     var highlight: String
     var detail: String
+    var artworkBackground: String? = nil
+    var websiteTheme: ConferenceWebsiteTheme? = nil
+    var logoPath: String? = nil
 
-    var colors: [String] { [background, accent, highlight, detail] }
+    var colors: [String] {
+        [background, accent, highlight, detail] + [artworkBackground].compactMap { $0 } + (websiteTheme?.colors ?? [])
+    }
     var cssProperties: String {
-        "--conference-bg: \(background); --conference-accent: \(accent); --conference-highlight: \(highlight); --conference-detail: \(detail)"
+        websiteTheme?.cssProperties
+            ?? "--conference-bg: \(background); --conference-accent: \(accent); --conference-highlight: \(highlight); --conference-detail: \(detail)"
+    }
+}
+
+struct ConferenceWebsiteTheme: Decodable {
+    var background: String
+    var foreground: String
+    var accent: String
+    var highlight: String
+    var detail: String
+
+    var colors: [String] { [background, foreground, accent, highlight, detail] }
+    var cssProperties: String {
+        "--conference-bg: \(background); --conference-text: \(foreground); --conference-accent: \(accent); --conference-highlight: \(highlight); --conference-detail: \(detail)"
     }
 }
 
@@ -42,6 +67,7 @@ struct Edition: Decodable {
     var accessURL: String?
     var valueSummary: ValueSummary?
     var bundleNote: String? = nil
+    var artworkGroups: [PartnerArtworkGroup]? = nil
 
     // Date-only scheduling uses UTC consistently in the build and browser.
     static var dayStyle: Date.ISO8601FormatStyle {
@@ -49,6 +75,12 @@ struct Edition: Decodable {
     }
 
     func path(in catalog: Catalog) -> String { catalog.conference(for: self).path + slug + "/" }
+}
+
+/// Products deliberately sharing one social post in this edition.
+struct PartnerArtworkGroup: Decodable {
+    var id: String
+    var projectIDs: [String]
 }
 
 /// Explicitly reviewed compatible offers; monetary amounts are computed from evidence.

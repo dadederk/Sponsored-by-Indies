@@ -1,4 +1,4 @@
-import test from 'node:test';
+import test, {before, after} from 'node:test';
 import assert from 'node:assert/strict';
 import {mkdtemp, writeFile, readFile, rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
@@ -9,6 +9,25 @@ import {spawnSync} from 'node:child_process';
 const script = resolve(dirname(fileURLToPath(import.meta.url)), '../../Scripts/SetupByIndiesHosting.swift');
 const source = 'dadederk/Sponsored-by-Indies';
 const target = 'dadederk/By-Indies-Pages';
+let buildRoot;
+let setupExecutable;
+
+before(async () => {
+  buildRoot = await mkdtemp(join(tmpdir(), 'by-indies-hosting-build-'));
+  setupExecutable = join(buildRoot, 'setup-hosting');
+  // Compile once; fixture command deadlines should measure execution, not cold compiler caches.
+  const result = spawnSync('swiftc', [script, '-o', setupExecutable], {
+    env:{...process.env, CLANG_MODULE_CACHE_PATH:join(buildRoot, 'clang-cache'),
+      SWIFT_MODULECACHE_PATH:join(buildRoot, 'swift-cache')},
+    encoding:'utf8', timeout:90_000
+  });
+  assert.ifError(result.error);
+  assert.equal(result.status, 0, result.stderr);
+});
+
+after(async () => {
+  if (buildRoot) await rm(buildRoot, {recursive:true, force:true});
+});
 
 async function fixture(scenario, check) {
   const root = await mkdtemp(join(tmpdir(), 'by-indies-hosting-test-'));
@@ -54,11 +73,14 @@ else {
   } else fail('Unexpected API endpoint: ' + endpoint);
 }
 `, {mode:0o755});
-  const run = args => spawnSync('swift', [script, ...args], {
-    env:{...process.env, PATH:`${root}:${process.env.PATH}`, BY_INDIES_TEST_STATE:stateFile,
-      CLANG_MODULE_CACHE_PATH:join(root, 'clang-cache'), SWIFT_MODULECACHE_PATH:join(root, 'swift-cache')},
-    encoding:'utf8', timeout:30_000
-  });
+  const run = args => {
+    const result = spawnSync(setupExecutable, args, {
+      env:{...process.env, PATH:`${root}:${process.env.PATH}`, BY_INDIES_TEST_STATE:stateFile},
+      encoding:'utf8', timeout:30_000
+    });
+    assert.ifError(result.error);
+    return result;
+  };
   const state = async () => JSON.parse(await readFile(stateFile, 'utf8'));
   try {await check(run, state);} finally {await rm(root, {recursive:true, force:true});}
 }

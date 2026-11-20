@@ -4,6 +4,21 @@ import Testing
 @testable import SponsoredByIndiesWebsite
 
 struct CatalogTests {
+    @Test(arguments: ["missing text", "repeated text", "unsafe URL", "blank text"])
+    func descriptionLinksRequireOneMatchingLabelAndASafeURL(problem: String) throws {
+        var catalog = CatalogFixture.make()
+        catalog.conferences[0].description = "A conference at Venue."
+        catalog.conferences[0].descriptionLink = .init(text: "Venue", url: "https://example.org/venue")
+        try catalog.validate()
+        switch problem {
+        case "missing text": catalog.conferences[0].descriptionLink?.text = "Another venue"
+        case "repeated text": catalog.conferences[0].description += " Return to Venue."
+        case "unsafe URL": catalog.conferences[0].descriptionLink?.url = "javascript:alert(1)"
+        default: catalog.conferences[0].descriptionLink?.text = " "
+        }
+        #expect(throws: CatalogError.self) { try catalog.validate() }
+    }
+
     @Test(arguments: ["missing quote", "blank quote", "blank author", "unsafe source"])
     func attributedQuotesRequireTextAuthorAndSafeSource(problem: String) throws {
         var catalog = CatalogFixture.make()
@@ -230,6 +245,21 @@ struct CatalogTests {
         #expect(catalog.visibleParticipations(for: edition).isEmpty)
         #expect(catalog.editions(for: conference).count == 1)
         #expect(conference.identityStyle.isEmpty)
+    }
+
+    @Test func conferenceWebsiteThemeCanDifferFromArtworkBranding() {
+        var conference = CatalogFixture.make().conferences[0]
+        #expect(!conference.identityStyle.contains("--conference-text"))
+
+        conference.branding?.websiteTheme = ConferenceWebsiteTheme(
+            background: "#f9a970", foreground: "#133750", accent: "#b52e22",
+            highlight: "#133750", detail: "#b52e22"
+        )
+        conference.branding?.artworkBackground = "#376584"
+        #expect(conference.identityStyle.contains("--conference-text: #133750"))
+        #expect(conference.branding?.colors.contains("#133750") == true)
+        #expect(conference.branding?.colors.contains("#376584") == true)
+        #expect(conference.branding?.background == "#183d35")
     }
 
     @Test func sameDayChoiceUsesStableUnicodeOrdering() throws {

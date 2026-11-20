@@ -19,7 +19,8 @@ Read [README.md](README.md) for project structure, local preview and verificatio
 - Write comments for decisions and invariants rather than restating the code.
 - Define site colours, spacing and dimensions in `DesignTokens.swift`. Components and CSS consume those definitions instead of duplicating values.
 - Bind brand SVG paints to palette variables with preview fallbacks, resolving them during generation. Keep conference palettes in their conference JSON records.
-- After changing the logo, palette or artwork renderer, rebuild and copy `Website/Build/readme-banner.png` to `Images/readme-banner.png` to refresh the README banner.
+- After changing the logo, palette or artwork renderer, rebuild both sites and refresh `assets/brand/<site>/` using the commands in `assets/brand/README.md`. The source README uses the Sponsored banner from that folder.
+- Keep generated artwork paths in `ArtworkPaths.swift`. Group brand exports by site and social exports by conference and edition; use descriptive lowercase filenames with hyphens. Keep only standard browser-discovery icons at the site root. Local partner previews belong in the ignored `Website/BuildArtwork/` tree.
 
 ## Card content
 
@@ -37,6 +38,8 @@ Read [README.md](README.md) for project structure, local preview and verificatio
 - Terms use one bullet per option: estimated payment, saving, linked regular US price and exact plan. Say “Choose one offer” once for alternatives; share identical redemption instructions once. Subscriptions return to the regular price at renewal unless an exception is specified.
 - Use US/USD references and the same conservative calculation for ranking and totals. Count only the largest compatible saving per product; round the headline down to whole dollars. Follow the README’s evidence and rounding rules.
 - Keep check dates in the collapsed value calculation. Keep internal approval discussions and provisional price-review notes in private planning.
+- When a contribution is approved, generate and visually check its partner artwork, then refresh that edition’s `assets/social` export using the README commands and configured groups. Keep draft artwork private.
+- Track constellation membership and pending products in private planning. Build the next constellation from newly approved products once they fill the existing layout; preserve earlier batches and record each batch’s asset, capacity and ordered product IDs.
 
 ## Public copy
 

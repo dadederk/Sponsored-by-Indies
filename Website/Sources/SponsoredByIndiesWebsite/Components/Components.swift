@@ -16,7 +16,7 @@ enum Components {
 
     static func brand(assetVersion: String, identity: SiteIdentity = .sponsored) -> some InlineElement {
         Span {
-            Image(decorative: "/logo.svg?v=shared-imprint-01-\(assetVersion)").class("brand-mark")
+            Image(decorative: "/\(ArtworkPaths.mark)?v=\(assetVersion)").class("brand-mark")
             Span {
                 if identity == .sponsored { Span("Sponsored").class("brand-sponsored") }
                 Span {
@@ -106,13 +106,16 @@ enum Components {
         title(plain, emphasis: emphasis, level: .title2).id(id)
     }
 
-    static func conferenceCard(_ conference: Conference, edition: Edition?, catalog: Catalog, headingLevel: Font.Style = .title3)
+    static func conferenceCard(
+        _ conference: Conference, edition: Edition?, catalog: Catalog,
+        headingLevel: Font.Style = .title3
+    )
         -> some HTML
     {
         Tag("article") {
             Section {
                 Text { Link(escaped(conference.name), target: edition?.path(in: catalog) ?? conference.path) }.font(headingLevel)
-                Text(escaped(conference.location)).class("conference-location")
+                Text { conferenceLocation(conference.location) }
                 if let edition { Text(escaped(edition.dateLabel)) }
             }.class("conference-panel").attribute("style", conference.identityStyle)
             Section {
@@ -121,11 +124,29 @@ enum Components {
                     Text(escaped(edition.introduction))
                     button("See the \(conference.name) \(edition.label) bundle", href: edition.path(in: catalog))
                 } else {
-                    Text(escaped(conference.description))
+                    conferenceDescription(conference)
                     button("See the \(conference.name) bundle", href: conference.path)
                 }
             }.class("panel")
         }.class("conference-card")
+    }
+
+    static func conferenceLocation(_ location: String) -> some InlineElement {
+        Span(escaped(location))
+            .font(.system(size: .rem(DesignTokens.conferenceLocationSize), weight: .bold))
+            .class("conference-location")
+    }
+
+    static func conferenceDescription(_ conference: Conference) -> Text {
+        guard let link = conference.descriptionLink,
+              let range = conference.description.range(of: link.text) else {
+            return Text(escaped(conference.description))
+        }
+        return Text {
+            escaped(String(conference.description[..<range.lowerBound]))
+            Link(escaped(link.text), target: escaped(link.url))
+            escaped(String(conference.description[range.upperBound...]))
+        }
     }
 
     static func productCard(_ product: Offer, offers: [Offer], indie: Indie, participation: Participation, bundlePath: String) -> some HTML {

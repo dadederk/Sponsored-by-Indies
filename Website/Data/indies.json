@@ -398,5 +398,39 @@
         ]
       }
     ]
+  },
+  {
+    "id": "leo-mehlig",
+    "name": "Leo Mehlig",
+    "company": "Structured",
+    "websiteURL": "https://structured.app/",
+    "socials": [],
+    "initials": "LM",
+    "people": [
+      {
+        "name": "Leo Mehlig",
+        "websiteURL": "https://structured.app/",
+        "bio": "App developer and founder of Structured. His background spans coding and product management, with a focus on design, user experience and making technology useful in everyday life.",
+        "portraitPath": "/portraits/leo-mehlig.jpg",
+        "socials": [
+          {
+            "label": "Mastodon",
+            "url": "https://mastodon.social/@leomehlig"
+          },
+          {
+            "label": "Bluesky",
+            "url": "https://bsky.app/profile/leomehlig.bsky.social"
+          },
+          {
+            "label": "Twitter",
+            "url": "https://x.com/leoMehlig"
+          },
+          {
+            "label": "GitHub",
+            "url": "https://github.com/leoMehlig"
+          }
+        ]
+      }
+    ]
   }
 ]

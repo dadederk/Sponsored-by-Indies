@@ -40,6 +40,7 @@ extension Catalog {
         )
         try catalog.validate()
         let images = projects.compactMap(\.iconPath) + indies.flatMap { ($0.people ?? []).compactMap(\.portraitPath) }
+            + records.compactMap { $0.conference.branding?.logoPath }
         for path in images {
             let file = directory.deletingLastPathComponent().appending(path: "Assets" + path)
             guard FileManager.default.fileExists(atPath: file.path) else {

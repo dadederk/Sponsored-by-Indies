@@ -14,7 +14,8 @@
       "background": "#1f1f24",
       "accent": "#5dd8ff",
       "highlight": "#fc5fa3",
-      "detail": "#fc5fa3"
+      "detail": "#fc5fa3",
+      "logoPath": "/conference-logos/arctic.svg"
     }
   },
   "editions": [
@@ -50,10 +51,27 @@
           "lookup-yearly",
           "movie-buzz-yearly",
           "swiftui-architecture-ebook",
-          "swiftdata-architecture-ebook"
+          "swiftdata-architecture-ebook",
+          "structured-lifetime"
         ]
       },
-      "bundleNote": "We’re working on expanding the bundle and its value."
+      "bundleNote": "We’re working on expanding the bundle and its value.",
+      "artworkGroups": [
+        {
+          "id": "rocketsim-rockettrace",
+          "projectIDs": [
+            "rocketsim",
+            "rockettrace"
+          ]
+        },
+        {
+          "id": "azam-books",
+          "projectIDs": [
+            "swiftui-architecture",
+            "swiftdata-architecture"
+          ]
+        }
+      ]
     }
   ],
   "participations": [
@@ -163,6 +181,13 @@
       "indieID": "mohammad-azam",
       "connection": "Workshop ARCtic 2025",
       "quote": "I have attended hundreds of conferences throughout my career, ARCtic conference is at the top of my list.",
+      "publicationApproved": true
+    },
+    {
+      "editionID": "arctic-2027",
+      "indieID": "leo-mehlig",
+      "connection": "Attendee ARCtic 2026",
+      "quote": null,
       "publicationApproved": true
     }
   ],
@@ -774,6 +799,39 @@
         "sourceURL": "https://azamsharp.school/swiftdata-architecture.html",
         "sourceFormat": "manual"
       }
+    },
+    {
+      "id": "structured-lifetime",
+      "editionID": "arctic-2027",
+      "projectID": "structured",
+      "benefit": "50% off lifetime Pro",
+      "terms": "One-time purchase for lifetime Structured Pro.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through the conference.",
+      "publicationApproved": true,
+      "savingEstimate": {
+        "regularPriceUSD": 99.99,
+        "discountPercent": 50,
+        "plan": "Structured Pro (Lifetime)",
+        "period": "lifetime",
+        "discountedPeriods": 1,
+        "currency": "USD",
+        "storefront": "US",
+        "observedPricesUSD": [
+          99.99
+        ],
+        "review": "unambiguous",
+        "verifiedOn": "2026-11-20",
+        "sourceURL": "https://apps.apple.com/us/app/structured-daily-planner-todo/id1499198946"
+      }
+    },
+    {
+      "id": "structured-yearly",
+      "editionID": "arctic-2027",
+      "projectID": "structured",
+      "benefit": "1 year of Pro free",
+      "terms": "Yearly Pro subscription. After the first year, the regular price at renewal applies.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through the conference.",
+      "publicationApproved": true
     }
   ]
 }

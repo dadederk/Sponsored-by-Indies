@@ -169,5 +169,14 @@
     "iconPath": "/app-icons/swiftdata-architecture.png",
     "description": "Build data-driven apps with SwiftData. Explore model relationships, queries, migrations, CloudKit sync, testing and performance, with practical guidance for managing persistence in real applications.",
     "showcaseDescription": "Build data-driven apps with SwiftData. Explore model relationships, queries, migrations, CloudKit sync, testing and performance, with practical guidance for managing persistence in real applications."
+  },
+  {
+    "id": "structured",
+    "indieID": "leo-mehlig",
+    "name": "Structured",
+    "websiteURL": "https://structured.app/",
+    "iconPath": "/app-icons/structured.png",
+    "description": "Bring tasks, calendars and reminders into one visual timeline. Plan your day, build routines, and make room for focused work and breaks across your Apple devices.",
+    "showcaseDescription": "Bring tasks, calendars and reminders into one visual timeline. Capture ideas in your inbox, build routines with recurring tasks, and use a focus timer to work through your day. Sync your plans across iPhone, iPad, Mac and Apple Watch."
   }
 ]

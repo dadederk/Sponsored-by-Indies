@@ -22,9 +22,9 @@ extension Pages {
                     Text("\(escaped(conference.name)) \(escaped(edition.label))").font(.title1)
                     Text {
                         escaped(edition.dateLabel) + " · "
-                        Span(escaped(conference.location)).class("conference-location")
+                        Components.conferenceLocation(conference.location)
                     }
-                    Text(escaped(conference.description))
+                    Components.conferenceDescription(conference)
                     Text(escaped(edition.introduction)).class("lead")
                     Section {
                         Components.button("Conference website", href: conference.websiteURL)

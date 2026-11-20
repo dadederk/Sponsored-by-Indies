@@ -12,11 +12,12 @@ struct BrandExportTests {
             .deletingLastPathComponent().deletingLastPathComponent().appending(path: "Assets")
         for name in ["logo.svg", "logo-inverse.svg", "favicon.svg"] {
             let source = try String(contentsOf: assets.appending(path: name), encoding: .utf8)
-            try DesignTokens.renderSVG(source).write(to: directory.appending(path: name), atomically: true, encoding: .utf8)
+            try files.createDirectory(at: directory.appending(path: ArtworkPaths.vectorAssets[name]!).deletingLastPathComponent(), withIntermediateDirectories: true)
+            try DesignTokens.renderSVG(source).write(to: directory.appending(path: ArtworkPaths.vectorAssets[name]!), atomically: true, encoding: .utf8)
         }
         try SocialPreview.install(in: directory)
         func bitmap(_ variant: String) throws -> NSBitmapImageRep {
-            let data = try Data(contentsOf: directory.appending(path: "sponsored-by-indies-logo-\(variant)-transparent.png"))
+            let data = try Data(contentsOf: directory.appending(path: ArtworkPaths.brandFile("logo-\(variant)-transparent")))
             return try #require(NSBitmapImageRep(data: data))
         }
         let colour = try bitmap("full-colour")

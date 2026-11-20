@@ -8,7 +8,8 @@ extension Pages {
             path: showcasePath,
             title: asHostedPreview ? "By Indies preview" : "Independent projects and their makers",
             description: "Meet the independent apps, games, tools and courses supporting our conference community, and the people who make them.",
-            isIndexable: !asHostedPreview, isShowcasePreview: asHostedPreview) {
+            isIndexable: !asHostedPreview, isShowcasePreview: asHostedPreview,
+            identity: asHostedPreview ? .sponsored : .showcase) {
             Tag("section") {
                 Components.title("Wonderful projects.", emphasis: "By awesome indies.")
                 Text("Small teams with big ideas, sharing what they make with our conference community. Discover their projects and get to know the people behind them.").class("lead")

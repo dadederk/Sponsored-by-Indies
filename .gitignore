@@ -5,6 +5,7 @@ Website/Build/
 Website/BuildPublic/
 Website/BuildIndies/
 Website/BuildIndiesPublic/
+Website/BuildArtwork/
 Website/.cache/
 Website/.ignite/
 Website/node_modules/

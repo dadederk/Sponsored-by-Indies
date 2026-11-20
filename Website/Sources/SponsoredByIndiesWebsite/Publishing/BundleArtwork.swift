@@ -13,7 +13,8 @@ struct BundleArtwork {
         let source = fields.map { "\($0.utf8.count):\($0)" }.joined()
         let version = SHA256.hash(data: Data(source.utf8)).prefix(6)
             .map { String(("0" + String($0, radix: 16)).suffix(2)) }.joined()
-        return conference.path + edition.slug + "/social-preview-\(version).png"
+        return "/" + ArtworkPaths.conferenceDirectory(conference, edition: edition)
+            + "/\(conference.slug)-\(edition.slug)-bundle-\(version).png"
     }
 
     var imageDescription: String {

@@ -30,7 +30,8 @@ enum DesignTokens {
     static let productIconRadius = 14
     static let builderPortraitSize = 56
     static let builderPortraitBorderWidth = 1.0
-    static let brandAssetNames = ["logo.svg", "logo-inverse.svg", "favicon.svg", "favicon-shared-imprint-01.svg"]
+    static let conferenceLocationSize = 1.25
+    static let brandAssetNames = ArtworkPaths.vectorAssets.keys.sorted()
     static let brandMarkSize = 76.0
     static let brandLabelSize = 20.0
     static let brandNameSize = 42.4
@@ -40,6 +41,26 @@ enum DesignTokens {
     static let brandExportHeight = 1400
     static let brandExportMarkSize = 1200.0
     static let brandExportOrigin = (x: 80.0, y: 100.0)
+
+    enum PartnerArtwork {
+        static let width = 1800
+        static let height = 1200
+        static let conferenceFrame = CGRect(x: 210, y: 360, width: 480, height: 480)
+        static let conferenceLogoInset = 64.0
+        static let productFrame = CGRect(x: 1110, y: 390, width: 420, height: 420)
+        static let productRadius = 92.0
+        static let pairedProductFrames = [
+            CGRect(x: 1000, y: 360, width: 280, height: 480),
+            CGRect(x: 1340, y: 360, width: 280, height: 480)
+        ]
+        static let brandFrame = CGRect(x: 1000, y: 505, width: 640, height: 190)
+        static let signatureFrame = CGRect(x: 1410, y: 64, width: 326, height: 96)
+        static let symbolFrame = CGRect(x: 852, y: 552, width: 96, height: 96)
+        static let crossInset = 15.0
+        static let crossStroke = 10.0
+        static let upperCurve = CGRect(x: 1300, y: 1040, width: 1100, height: 700)
+        static let lowerCurve = CGRect(x: -650, y: -540, width: 1150, height: 700)
+    }
 
     // Base scale, then semantic roles. Keep page composition free of repeated values.
     static let spacing = """
@@ -123,7 +144,10 @@ enum DesignTokens {
     /// SVGs cannot inherit page variables when loaded as images. Resolve their
     /// explicit paint bindings during publishing; fallbacks keep source previews valid.
     static func renderSVG(_ source: String, palette: BrandPalette = DesignTokens.palette) throws -> String {
-        let colors = Dictionary(uniqueKeysWithValues: palette.properties)
+        try renderSVG(source, colors: Dictionary(uniqueKeysWithValues: palette.properties))
+    }
+
+    static func renderSVG(_ source: String, colors: [String: String]) throws -> String {
         let pattern = try NSRegularExpression(pattern: #"var\(--([a-z-]+),\s*#[0-9a-fA-F]{6}\)"#)
         let matches = pattern.matches(in: source, range: NSRange(source.startIndex..., in: source))
         var result = source
@@ -137,11 +161,16 @@ enum DesignTokens {
     }
 
     static func install(in directory: URL) throws {
-        try stylesheet().write(to: directory.appendingPathComponent("design-tokens.css"), atomically: true, encoding: .utf8)
-        for name in brandAssetNames {
+        let files = FileManager.default
+        try files.createDirectory(at: directory.appending(path: "css"), withIntermediateDirectories: true)
+        try stylesheet().write(to: directory.appending(path: "css/design-tokens.css"), atomically: true, encoding: .utf8)
+        for (name, path) in ArtworkPaths.vectorAssets.sorted(by: { $0.key < $1.key }) {
             let file = directory.appendingPathComponent(name)
             let source = try String(contentsOf: file, encoding: .utf8)
-            try renderSVG(source).write(to: file, atomically: true, encoding: .utf8)
+            let target = directory.appending(path: path)
+            try files.createDirectory(at: target.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try renderSVG(source).write(to: target, atomically: true, encoding: .utf8)
+            try files.removeItem(at: file)
         }
     }
 

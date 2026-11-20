@@ -22,13 +22,14 @@ for (const [directory, origin, preview] of [
     assert.ok(files.length >= 8, 'Generate both site outputs before running these checks.');
     const pages = new Map();
     const expectedSitemap = new Set();
-    const png = await readFile(join(root, 'social-preview.png'));
+    const png = await readFile(join(root, 'assets/brand/sponsored-by-indies/sponsored-by-indies-social-preview.png'));
     assert.equal(png.subarray(0, 8).toString('hex'), '89504e470d0a1a0a', 'sharing image is a PNG');
     assert.equal(png.readUInt32BE(16), 1200, 'sharing image width');
     assert.equal(png.readUInt32BE(20), 630, 'sharing image height');
     for (const [name, width, height] of [
-      ['social-avatar.png', 1024, 1024], ['social-banner.png', 1500, 500],
-      ['favicon-32.png', 32, 32], ['apple-touch-icon.png', 180, 180]
+      ['assets/brand/sponsored-by-indies/sponsored-by-indies-social-avatar.png', 1024, 1024],
+      ['assets/brand/sponsored-by-indies/sponsored-by-indies-social-banner.png', 1500, 500],
+      ['assets/icons/favicon-32.png', 32, 32], ['apple-touch-icon.png', 180, 180]
     ]) {
       const asset = await readFile(join(root, name));
       assert.equal(asset.subarray(0, 8).toString('hex'), '89504e470d0a1a0a', `${name}: PNG format`);
@@ -38,12 +39,12 @@ for (const [directory, origin, preview] of [
     const ico = await readFile(join(root, 'favicon.ico'));
     assert.equal(ico.subarray(0, 6).toString('hex'), '000001000100', 'ICO directory header');
     assert.equal(ico.readUInt32LE(18), 22, 'ICO representation offset');
-    assert.deepEqual(ico.subarray(22), await readFile(join(root, 'favicon-32.png')), 'ICO contains current artwork');
+    assert.deepEqual(ico.subarray(22), await readFile(join(root, 'assets/icons/favicon-32.png')), 'ICO contains current artwork');
     for (const file of files) {
       const html = await readFile(join(root, file), 'utf8');
       const version = html.match(/design-tokens\.css\?v=([a-f0-9]+)/)?.[1];
       assert.ok(version, `${file}: versioned brand assets`);
-      for (const path of ['favicon.ico', 'favicon-shared-imprint-01.svg', 'favicon-32.png', 'apple-touch-icon.png']) {
+      for (const path of ['favicon.ico', 'assets/icons/favicon-shared-imprint-01.svg', 'assets/icons/favicon-32.png', 'apple-touch-icon.png']) {
         assert.ok(html.includes(`href="/${path}?v=${version}"`), `${file}: current ${path}`);
       }
       assert.match(html, /name="theme-color" content="#[a-fA-F0-9]{6}"/, `${file}: browser theme colour`);
@@ -63,11 +64,14 @@ for (const [directory, origin, preview] of [
       const canonical = new URL(isHub ? permanentLinks[0][1] : route, origin).href;
       const bundleRoute = /^\/conferences\/[^/]+\/[^/]+\/(?:access\/)?$/.test(route)
         ? route.replace(/access\/$/, '') : isHub ? new URL(canonical).pathname : null;
-      let imagePath = '/social-preview.png';
+      let imagePath = '/assets/brand/sponsored-by-indies/sponsored-by-indies-social-preview.png';
       if (bundleRoute) {
-        const artwork = (await readdir(join(root, bundleRoute))).filter(name => /^social-preview-[a-f0-9]+\.png$/.test(name));
+        const [, conference, edition] = bundleRoute.match(/^\/conferences\/([^/]+)\/([^/]+)\/$/);
+        const artworkFolder = `/assets/social/${conference}/${edition}/`;
+        const artwork = (await readdir(join(root, artworkFolder)))
+          .filter(name => new RegExp(`^${conference}-${edition}-bundle-[a-f0-9]+\\.png$`).test(name));
         assert.equal(artwork.length, 1, `${file}: one current bundle image`);
-        imagePath = bundleRoute + artwork[0];
+        imagePath = artworkFolder + artwork[0];
         const bundlePNG = await readFile(join(root, imagePath));
         assert.equal(bundlePNG.readUInt32BE(16), 1200);
         assert.equal(bundlePNG.readUInt32BE(20), 630);

@@ -11,7 +11,21 @@ struct BuildOptionsTests {
         ["--site-url", "https://user:password@example.org"],
         ["--site-url", "https://example.org", "--site-url", "https://other.org"],
         ["--validate-only", "--verify-prices"], ["--verify-prices", "--validate-only"],
-        ["--check-maintenance", "--validate-only"], ["--verify-prices", "--check-maintenance"]
+        ["--check-maintenance", "--validate-only"], ["--verify-prices", "--check-maintenance"],
+        ["--partner-artwork"], ["--project", "dee"], ["--partner-artwork", "--project", "dee"],
+        ["--partner-artwork", "arctic-2027", "--validate-only"],
+        ["--partner-artwork", "arctic-2027", "--public"],
+        ["--partner-artwork", "arctic-2027", "--site", "showcase"],
+        ["--partner-artwork", "arctic-2027", "--site-url", "https://example.org"],
+        ["--partner-artwork", "arctic-2027", "--partner-artwork", "arctic-2027"],
+        ["--partner-artwork", "arctic-2027", "--project", "dee", "--project", "dee"],
+        ["--all-partners"], ["--group", "pair"],
+        ["--partner-artwork", "arctic-2027", "--group"],
+        ["--partner-artwork", "arctic-2027", "--all-partners", "--project", "dee"],
+        ["--partner-artwork", "arctic-2027", "--all-partners", "--group", "pair"],
+        ["--partner-artwork", "arctic-2027", "--project", "dee", "--group", "pair"],
+        ["--partner-artwork", "arctic-2027", "--group", "pair", "--group", "other"],
+        ["--partner-artwork", "arctic-2027", "--all-partners", "--all-partners"]
     ])
     func rejectsInvalidArguments(arguments: [String]) {
         #expect(throws: CatalogError.self) { try BuildOptions(arguments: arguments) }
@@ -30,5 +44,11 @@ struct BuildOptionsTests {
         #expect(showcase.siteURL.absoluteString == "http://localhost:8001")
         #expect(showcase.identity.buildDirectory(preview: true) == "BuildIndies")
         #expect(showcase.identity.buildDirectory(preview: false) == "BuildIndiesPublic")
+        let artwork = try BuildOptions(arguments: ["--partner-artwork", "arctic-2027", "--project", "dee"])
+        #expect(artwork.partnerArtworkEditionID == "arctic-2027")
+        #expect(artwork.partnerProjectID == "dee")
+        #expect(try BuildOptions(arguments: ["--partner-artwork", "arctic-2027"]).partnerProjectID == nil)
+        #expect(try BuildOptions(arguments: ["--partner-artwork", "arctic-2027", "--all-partners"]).allPartners)
+        #expect(try BuildOptions(arguments: ["--partner-artwork", "arctic-2027", "--group", "pair"]).partnerGroupID == "pair")
     }
 }
