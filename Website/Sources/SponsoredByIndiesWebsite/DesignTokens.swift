@@ -116,10 +116,16 @@ enum DesignTokens {
       --focus-halo: 6px;
       --focus-radius: 2px;
       --reading-width: 52rem;
-      --offer-heading-size: 1.125rem;
-      --project-heading-size: 1.5rem;
-      --builder-heading-size: 1.125rem;
       --card-text-basis: 10rem;
+    """
+
+    static let typography = """
+      --font-size-small: .9375rem;
+      --font-size-heading-small: 1.125rem;
+      --font-size-heading-medium: 1.5rem;
+      --offer-heading-size: var(--font-size-heading-small);
+      --project-heading-size: var(--font-size-heading-medium);
+      --builder-heading-size: var(--font-size-heading-small);
     """
 
     static func stylesheet(palette: BrandPalette = DesignTokens.palette) -> String {
@@ -129,6 +135,7 @@ enum DesignTokens {
         :root {
         \(colors)
         \(spacing)
+        \(typography)
         }
         /* Retain Ignite/Bootstrap grid classes while sharing the spacing scale. */
         .row.g-3 { --bs-gutter-x: var(--space-4); --bs-gutter-y: var(--space-4); }

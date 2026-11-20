@@ -21,17 +21,16 @@ extension Components {
                     .font(.title3).margin(.bottom, .small)
                 for person in people { builderRow(person) }
             }.class("showcase-builders")
-            Section {
-                for edition in editions {
-                    Text {
-                        Link(
-                            escaped(catalog.conference(for: edition).name + " " + edition.label) + " bundle",
-                            target: escaped(sponsoredRoot + edition.path(in: catalog) + "#" + project.bundleAnchor))
-                        Span(" · " + escaped(edition.dateLabel))
-                    }.margin(0)
+            List(editions) { edition in
+                ListItem {
+                    Link(
+                        escaped(catalog.conference(for: edition).name + " " + edition.label) + " bundle",
+                        target: escaped(sponsoredRoot + edition.path(in: catalog) + "#" + project.bundleAnchor))
+                    Span(" · " + escaped(edition.dateLabel))
                 }
             }.font(.small).foregroundStyle(.secondary).class("showcase-contributions", "showcase-bundles")
         }.id(project.bundleAnchor).attribute("data-offer-sharing", "true").class("panel", "showcase-card")
+            .padding(.bottom, 0)
     }
 
     private static func builderRow(_ person: IndiePerson) -> some HTML {

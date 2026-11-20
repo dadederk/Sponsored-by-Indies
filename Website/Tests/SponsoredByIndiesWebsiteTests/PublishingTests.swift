@@ -81,7 +81,7 @@ struct PublishingTests {
         var site = IndiesSite(catalog: catalog, preview: true, url: try #require(URL(string: "https://example.org")))
         try await site.generate(sourceDirectory: source, buildDirectory: root)
         let html = try String(contentsOf: root.appending(path: "conferences/sample/2027/index.html"), encoding: .utf8)
-        let card = try #require(html.firstMatch(of: /<article class="panel product-card">[\s\S]*?<\/article>/))
+        let card = try #require(html.firstMatch(of: /<article\b[^>]*class="panel product-card"[^>]*>[\s\S]*?<\/article>/))
         let text = String(card.output)
         let fallback = try #require(text.firstMatch(of: /<details[\s\S]*?<\/details>/))
         let dialog = text.components(separatedBy: String(fallback.output))[0]
@@ -133,7 +133,7 @@ struct PublishingTests {
         var site = IndiesSite(catalog: catalog, preview: true, url: try #require(URL(string: "https://example.org")))
         try await site.generate(sourceDirectory: source, buildDirectory: root)
         let html = try String(contentsOf: root.appending(path: "conferences/sample/2027/index.html"), encoding: .utf8)
-        let card = try #require(html.firstMatch(of: /<article class="panel product-card">[\s\S]*?<\/article>/))
+        let card = try #require(html.firstMatch(of: /<article\b[^>]*class="panel product-card"[^>]*>[\s\S]*?<\/article>/))
         let text = String(card.output)
         #expect(text.contains("href=\"https://example.org/hidde?event=one&amp;copy;=yes\""))
         #expect(text.contains(">Hidde &amp; &lt;Friends&gt;</a>"))
@@ -275,7 +275,7 @@ struct PublishingTests {
             #expect(visibleValue.contains("We’re adding more to the bundle."))
             #expect(visibleValue.contains("get in touch"))
             #expect(visibleValue.contains("href=\"/participate/indies/\""))
-            let cards = html.matches(of: /<article class="panel product-card">[\s\S]*?<\/article>/).map { String($0.output) }
+            let cards = html.matches(of: /<article\b[^>]*class="panel product-card"[^>]*>[\s\S]*?<\/article>/).map { String($0.output) }
             #expect(cards.count == 2)
             let toolCard = try #require(cards.first { $0.contains("Tool &amp; &lt;Kit&gt;") })
             let deals = try #require(toolCard.firstMatch(of: /<ul[^>]*class="product-card-benefits"[^>]*>/))
@@ -358,7 +358,7 @@ struct PublishingTests {
         let assetVersion = try AssetFingerprint.make(in: source)
         #expect(home.contains("/styles.css?v=tokens-\(assetVersion)"))
         #expect(home.contains("/assets/brand/shared/by-indies-mark.svg?v=\(assetVersion)"))
-        #expect(home.contains("/assets/icons/favicon-shared-imprint-01.svg?v=\(assetVersion)"))
+        #expect(home.contains("/assets/icons/favicon.svg?v=\(assetVersion)"))
         #expect(home.contains("data-next-edition=\"sample-&quot;2027&quot;\""))
         let contribution = try page("participate/indies/index.html")
         let conferenceInterest = try page("participate/conferences/index.html")
@@ -561,6 +561,69 @@ struct PublishingTests {
         }
     }
 
+    @Test(arguments: [0, 1, 2, 4])
+    func conferenceDirectoryKeepsRecentPastEditionsOutsideTheArchive(pastCount: Int) async throws {
+        var catalog = CatalogFixture.make()
+        let template = catalog.editions[0]
+        for year in (2022..<(2022 + pastCount)).reversed() {
+            var edition = template
+            edition.id = "sample-\(year)"
+            edition.slug = "\(year)"
+            edition.label = "\(year)"
+            edition.dateLabel = "2–4 February \(year)"
+            edition.startDate = "\(year)-02-02"
+            edition.endDate = "\(year)-02-04"
+            catalog.editions.append(edition)
+        }
+        // Include a later edition of the same conference: no edition may be lost or duplicated.
+        var future = template
+        future.id = "sample-2028"
+        future.slug = "2028"
+        future.label = "2028"
+        future.dateLabel = "2–4 February 2028"
+        future.startDate = "2028-02-02"
+        future.endDate = "2028-02-04"
+        catalog.editions.insert(future, at: 0)
+        try catalog.validate()
+        let root = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let date = try #require(ISO8601DateFormatter().date(from: "2026-11-20T12:00:00Z"))
+        var site = IndiesSite(catalog: catalog, preview: true,
+                              url: try #require(URL(string: "https://example.org")), publicationDate: date)
+        try await site.generate(sourceDirectory: source, buildDirectory: root)
+        let html = try String(contentsOf: root.appending(path: "conferences/index.html"), encoding: .utf8)
+        let next = try #require(html.firstMatch(of: /<section[^>]*aria-labelledby="next-conference-title"[\s\S]*?<\/section>/)?.0)
+        let upcoming = try #require(html.firstMatch(of: /<section[^>]*aria-labelledby="upcoming-conferences-title"[\s\S]*?<\/section>/)?.0)
+        #expect(next.contains("/conferences/sample/2027/"))
+        #expect(!next.contains("/conferences/sample/2028/"))
+        #expect(upcoming.contains("/conferences/sample/2028/"))
+        #expect(!upcoming.contains("/conferences/sample/2027/"))
+        #expect(html.contains("id=\"past-conferences-title\"") == (pastCount > 0))
+        #expect(html.contains("id=\"past-conferences-archive\"") == (pastCount > 2))
+        if pastCount > 0 {
+            let past = try #require(html.firstMatch(of: /<section[^>]*aria-labelledby="past-conferences-title"[\s\S]*?<\/section>/)?.0)
+            let recent = past.components(separatedBy: "<details")[0]
+            #expect(recent.components(separatedBy: "<article ").count - 1 == min(2, pastCount))
+            for year in 2022..<(2022 + pastCount) {
+                #expect(recent.contains("/conferences/sample/\(year)/") == (year >= 2022 + pastCount - 2))
+            }
+            if pastCount > 2 {
+                let archive = try #require(past.firstMatch(of: /<details[\s\S]*?<\/details>/)?.0)
+                #expect(!archive.contains(" open"))
+                #expect(archive.contains("Show all past conferences"))
+                #expect(archive.contains("Show fewer"))
+                let newest = try #require(past.range(of: "/conferences/sample/2025/"))
+                let previous = try #require(past.range(of: "/conferences/sample/2024/"))
+                #expect(newest.lowerBound < previous.lowerBound)
+                // Browser checks use this generated fixture to exercise a real archive before
+                // the public catalogue has enough past editions. It is never published.
+                let fixtureFolder = source.appending(path: ".build/browser-fixtures")
+                try FileManager.default.createDirectory(at: fixtureFolder, withIntermediateDirectories: true)
+                try html.write(to: fixtureFolder.appending(path: "conference-directory.html"), atomically: true, encoding: .utf8)
+            }
+        }
+    }
+
     @Test(arguments: [true, false])
     func groupedOffersKeepTheirRedemptionInstructions(shared: Bool) async throws {
         var catalog = CatalogFixture.make()
@@ -577,7 +640,7 @@ struct PublishingTests {
         var site = IndiesSite(catalog: catalog, preview: true, url: try #require(URL(string: "https://example.org")))
         try await site.generate(sourceDirectory: source, buildDirectory: root)
         let html = try String(contentsOf: root.appending(path: "conferences/sample/2027/index.html"), encoding: .utf8)
-        let card = try #require(html.firstMatch(of: /<article class="panel product-card">[\s\S]*?<\/article>/))
+        let card = try #require(html.firstMatch(of: /<article\b[^>]*class="panel product-card"[^>]*>[\s\S]*?<\/article>/))
         let instructions = "Open the lifetime &amp; member portal."
         let fallback = try #require(String(card.output).firstMatch(of: /<details[\s\S]*?<\/details>/))
         let dialog = String(card.output).components(separatedBy: String(fallback.output))[0]

@@ -52,7 +52,7 @@ struct MarketingLayout: Layout {
                 .customAttribute(name: "sizes", value: "32x32")
             MetaLink(href: "/apple-touch-icon.png?v=\(assetVersion)", rel: "apple-touch-icon")
                 .customAttribute(name: "sizes", value: "180x180")
-            MetaLink(href: "/\(ArtworkPaths.browserFavicon)?v=\(assetVersion)", rel: "icon")
+            MetaLink(href: "/\(ArtworkPaths.favicon)?v=\(assetVersion)", rel: "icon")
                 .customAttribute(name: "type", value: "image/svg+xml")
                 .customAttribute(name: "sizes", value: "any")
             MetaLink(href: "/\(ArtworkPaths.faviconPNG)?v=\(assetVersion)", rel: "icon")

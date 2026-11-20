@@ -62,7 +62,9 @@ let brandFiles = Set(["assets/brand/README.md",
                       "assets/brand/by-indies/by-indies-readme-banner.png"])
 let unexpected = paths.filter { path in
     if rootFiles.contains(path) || brandFiles.contains(path) { return false }
-    if path.range(of: "^assets/social/[a-z0-9-]+/[a-z0-9-]+/partners/[a-z0-9-]+\\.png$", options: .regularExpression) != nil { return false }
+    if path.range(of: "^assets/social/([a-z0-9-]+)/([a-z0-9-]+)/partners/\\1-\\2-[a-z0-9-]+-(cross|heart)\\.png$", options: .regularExpression) != nil { return false }
+    if path.range(of: "^assets/social/[a-z0-9-]+/[a-z0-9-]+/partners/artwork-index\\.json$", options: .regularExpression) != nil { return false }
+    if path.range(of: "^assets/social/([a-z0-9-]+)/([a-z0-9-]+)/constellations/\\1-\\2-constellation-[0-9]{2}\\.png$", options: .regularExpression) != nil { return false }
     if path.lowercased().hasSuffix(".md") { return true }
     return !websiteFiles.contains(path) && !websiteFolders.contains(where: { path.hasPrefix($0) })
 }

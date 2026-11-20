@@ -50,7 +50,7 @@ struct PartnerArtwork {
     }
 
     var partnerID: String { group?.id ?? projects.first?.id ?? "sponsored-by-indies" }
-    var folder: String { "social/\(conference.slug)/\(edition.slug)/\(partnerID)" }
+    var folder: String { ArtworkPaths.partnerDirectory(conference, edition: edition) + "/\(partnerID)" }
 
     func filename(for symbol: Symbol) -> String {
         "\(conference.slug)-\(edition.slug)-\(partnerID)-\(symbol.rawValue).png"
@@ -76,11 +76,19 @@ struct PartnerArtwork {
         guard Set(result.map(\.partnerID)).count == result.count else {
             throw CatalogError.invalid("Partner artwork filenames must be distinct.")
         }
-        return result
+        // Price ranking changes must not reorder the promotional series.
+        return result.sorted {
+            if $0.projects.isEmpty != $1.projects.isEmpty { return $0.projects.isEmpty }
+            return $0.partnerID < $1.partnerID
+        }
     }
 
     @MainActor
     static func installBatch(_ artworks: [PartnerArtwork], in directory: URL, assets: URL, brandLogo: URL) throws {
+        guard let first = artworks.first, artworks.allSatisfy({ $0.edition.id == first.edition.id }),
+              Set(artworks.map(\.partnerID)).count == artworks.count else {
+            throw CatalogError.invalid("An artwork batch requires distinct partners from one edition.")
+        }
         let files = FileManager.default
         let parent = directory.deletingLastPathComponent()
         try files.createDirectory(at: parent, withIntermediateDirectories: true)
@@ -91,6 +99,7 @@ struct PartnerArtwork {
             try artwork.png(symbol: .cross, assets: assets, brandLogo: brandLogo)
                 .write(to: staging.appending(path: artwork.filename(for: .cross)), options: .atomic)
         }
+        try installIndex(for: artworks, symbols: [.cross], in: staging)
         try BuildOutput.install(staging, at: directory)
     }
 
@@ -106,7 +115,35 @@ struct PartnerArtwork {
             try png(symbol: symbol, assets: assets, brandLogo: brandLogo)
                 .write(to: staging.appending(path: filename(for: symbol)), options: .atomic)
         }
+        try Self.installIndex(for: [self], symbols: Symbol.allCases, in: staging)
         try BuildOutput.install(staging, at: directory)
+    }
+
+    private static func installIndex(for artworks: [PartnerArtwork], symbols: [Symbol], in directory: URL) throws {
+        struct Post: Encodable {
+            let kind: String
+            let partnerID: String
+            let projectIDs: [String]
+            let images: [String: String]
+        }
+        struct Index: Encodable {
+            let conferenceID: String
+            let editionID: String
+            let width: Int
+            let height: Int
+            let posts: [Post]
+        }
+        let first = artworks[0]
+        let posts = artworks.map { artwork in
+            Post(kind: artwork.projects.isEmpty ? "sponsor" : "projects", partnerID: artwork.partnerID,
+                 projectIDs: artwork.projects.map(\.id),
+                 images: Dictionary(uniqueKeysWithValues: symbols.map { ($0.rawValue, artwork.filename(for: $0)) }))
+        }
+        let index = Index(conferenceID: first.conference.id, editionID: first.edition.id,
+                          width: DesignTokens.PartnerArtwork.width, height: DesignTokens.PartnerArtwork.height, posts: posts)
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes]
+        try (encoder.encode(index) + Data("\n".utf8)).write(to: directory.appending(path: "artwork-index.json"), options: .atomic)
     }
 
     @MainActor

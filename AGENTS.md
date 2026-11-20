@@ -21,6 +21,7 @@ Read [README.md](README.md) for project structure, local preview and verificatio
 - Bind brand SVG paints to palette variables with preview fallbacks, resolving them during generation. Keep conference palettes in their conference JSON records.
 - After changing the logo, palette or artwork renderer, rebuild both sites and refresh `assets/brand/<site>/` using the commands in `assets/brand/README.md`. The source README uses the Sponsored banner from that folder.
 - Keep generated artwork paths in `ArtworkPaths.swift`. Group brand exports by site and social exports by conference and edition; use descriptive lowercase filenames with hyphens. Keep only standard browser-discovery icons at the site root. Local partner previews belong in the ignored `Website/BuildArtwork/` tree.
+- Use lowercase folder names with hyphens for asset categories and stable site, conference, edition and partner slugs. Reuse `assets/brand/<site>/` and `assets/social/<conference>/<edition>/` beneath each output root; use `partners/` and `constellations/` consistently. Local previews mirror that hierarchy, adding a partner folder for its variants. Keep existing Swift source folders and build-root names unchanged.
 
 ## Card content
 
@@ -39,7 +40,10 @@ Read [README.md](README.md) for project structure, local preview and verificatio
 - Use US/USD references and the same conservative calculation for ranking and totals. Count only the largest compatible saving per product; round the headline down to whole dollars. Follow the README’s evidence and rounding rules.
 - Keep check dates in the collapsed value calculation. Keep internal approval discussions and provisional price-review notes in private planning.
 - When a contribution is approved, generate and visually check its partner artwork, then refresh that edition’s `assets/social` export using the README commands and configured groups. Keep draft artwork private.
-- Track constellation membership and pending products in private planning. Build the next constellation from newly approved products once they fill the existing layout; preserve earlier batches and record each batch’s asset, capacity and ordered product IDs.
+- Promotional artwork has three kinds: conference × Sponsored by Indies, conference × each approved project or deliberate related-project group, and constellations as the existing layout fills, with a final partial batch near the conference. Group related products from the same maker explicitly in edition data; do not automatically group everything a maker contributes.
+- Keep promotional generation deterministic: fixed geometry, ordered project IDs, stable descriptive filenames and an export index without timestamps.
+- Keep constellations visually close to the approved reference: projects around the conference logo, with larger imagery for projects providing larger discounts. Record explicit positions and sizes per batch so later discount changes do not alter an already published graphic. Agree the discount metric and sizing rule before automating the renderer.
+- Track constellation membership and pending products in private planning. Build the next constellation from newly approved products once they fill the existing layout. Near the conference, publish a partial final batch to give visibility to projects not included in previous rounds; do not wait for every slot to fill. Preserve earlier batches and record each batch’s asset, capacity, ordered product IDs, positions and sizes. Record actual publication separately from generation.
 
 ## Public copy
 

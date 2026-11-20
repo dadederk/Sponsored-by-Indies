@@ -32,7 +32,7 @@ struct SponsoredByIndiesWebsite {
                 let artworks = try PartnerArtwork.batch(catalog: catalog, editionID: editionID)
                 let edition = artworks[0].edition
                 let conference = artworks[0].conference
-                let directory = repository.appending(path: ArtworkPaths.conferenceDirectory(conference, edition: edition) + "/partners")
+                let directory = repository.appending(path: ArtworkPaths.partnerDirectory(conference, edition: edition))
                 try PartnerArtwork.installBatch(artworks, in: directory, assets: assets, brandLogo: brand)
                 print("\(artworks.count) partner graphics generated at \(directory.path)")
             } else {

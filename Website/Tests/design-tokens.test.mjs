@@ -64,8 +64,7 @@ for (const directory of ['Build', 'BuildPublic']) {
     for (const [name, path] of [
       ['logo.svg', 'assets/brand/shared/by-indies-mark.svg'],
       ['logo-inverse.svg', 'assets/brand/shared/by-indies-mark-inverse.svg'],
-      ['favicon.svg', 'assets/icons/favicon.svg'],
-      ['favicon-shared-imprint-01.svg', 'assets/icons/favicon-shared-imprint-01.svg']
+      ['favicon.svg', 'assets/icons/favicon.svg']
     ]) {
       const source = await read(`Assets/${name}`);
       const output = await read(`${directory}/${path}`);

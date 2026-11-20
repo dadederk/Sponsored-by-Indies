@@ -61,6 +61,7 @@ struct PartnerArtworkTests {
         #expect(batch.filter { $0.projects.isEmpty }.count == 1)
         #expect(batch.filter { $0.group != nil }.map(\.partnerID).sorted() == ["azam-books", "rocketsim-rockettrace"])
         #expect(batch.count == expected.count - 2 + 1)
+        #expect(batch.dropFirst().map(\.partnerID) == batch.dropFirst().map(\.partnerID).sorted())
     }
 
     @Test(arguments: ["../escape", "/tmp/export", "sample/2027", "sample\\2027", "sample\n"])
@@ -108,7 +109,7 @@ struct PartnerArtworkTests {
         #expect(result != (try changed.png(symbol: .cross, assets: assets, brandLogo: brand)))
     }
 
-    @Test(arguments: ["unknown", "duplicate member", "overlap", "duplicate ID", "unsafe ID", "product ID", "one product"])
+    @Test(arguments: ["unknown", "duplicate member", "overlap", "duplicate ID", "unsafe ID", "product ID", "one product", "different makers"])
     func groupsRequireDistinctApprovedMembersAndStableIDs(problem: String) throws {
         var catalog = try Catalog.load(from: root.appending(path: "Data"))
         var groups = try #require(catalog.editions[0].artworkGroups)
@@ -119,6 +120,7 @@ struct PartnerArtworkTests {
         case "duplicate ID": groups[1].id = groups[0].id
         case "unsafe ID": groups[0].id = "../escape"
         case "product ID": groups[0].id = "dee"
+        case "different makers": groups[0].projectIDs[1] = "structured"
         default: groups[0].projectIDs.removeLast()
         }
         catalog.editions[0].artworkGroups = groups
@@ -184,14 +186,22 @@ struct PartnerArtworkTests {
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: directory) }
         let brand = root.deletingLastPathComponent().appending(path: ArtworkPaths.brandFile("logo-full-colour-transparent"))
-        #expect(artwork.folder == "social/arctic/2027/dee")
+        #expect(artwork.folder == "assets/social/arctic/2027/partners/dee")
+        #expect(ArtworkPaths.partnerDirectory(artwork.conference, edition: artwork.edition) == "assets/social/arctic/2027/partners")
         try artwork.install(in: directory, assets: root.appending(path: "Assets"), brandLogo: brand)
         let cross = directory.appending(path: "arctic-2027-dee-cross.png")
         let individual = try Data(contentsOf: cross)
         #expect(Set(try FileManager.default.contentsOfDirectory(atPath: directory.path))
-                == ["arctic-2027-dee-cross.png", "arctic-2027-dee-heart.png"])
+                == ["arctic-2027-dee-cross.png", "arctic-2027-dee-heart.png", "artwork-index.json"])
+        let index = try Data(contentsOf: directory.appending(path: "artwork-index.json"))
+        let record = try #require(JSONSerialization.jsonObject(with: index) as? [String: Any])
+        let posts = try #require(record["posts"] as? [[String: Any]])
+        #expect(posts.first?["projectIDs"] as? [String] == ["dee"])
+        #expect(posts.first?["images"] as? [String: String] == ["cross": "arctic-2027-dee-cross.png", "heart": "arctic-2027-dee-heart.png"])
+        try artwork.install(in: directory, assets: root.appending(path: "Assets"), brandLogo: brand)
+        #expect(try Data(contentsOf: directory.appending(path: "artwork-index.json")) == index)
         try PartnerArtwork.installBatch([artwork], in: directory, assets: root.appending(path: "Assets"), brandLogo: brand)
-        #expect(try FileManager.default.contentsOfDirectory(atPath: directory.path) == ["arctic-2027-dee-cross.png"])
+        #expect(Set(try FileManager.default.contentsOfDirectory(atPath: directory.path)) == ["arctic-2027-dee-cross.png", "artwork-index.json"])
         #expect(try Data(contentsOf: cross) == individual)
     }
 

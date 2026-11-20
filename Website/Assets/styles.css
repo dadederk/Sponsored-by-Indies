@@ -11,7 +11,7 @@ body { background: var(--paper); color: var(--ink); font-family: system-ui,-appl
 h1,h2,h3 { color: inherit; line-height: 1.15; letter-spacing: -.04em; font-weight: 650; text-wrap: balance; overflow-wrap: anywhere; }
 h1 { font-size: clamp(2.8rem, 2rem + 3vw, 5rem); max-width: 17ch; margin-bottom: var(--space-6); }
 h2 { font-size: clamp(2rem, 1.5rem + 1.8vw, 3.4rem); margin-bottom: var(--heading-gap); max-width: 24ch; }
-h3,.audience-cards h2 { font-size: 1.5rem; margin-bottom: var(--space-4); }
+h3,.audience-cards h2 { font-size: var(--font-size-heading-medium); margin-bottom: var(--space-4); }
 .title-accent { font-family: Georgia, "Times New Roman", serif; font-style: italic; font-weight: 400; color: var(--accent); }
 p,li { max-width: 70ch; overflow-wrap: anywhere; }
 span { overflow-wrap: anywhere; }
@@ -39,7 +39,7 @@ main:focus { outline: none; }
 .brand-by,.brand-name { font-size: var(--brand-name-size); line-height: 1; }
 .brand-by { font-weight: 400; }
 .brand-name { font-weight: 700; letter-spacing: -.025em; }
-.site-footer { border-top: var(--border-width) solid var(--line); padding-block: var(--space-8); font-size: .9375rem; }
+.site-footer { border-top: var(--border-width) solid var(--line); padding-block: var(--space-8); font-size: var(--font-size-small); }
 .site-footer p { margin: 0; }
 .footer-identity { flex-wrap: wrap; gap: var(--space-4) var(--space-6); }
 .skip-link { position: fixed; top: -10rem; left: var(--space-4); z-index: 10; background: var(--blue); color: var(--white); padding: var(--button-inset-block) var(--space-4); }
@@ -49,7 +49,8 @@ main:focus { outline: none; }
 .home-feature-grid,.section-grid { --bs-gutter-x: var(--section-space); --bs-gutter-y: var(--section-space); }
 @media (min-width: 992px) {
   .hero h1 { font-size: clamp(2.8rem, 4.6vw, 4rem); }
-  .hero .conference-card .conference-panel,.hero .conference-card .panel { padding: var(--conference-inset-small); }
+  .hero .conference-card .conference-panel,.hero .conference-card .panel,
+  .conference-card-compact .conference-panel,.conference-card-compact .panel { padding: var(--conference-inset-small); }
 }
 .eyebrow { font-size: .8125rem; font-weight: 700; letter-spacing: .02em; margin-bottom: var(--eyebrow-gap); }
 .lead { font-size: 1.1875rem; color: var(--muted); max-width: 55ch; margin-bottom: var(--heading-gap); }
@@ -82,7 +83,14 @@ section.conference-panel { padding: 0; }
 .conference-card { border: var(--border-width) solid var(--line); border-radius: var(--radius-card); overflow: hidden; }
 .conference-card .panel { border: 0; border-radius: 0; }
 /* Unequal featured columns and the desktop breakpoint need more than Ignite's fixed grid API. */
-.conference-directory,.conference-card-grid { display: grid; gap: var(--space-6); }
+.conference-card-grid { display: grid; gap: var(--space-6); }
+/* Native disclosure states keep the archive button's label accurate without a script. */
+.conference-archive { border: 0; padding: 0; margin: var(--space-6) 0 0; }
+.conference-archive > summary { display: inline-flex; list-style: none; }
+.conference-archive > summary::-webkit-details-marker { display: none; }
+.conference-archive .archive-show-fewer,.conference-archive[open] .archive-show-all { display: none; }
+.conference-archive[open] .archive-show-fewer { display: inline; }
+.conference-archive > .conference-card-grid { margin-top: var(--space-6); }
 @media (min-width: 992px) {
   .conference-card-featured { display: grid; grid-template-columns: minmax(0,2fr) minmax(0,3fr); }
   .conference-card-featured > * { min-width: 0; }
@@ -93,7 +101,7 @@ section.conference-panel { padding: 0; }
 .edition-list li { border-bottom: var(--border-width) solid var(--line); padding-block: var(--space-6); }
 .edition-list a { background: var(--conference-bg,var(--ink)); color: var(--conference-accent,var(--white)); padding: var(--edition-link-inset-block) var(--edition-link-inset-inline); border-radius: var(--radius-small); }
 .edition-nav { padding-block: var(--space-4); border-bottom: var(--border-width) solid var(--line); }
-.breadcrumb { font-size: .9375rem; padding: var(--space-4) 0; margin: 0; align-items: center; column-gap: var(--breadcrumb-gap); }
+.breadcrumb { font-size: var(--font-size-small); padding: var(--space-4) 0; margin: 0; align-items: center; column-gap: var(--breadcrumb-gap); }
 .breadcrumb li { display: flex; align-items: center; margin: 0; }
 .breadcrumb li + li::before { content: ""; border-right: var(--control-border-width) solid var(--muted); height: 1em; transform: rotate(15deg); margin-inline: var(--separator-inset-start) var(--separator-inset-end); flex: none; }
 .page-intro { padding-block: var(--space-6) var(--section-space); }
@@ -104,7 +112,7 @@ section.conference-panel { padding: 0; }
 .manifesto p { margin: 0 auto var(--space-5); font-size: clamp(1.2rem, 1rem + 1vw, 1.6rem); line-height: 1.55; max-width: 42ch; }
 .manifesto h2 { margin: var(--space-8) auto 0; font-size: clamp(2.5rem, 2rem + 3vw, 4.5rem); max-width: 20ch; }
 .manifesto .title-accent { color: var(--accent-soft); display: block; }
-.contact-note { font-size: .9375rem; color: var(--muted); margin-top: var(--space-8); }
+.contact-note { font-size: var(--font-size-small); color: var(--muted); margin-top: var(--space-8); }
 details { border-top: var(--border-width) solid var(--rule); padding-block: var(--space-2); margin-block: var(--space-4); }
 summary { cursor: pointer; padding: var(--space-3) var(--space-1); min-height: var(--target-size); min-width: var(--target-size); font-weight: 600; }
 details > p { margin-top: var(--space-4); padding-inline: var(--space-1); }
@@ -125,7 +133,7 @@ details > p { margin-top: var(--space-4); padding-inline: var(--space-1); }
 .contribution-form { --bs-gutter-x: 0; --bs-gutter-y: var(--space-6); }
 .contribution-form fieldset { border-top: var(--border-width) solid var(--rule); padding-block: var(--space-6); margin-top: var(--space-6); }
 /* Preserve Bootstrap’s full-width floated legend so the divider stays above it. */
-.contribution-form legend { font-size: 1.5rem; font-weight: 650; letter-spacing: -.02em; }
+.contribution-form legend { font-size: var(--font-size-heading-medium); font-weight: 650; letter-spacing: -.02em; }
 .contribution-form fieldset > div { margin-bottom: var(--space-5); }
 /* Nested offers share a smaller legend and a logical inset, including RTL layouts. */
 .contribution-form fieldset[data-offer] { border-top: 0; border-inline-start: var(--border-width) solid var(--rule); padding-inline-start: var(--space-4); margin-inline-start: var(--space-2); padding-block: var(--space-2); }
@@ -135,7 +143,7 @@ details > p { margin-top: var(--space-4); padding-inline: var(--space-1); }
 textarea.form-control { resize: vertical; }
 .form-control:focus,.form-select:focus { color: var(--ink); background-color: var(--surface); border-color: var(--blue); }
 input.form-control:focus-visible,textarea.form-control:focus-visible,select.form-select:focus-visible { outline: var(--focus-width) solid var(--ink); outline-offset: var(--focus-offset); box-shadow: 0 0 0 var(--focus-halo) var(--paper); }
-.field-help { color: var(--muted); font-size: .9375rem; margin-block: var(--space-2) var(--space-4); }
+.field-help { color: var(--muted); font-size: var(--font-size-small); margin-block: var(--space-2) var(--space-4); }
 #form-status:not(:empty) { border-left: var(--focus-width) solid var(--blue); padding: var(--button-inset-block) var(--space-4); margin-block: var(--space-6); }
 #draft-preview { border-top: var(--border-width) solid var(--rule); padding-block: var(--space-8); margin-top: var(--space-8); }
 [hidden] { display: none !important; }
@@ -159,7 +167,9 @@ input.form-control:focus-visible,textarea.form-control:focus-visible,select.form
 .product-card-benefits { display: flex; flex-wrap: wrap; align-content: start; align-items: flex-start; gap: var(--space-2); padding: 0; margin: 0; list-style: none; }
 .product-card-benefits .badge { white-space: normal; text-align: left; line-height: inherit; font-size: inherit; }
 .product-card-benefits li + li { margin-top: 0; }
-.product-card-maker { display: flex; flex-direction: column; gap: var(--space-3); border-top: var(--border-width) solid var(--line); padding-top: var(--space-4); margin-top: 0; line-height: 1.5; }
+.product-card-maker { display: flex; flex-direction: column; gap: var(--space-2); border-top: var(--border-width) solid var(--line); padding-top: var(--space-4); margin-top: 0; line-height: 1.5; }
+/* Ignite applies Quote modifiers to a wrapper; reset the blockquote's own browser margin here. */
+.product-card-maker blockquote { margin: 0; }
 .product-card-maker p a { min-height: 0; display: inline; }
 .offer-terms-link { white-space: nowrap; }
 /* Keep the heading flexible while reserving a full touch target for the small utility icon. */
@@ -182,6 +192,11 @@ input.form-control:focus-visible,textarea.form-control:focus-visible,select.form
 .showcase-builders h3 { font-size: var(--builder-heading-size); }
 .showcase-builders,.showcase-contributions { border-top: var(--border-width) solid var(--line); padding-top: var(--space-4); }
 .showcase-contributions { margin-top: auto; }
+/* Bundle/date pairs wrap as compact list items while retaining native bullets. */
+.showcase-bundles { display: flex; flex-wrap: wrap; align-content: center; gap: 0 var(--space-6); margin-bottom: 0; padding-block: var(--space-2); padding-inline-start: var(--space-4); }
+.showcase-bundles li { margin: 0; max-width: 100%; }
+/* These are links within bundle/date text, so use its line height rather than control sizing. */
+.showcase-bundles a { display: inline; min-height: 0; min-width: 0; }
 .builder-row + .builder-row { margin-top: var(--space-4); }
 .builder-row { flex-wrap: wrap; }
 .builder-row > :first-child { flex: none; }
@@ -196,12 +211,12 @@ input.form-control:focus-visible,textarea.form-control:focus-visible,select.form
   .showcase-grid { row-gap: var(--space-6); }
   .product-grid > .col,.showcase-grid > .col { display: grid; grid-template-rows: subgrid; grid-row: span 4; width: auto; min-width: 0; padding: 0; margin: 0; }
   .product-card,.showcase-card { display: grid; grid-template-rows: subgrid; grid-row: span 4; }
-  .showcase-contributions { margin-top: 0; align-self: start; }
+  .showcase-contributions { margin-top: 0; align-self: stretch; }
   @media (min-width: 768px) {
     .product-grid,.showcase-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     /* Quotes share a row above the credits, including cards without a quote. */
     .product-grid > .col,.product-card { grid-row: span 5; }
-    .product-card-maker { display: grid; grid-template-rows: subgrid; grid-row: span 2; row-gap: var(--space-3); }
+    .product-card-maker { display: grid; grid-template-rows: subgrid; grid-row: span 2; row-gap: var(--space-2); }
     .product-card-footer { grid-row: 2; align-self: start; }
   }
 }

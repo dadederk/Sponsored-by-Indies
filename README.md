@@ -50,6 +50,8 @@ Keep existing page addresses and add only approved conference and offer details.
 
 Conference descriptions stay plain text for metadata. An optional `descriptionLink` adds one inline link to the displayed description, using `text` and `url`. Its text must appear exactly once in the description.
 
+The conference directory features the nearest current or future edition, lists the remaining upcoming editions, and shows past editions newest first. Past starts with two editions; “Show all past conferences” reveals the rest without JavaScript. Empty sections and unnecessary archive controls stay hidden.
+
 `projects.json` holds shared project IDs, names, URLs, icons and descriptions. Changes to these shared fields also appear in past bundles; offer terms, prices and approvals stay specific to each edition. Conference offers reference a `projectID` and contain only edition-specific details. The showcase lists each project with an approved offer and approved participation in at least one edition, once, alphabetically. Past contributors remain visible, and bundle links show the edition’s dates. Each project has a copyable permalink, with a native link and manual-copy fallback. Bundle links use stable project anchors and do not imply an offer is currently redeemable.
 
 `indies.json` holds maker identities and individual `people` rows, with optional bios, personal websites, social links and local portrait paths. Display builder links in this order: Website, Mastodon, Bluesky, Twitter, GitHub, Instagram, LinkedIn, using the available profiles. Public social avatars may be sourced from Twitter, Mastodon, Bluesky or GitHub. Keep the matching profile link in `socials` and download the selected image into `Website/Assets/portraits/`; visitors load the local copy. Missing portraits use initials, and loading fails if a referenced image is missing. The independently curated discovery links live in `site.json` under `discoveryResources`; they do not indicate a partnership.
@@ -148,13 +150,25 @@ Generated artwork uses the same folder structure in every site build and in the 
 | `css/` | Generated design tokens and Ignite stylesheets |
 | `optimized/app-icons/` and `optimized/portraits/` | Delivery images sized for cards |
 
+Asset folder names use lowercase words separated by hyphens and stable slugs, such as `sponsored-by-indies`, `arctic` and `2027`. Use the same `assets/brand/<site>/` and `assets/social/<conference>/<edition>/` hierarchy beneath every output root, with `partners/` and `constellations/` for promotional types. Local partner previews add a partner folder beneath `partners/` to keep their variants together. Existing Swift source folders and build-root names retain their project conventions.
+
 Artwork filenames use lowercase words separated by hyphens and include their site or conference, edition and purpose, for example `by-indies-social-banner.png` and `arctic-2027-dee-cross.png`. The conventional `favicon.ico` and `apple-touch-icon.png` stay at the site root for automatic browser discovery. Original product images and portraits retain their stable data paths.
 
 Both sites use the shared “by indies.” wordmark, with “Sponsored” above it for the conference site. The showcase’s generated repository README uses its own banner. After changing branding, regenerate both sites and refresh the exports following [the artwork instructions](assets/brand/README.md); the source README uses the Sponsored banner directly from that folder. Website builds do not overwrite the committed exports.
 
 Each bundle also generates a 1200 × 630 sharing card in `assets/social/<conference>/<edition>/`, using the conference’s JSON palette, name, edition, dates and location. Edition pages, their conference-home mirror and access pages share that card. Its filename changes when those details change, while renderer and logo changes update the asset version. Other pages keep their site’s general sharing card.
 
-### Create individual partner posts
+### Promotional artwork
+
+Keep three kinds of promotional graphics for each conference edition:
+
+1. One conference × Sponsored by Indies card.
+2. One conference × project card for each approved project, combining related projects from the same maker only when the grouping is deliberate. A different product category can keep its own card: RocketSim and RocketTrace share a post, while AI Fundamentals stays separate; Azam’s two books share a post.
+3. Constellation cards with projects surrounding the conference logo, created when enough newly approved projects fill the established layout. Near the conference, publish a final partial batch so projects not featured in previous rounds still get visibility. Keep completed constellations unchanged and queue later projects for the next one.
+
+Membership and order are explicit, rather than inferred from maker identity or the current price ranking. Each export includes `artwork-index.json`, listing the edition, dimensions, project IDs and filenames. It contains no timestamps or machine-specific paths, so unchanged inputs produce the same index. The partner series always lists the sponsor first, then partner IDs alphabetically; paired products retain the order in the edition data.
+
+#### Create partner posts
 
 Generate matching 1800 × 1200 PNGs with a cross or a heart between the conference and partner logos:
 
@@ -165,19 +179,23 @@ swift run --package-path Website --force-resolved-versions SponsoredByIndiesWebs
 swift run --package-path Website --force-resolved-versions SponsoredByIndiesWebsite --partner-artwork arctic-2027 --all-partners
 ```
 
-The first command pairs the conference with Sponsored by Indies. Add `--project` to select an approved product from that edition; product posts also carry the small Sponsored by Indies signature. Each command writes `<conference>-<edition>-<partner>-cross.png` and `…-heart.png` under `Website/BuildArtwork/social/<conference>/<edition>/<partner>/`, preserving previous exports if rendering fails. These graphics are local exports and are not deployed with the website.
+The first command pairs the conference with Sponsored by Indies. Add `--project` to select an approved product from that edition; product posts also carry the small Sponsored by Indies signature. Each command writes `<conference>-<edition>-<partner>-cross.png` and `…-heart.png` under `Website/BuildArtwork/assets/social/<conference>/<edition>/partners/<partner>/`, preserving previous exports if rendering fails. These graphics are local exports and are not deployed with the website.
 
-Use `--group` for two products sharing a post. Define the group ID and ordered `projectIDs` in the edition’s `artworkGroups`; validation requires two distinct approved products with local artwork and prevents a product from appearing in multiple groups. Paired products sit side by side, and portrait book artwork keeps its original proportions and square corners.
+Use `--group` for two products sharing a post. Define the group ID and ordered `projectIDs` in the edition’s `artworkGroups`; validation requires two distinct approved products from the same maker with local artwork and prevents a product from appearing in multiple groups. Paired products sit side by side, and portrait book artwork keeps its original proportions and square corners.
 
 Use `--all-partners` to export the final navy-X series to `assets/social/<conference>/<edition>/partners/`. The set includes Sponsored by Indies and every approved product exactly once, combining the edition’s groups. It replaces only the `partners` folder after every render succeeds, removing stale individual posts when products are grouped while preserving other edition artwork. These ready-to-share PNGs can be committed alongside the brand exports.
 
 Include artwork in the contribution approval process: generate the new product’s `--project` or configured `--group` export, visually check it, and refresh the edition with `--all-partners`. Keep unconfirmed examples and their exports in private planning.
 
-For constellation posts, keep a private record of each completed graphic’s path, layout capacity and ordered product IDs. Queue newly approved products that have not appeared in an earlier constellation. Generate the next graphic when the queue fills that layout, then record its members and clear only those products from the queue. Preserve earlier graphics rather than reshuffling them whenever one product joins.
+For constellation posts, follow the approved reference: projects surround the conference logo, and projects providing larger discounts have larger imagery. Use explicit positions, sizes and ordering; never introduce random placement. Agree the discount metric and sizing rule before automating the renderer, then freeze each completed batch so later price or discount changes do not alter an already published graphic.
+
+Keep a private record of each completed graphic’s path, layout capacity, ordered product IDs, positions and sizes. Queue newly approved products that have not appeared in an earlier constellation. Generate and publish the next graphic when the queue fills that layout. Near the conference, publish a final batch even if it has unfilled slots, giving the remaining projects visibility. Record generation and publication separately and clear only the featured projects from the queue. Preserve earlier graphics rather than reshuffling them whenever one product joins. Final files belong in `assets/social/<conference>/<edition>/constellations/`, named `<conference>-<edition>-constellation-01.png`, `…-02.png`, and so on. Do not reconstruct an earlier graphic’s membership or capacity from guesses; verify its original first. The partner renderer does not automatically create or replace constellations.
 
 The renderer uses fixed geometry and the shared palette and dimensions in `DesignTokens.swift`. It draws original product icons, the approved brand PNG and outlined conference SVGs without generated lettering or platform emoji. Repeating a render with the same inputs and rendering runtime produces identical PNG bytes. Conference SVG paths live in `Website/Assets/conference-logos/` and are selected by `branding.logoPath` in the conference JSON; their paints resolve from that conference’s palette. ARCtic’s outlines match its original Roboto Mono lettering and need no installed fonts.
 
 The `publish-showcase` job requires the Actions variable `BY_INDIES_PUBLISH_ENABLED` to be `true`. Enable it to publish the showcase to its separate repository. The Sponsored footer links to `https://byindies.com/`; the non-indexable review route stays available for checking content on the Sponsored site.
+
+Swift publishing tests also generate an ignored `.build/browser-fixtures/conference-directory.html` sample with past editions. Run them before the browser checks, which use it to verify keyboard expansion, collapse and no-script behaviour without adding sample conferences to the public catalogue.
 
 ## Configure By Indies hosting
 

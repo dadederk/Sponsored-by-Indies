@@ -37,14 +37,13 @@ struct IndieContribution {
             ])
             Section {
                 if let contact = catalog.contactURL, let recipient = URLComponents(string: contact)?.path, contact.hasPrefix("mailto:") {
-                    Tag("details") {
-                        Tag("summary") { "Prefer a form?" }
-                        Text("Fill in the form to prepare an email, then review and send it in your email app.").id("form-help")
-                        Components.emailFormFallback
-                        contributionForm(recipient: recipient).class("reading-width")
-                        Components.emailDraftPreview(contact: contact, filename: "indie-contribution.eml", includesImages: true)
-                        Components.emailFormStatus
-                    }.id("interest-form").class("participation-form")
+                    Components.emailFormDisclosure(
+                        contact: contact, filename: "indie-contribution.eml",
+                        help: "Fill in the form to prepare an email, then review and send it in your email app.",
+                        includesImages: true
+                    ) {
+                        contributionForm(recipient: recipient)
+                    }
                     Script(file: "/contribution.mjs").attribute("type", "module")
                 } else if catalog.contactURL == nil {
                     Text("A contribution contact route will be available here soon.")

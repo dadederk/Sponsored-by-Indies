@@ -85,6 +85,8 @@ extension Catalog {
                     try require(group.projectIDs.count == 2 && group.projectIDs.allSatisfy { id in
                         visible.contains(id) && projects.contains { $0.id == id && $0.iconPath != nil }
                     }, "Artwork group \(group.id) needs two approved products with local artwork in \(edition.id).")
+                    try require(Set(projects.filter { group.projectIDs.contains($0.id) }.map(\.indieID)).count == 1,
+                                "Artwork group \(group.id) must contain products from the same maker.")
                 }
             }
             for contribution in visibleProductContributions(for: edition) {

@@ -4,9 +4,10 @@ Ready-to-share artwork for conference websites, slides and printed materials. Fi
 
 - `sponsored-by-indies/`: Sponsored by Indies logos, social images and README banner.
 - `by-indies/`: By Indies social images and README banner.
-- `../social/<conference>/<edition>/partners/`: approved conference partner posts.
+- `../social/<conference>/<edition>/partners/`: sponsor and approved project posts, with an `artwork-index.json` recording their membership and filenames.
+- `../social/<conference>/<edition>/constellations/`: completed constellation batches, preserved when new projects join.
 
-Local cross and heart previews live in `Website/BuildArtwork/social/<conference>/<edition>/<partner>/` and are ignored by Git. Website builds use the same brand and conference folder names under each build root. Source SVGs, product artwork and portraits live in `Website/Assets/`.
+Local cross and heart previews live in `Website/BuildArtwork/assets/social/<conference>/<edition>/partners/<partner>/` and are ignored by Git. Website builds use the same brand and conference folder names under each build root. Source SVGs, product artwork and portraits live in `Website/Assets/`.
 
 The following files live in `sponsored-by-indies/`; By Indies social files use the `by-indies-` prefix in `by-indies/`.
 

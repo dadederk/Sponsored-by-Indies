@@ -1,0 +1,200 @@
+{
+  "conferenceID" : "arctic",
+  "editionID" : "arctic-2027",
+  "height" : 1200,
+  "posts" : [
+    {
+      "images" : {
+        "cross" : "arctic-2027-sponsored-by-indies-cross.png"
+      },
+      "kind" : "sponsor",
+      "partnerID" : "sponsored-by-indies",
+      "projectIDs" : [
+
+      ]
+    },
+    {
+      "images" : {
+        "cross" : "arctic-2027-ai-fundamentals-cross.png"
+      },
+      "kind" : "projects",
+      "partnerID" : "ai-fundamentals",
+      "projectIDs" : [
+        "ai-fundamentals"
+      ]
+    },
+    {
+      "images" : {
+        "cross" : "arctic-2027-azam-books-cross.png"
+      },
+      "kind" : "projects",
+      "partnerID" : "azam-books",
+      "projectIDs" : [
+        "swiftui-architecture",
+        "swiftdata-architecture"
+      ]
+    },
+    {
+      "images" : {
+        "cross" : "arctic-2027-coca-cross.png"
+      },
+      "kind" : "projects",
+      "partnerID" : "coca",
+      "projectIDs" : [
+        "coca"
+      ]
+    },
+    {
+      "images" : {
+        "cross" : "arctic-2027-dee-cross.png"
+      },
+      "kind" : "projects",
+      "partnerID" : "dee",
+      "projectIDs" : [
+        "dee"
+      ]
+    },
+    {
+      "images" : {
+        "cross" : "arctic-2027-helm-cross.png"
+      },
+      "kind" : "projects",
+      "partnerID" : "helm",
+      "projectIDs" : [
+        "helm"
+      ]
+    },
+    {
+      "images" : {
+        "cross" : "arctic-2027-kickstart-cross.png"
+      },
+      "kind" : "projects",
+      "partnerID" : "kickstart",
+      "projectIDs" : [
+        "kickstart"
+      ]
+    },
+    {
+      "images" : {
+        "cross" : "arctic-2027-lookup-cross.png"
+      },
+      "kind" : "projects",
+      "partnerID" : "lookup",
+      "projectIDs" : [
+        "lookup"
+      ]
+    },
+    {
+      "images" : {
+        "cross" : "arctic-2027-movie-buzz-cross.png"
+      },
+      "kind" : "projects",
+      "partnerID" : "movie-buzz",
+      "projectIDs" : [
+        "movie-buzz"
+      ]
+    },
+    {
+      "images" : {
+        "cross" : "arctic-2027-nil-coalescing-books-cross.png"
+      },
+      "kind" : "projects",
+      "partnerID" : "nil-coalescing-books",
+      "projectIDs" : [
+        "nil-coalescing-books"
+      ]
+    },
+    {
+      "images" : {
+        "cross" : "arctic-2027-nunch-cross.png"
+      },
+      "kind" : "projects",
+      "partnerID" : "nunch",
+      "projectIDs" : [
+        "nunch"
+      ]
+    },
+    {
+      "images" : {
+        "cross" : "arctic-2027-passable-cross.png"
+      },
+      "kind" : "projects",
+      "partnerID" : "passable",
+      "projectIDs" : [
+        "passable"
+      ]
+    },
+    {
+      "images" : {
+        "cross" : "arctic-2027-pocketshelf-cross.png"
+      },
+      "kind" : "projects",
+      "partnerID" : "pocketshelf",
+      "projectIDs" : [
+        "pocketshelf"
+      ]
+    },
+    {
+      "images" : {
+        "cross" : "arctic-2027-retrorapid-cross.png"
+      },
+      "kind" : "projects",
+      "partnerID" : "retrorapid",
+      "projectIDs" : [
+        "retrorapid"
+      ]
+    },
+    {
+      "images" : {
+        "cross" : "arctic-2027-rocketsim-rockettrace-cross.png"
+      },
+      "kind" : "projects",
+      "partnerID" : "rocketsim-rockettrace",
+      "projectIDs" : [
+        "rocketsim",
+        "rockettrace"
+      ]
+    },
+    {
+      "images" : {
+        "cross" : "arctic-2027-structured-cross.png"
+      },
+      "kind" : "projects",
+      "partnerID" : "structured",
+      "projectIDs" : [
+        "structured"
+      ]
+    },
+    {
+      "images" : {
+        "cross" : "arctic-2027-the-shed-cross.png"
+      },
+      "kind" : "projects",
+      "partnerID" : "the-shed",
+      "projectIDs" : [
+        "the-shed"
+      ]
+    },
+    {
+      "images" : {
+        "cross" : "arctic-2027-whio-cross.png"
+      },
+      "kind" : "projects",
+      "partnerID" : "whio",
+      "projectIDs" : [
+        "whio"
+      ]
+    },
+    {
+      "images" : {
+        "cross" : "arctic-2027-xarra-cross.png"
+      },
+      "kind" : "projects",
+      "partnerID" : "xarra",
+      "projectIDs" : [
+        "xarra"
+      ]
+    }
+  ],
+  "width" : 1800
+}

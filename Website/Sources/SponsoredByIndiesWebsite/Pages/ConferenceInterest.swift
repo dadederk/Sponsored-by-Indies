@@ -82,14 +82,12 @@ struct ConferenceInterest {
     private var enquirySection: some HTML {
         Section {
             if let contact = catalog.contactURL, contact.hasPrefix("mailto:"), let recipient = URLComponents(string: contact)?.path {
-                Tag("details") {
-                    Tag("summary") { "Prefer a form?" }
-                    Text("Tell us what you know so far. The form prepares an email for you to review and send in your email app.").id("form-help")
-                    Components.emailFormFallback
-                    enquiryForm(recipient: recipient).class("reading-width")
-                    Components.emailDraftPreview(contact: contact, filename: "conference-interest.eml")
-                    Components.emailFormStatus
-                }.id("interest-form").class("participation-form")
+                Components.emailFormDisclosure(
+                    contact: contact, filename: "conference-interest.eml",
+                    help: "Tell us what you know so far. The form prepares an email for you to review and send in your email app."
+                ) {
+                    enquiryForm(recipient: recipient)
+                }
                 Script(file: "/conference-interest.mjs").attribute("type", "module")
             } else if catalog.contactURL == nil {
                 Text("A conference contact route will be available here soon.")

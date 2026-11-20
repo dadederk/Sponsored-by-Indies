@@ -32,6 +32,21 @@ extension Components {
         }.class("tinted-section").aria(.labelledBy, id)
     }
 
+    // Each participation page has one disclosure; the browser modules share these IDs.
+    static func emailFormDisclosure(
+        contact: String, filename: String, help: String, includesImages: Bool = false,
+        @HTMLBuilder form: @escaping () -> some HTML
+    ) -> some HTML {
+        Tag("details") {
+            Tag("summary") { "Prefer a form?" }
+            Text(escaped(help)).id("form-help")
+            emailFormFallback
+            form().class("reading-width")
+            emailDraftPreview(contact: contact, filename: filename, includesImages: includesImages)
+            emailFormStatus
+        }.id("interest-form").class("participation-form")
+    }
+
     static func emailDraftPreview(contact: String, filename: String, includesImages: Bool = false) -> some HTML {
         Tag("section") {
             Text("Your email draft").font(.title2).id("draft-title")
