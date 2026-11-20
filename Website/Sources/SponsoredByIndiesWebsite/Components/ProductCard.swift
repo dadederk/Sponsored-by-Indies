@@ -76,7 +76,7 @@ extension Components {
                 }.class("product-card-footer")
             }.foregroundStyle(.secondary).class("product-card-maker")
         }.class("panel", "product-card")
-            .padding(.bottom, .custom("var(--space-2)"))
+            .padding(.bottom, .custom("var(--card-detail-inset)"))
     }
 
     private static func productTerms(_ product: Offer, offers: [Offer], id: String) -> some HTML {

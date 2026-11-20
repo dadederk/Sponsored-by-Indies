@@ -173,7 +173,7 @@ struct PartnerArtwork {
                   let image = CGImageSourceCreateImageAtIndex(source, 0, nil) else {
                 throw CatalogError.invalid("Cannot read product artwork: \(project.id).")
             }
-            return NSImage(cgImage: try Self.removingTransparentPadding(from: image), size: .zero)
+            return NSImage(cgImage: try ImageOptimization.normalizedProductArtwork(from: image), size: .zero)
         }
 
         NSGraphicsContext.saveGraphicsState()
@@ -222,32 +222,6 @@ struct PartnerArtwork {
             throw CatalogError.invalid("Cannot encode partner artwork.")
         }
         return output as Data
-    }
-
-    /// Size the visible artwork consistently when maker exports include transparent canvas padding.
-    static func removingTransparentPadding(from image: CGImage) throws -> CGImage {
-        guard let space = CGColorSpace(name: CGColorSpace.sRGB),
-              let bitmap = CGContext(data: nil, width: image.width, height: image.height,
-                  bitsPerComponent: 8, bytesPerRow: image.width * 4, space: space,
-                  bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.byteOrder32Big.rawValue),
-              let bytes = bitmap.data?.assumingMemoryBound(to: UInt8.self) else {
-            throw CatalogError.invalid("Cannot inspect artwork transparency.")
-        }
-        bitmap.draw(image, in: CGRect(x: 0, y: 0, width: image.width, height: image.height))
-        var minX = image.width, minY = image.height, maxX = -1, maxY = -1
-        for y in 0..<image.height {
-            for x in 0..<image.width where bytes[(y * image.width + x) * 4 + 3] > 0 {
-                minX = min(minX, x)
-                minY = min(minY, y)
-                maxX = max(maxX, x)
-                maxY = max(maxY, y)
-            }
-        }
-        guard maxX >= minX, maxY >= minY,
-              let cropped = image.cropping(to: CGRect(x: minX, y: minY, width: maxX - minX + 1, height: maxY - minY + 1)) else {
-            throw CatalogError.invalid("Product artwork must contain visible pixels.")
-        }
-        return cropped
     }
 
     @MainActor

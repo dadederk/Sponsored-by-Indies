@@ -205,33 +205,6 @@ struct PartnerArtworkTests {
         #expect(try Data(contentsOf: cross) == individual)
     }
 
-    @Test func transparentPaddingIsRemovedWithoutCroppingVisiblePixels() throws {
-        let space = try #require(CGColorSpace(name: CGColorSpace.sRGB))
-        let bitmap = try #require(CGContext(data: nil, width: 11, height: 17, bitsPerComponent: 8,
-            bytesPerRow: 44, space: space, bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue))
-        bitmap.setFillColor(CGColor(srgbRed: 1, green: 0, blue: 0, alpha: 1))
-        bitmap.fill(CGRect(x: 2, y: 1, width: 4, height: 7))
-        let original = try #require(bitmap.makeImage())
-        let expected = try #require(NSBitmapImageRep(cgImage: original).colorAt(x: 2, y: 9)?.usingColorSpace(.sRGB))
-        let image = try PartnerArtwork.removingTransparentPadding(from: original)
-        #expect(image.width == 4 && image.height == 7)
-        #expect(image.colorSpace?.name == original.colorSpace?.name)
-        let pixels = NSBitmapImageRep(cgImage: image)
-        for y in 0..<image.height {
-            for x in 0..<image.width {
-                let color = try #require(pixels.colorAt(x: x, y: y)?.usingColorSpace(.sRGB))
-                #expect(color.alphaComponent == 1)
-                #expect(abs(color.redComponent - expected.redComponent) < 0.000001)
-                #expect(abs(color.greenComponent - expected.greenComponent) < 0.000001)
-                #expect(abs(color.blueComponent - expected.blueComponent) < 0.000001)
-            }
-        }
-        bitmap.clear(CGRect(x: 0, y: 0, width: 11, height: 17))
-        #expect(throws: CatalogError.self) {
-            try PartnerArtwork.removingTransparentPadding(from: #require(bitmap.makeImage()))
-        }
-    }
-
     @Test(arguments: ["/conference-logos/../secret.svg", "https://example.org/logo.svg", "/conference-logos/logo.png"])
     func logoPathsStayInsideLocalVectorAssets(path: String) {
         var catalog = CatalogFixture.make()

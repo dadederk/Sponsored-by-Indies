@@ -1,3 +1,4 @@
+import AppKit
 import CoreGraphics
 import Foundation
 import ImageIO
@@ -40,6 +41,64 @@ struct ImageOptimizationTests {
         let image = try decode(output)
         #expect(image.width == 10)
         #expect(image.height == 20)
+    }
+
+    @Test(arguments: [(400, 400, 96, 192), (40, 20, 20, 20)])
+    func trimmedCopiesSizeVisibleArtworkWithoutUpscalingOrChangingTheMaster(
+        width: Int, height: Int, expectedWidth: Int, expectedHeight: Int
+    ) throws {
+        let root = try temporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: root) }
+        let source = root.appending(path: "padded.png")
+        let output = root.appending(path: "copy.png")
+        try fixture(width: width, height: height, at: source)
+        let original = try Data(contentsOf: source)
+        try ImageOptimization.resize(source, to: output, maximumDimension: 192, trimTransparentPadding: true)
+        let image = try decode(output)
+        #expect(image.width == expectedWidth && image.height == expectedHeight)
+        #expect(try Data(contentsOf: source) == original)
+    }
+
+    @Test func preparationTrimsOnlyProductArtworkAndPreservesPortraitFraming() throws {
+        let root = try temporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: root) }
+        for folder in ["app-icons", "portraits"] {
+            let directory = root.appending(path: folder)
+            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+            try fixture(width: 40, height: 40, at: directory.appending(path: "padded.png"))
+        }
+        try ImageOptimization.prepare(in: root)
+        let product = try decode(root.appending(path: "optimized/app-icons/padded.png"))
+        let portrait = try decode(root.appending(path: "optimized/portraits/padded.png"))
+        #expect(product.width == 20 && product.height == 40)
+        #expect(portrait.width == 40 && portrait.height == 40)
+    }
+
+    @Test(arguments: [true, false])
+    func solidAppTilesExcludeShadowsWhileCoversKeepTheirFullArtwork(square: Bool) throws {
+        let width = 100
+        let height = square ? 100 : 150
+        let bitmap = try #require(CGContext(data: nil, width: width, height: height,
+            bitsPerComponent: 8, bytesPerRow: width * 4, space: CGColorSpaceCreateDeviceRGB(),
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue))
+        bitmap.setFillColor(CGColor(red: 0, green: 0, blue: 0, alpha: 0.05))
+        bitmap.fill(CGRect(x: 0, y: 0, width: width, height: height))
+        bitmap.setFillColor(CGColor(red: 0.2, green: 0.5, blue: 0.9, alpha: 1))
+        bitmap.fill(CGRect(x: 10, y: 10, width: 80, height: height - 20))
+        let original = try #require(bitmap.makeImage())
+        let fitted = try ImageOptimization.normalizedProductArtwork(from: original)
+        #expect(fitted.width == (square ? 80 : width))
+        #expect(fitted.height == (square ? 80 : height))
+        #expect(original.width == width && original.height == height)
+    }
+
+    @Test func translucentArtworkWithoutASolidTileRemainsVisible() throws {
+        let root = try temporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: root) }
+        let source = root.appending(path: "translucent.png")
+        try fixture(width: 40, height: 40, at: source)
+        let fitted = try ImageOptimization.normalizedProductArtwork(from: decode(source))
+        #expect(fitted.width == 20 && fitted.height == 40)
     }
 
     @Test func resamplingRetainsWideGamutColourSpace() throws {
@@ -115,6 +174,33 @@ struct ImageOptimizationTests {
         try original.write(to: file)
         try ImageOptimization.compressPNGs(in: images, cacheDirectory: cache)
         #expect(try decode(file).width == 64)
+    }
+
+    @Test func transparentPaddingIsRemovedWithoutCroppingVisiblePixels() throws {
+        let space = try #require(CGColorSpace(name: CGColorSpace.sRGB))
+        let bitmap = try #require(CGContext(data: nil, width: 11, height: 17, bitsPerComponent: 8,
+            bytesPerRow: 44, space: space, bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue))
+        bitmap.setFillColor(CGColor(srgbRed: 1, green: 0, blue: 0, alpha: 1))
+        bitmap.fill(CGRect(x: 2, y: 1, width: 4, height: 7))
+        let original = try #require(bitmap.makeImage())
+        let expected = try #require(NSBitmapImageRep(cgImage: original).colorAt(x: 2, y: 9)?.usingColorSpace(.sRGB))
+        let image = try ImageOptimization.removingTransparentPadding(from: original)
+        #expect(image.width == 4 && image.height == 7)
+        #expect(image.colorSpace?.name == original.colorSpace?.name)
+        let pixels = NSBitmapImageRep(cgImage: image)
+        for y in 0..<image.height {
+            for x in 0..<image.width {
+                let color = try #require(pixels.colorAt(x: x, y: y)?.usingColorSpace(.sRGB))
+                #expect(color.alphaComponent == 1)
+                #expect(abs(color.redComponent - expected.redComponent) < 0.000001)
+                #expect(abs(color.greenComponent - expected.greenComponent) < 0.000001)
+                #expect(abs(color.blueComponent - expected.blueComponent) < 0.000001)
+            }
+        }
+        bitmap.clear(CGRect(x: 0, y: 0, width: 11, height: 17))
+        #expect(throws: CatalogError.self) {
+            try ImageOptimization.removingTransparentPadding(from: #require(bitmap.makeImage()))
+        }
     }
 
     private func temporaryDirectory() throws -> URL {

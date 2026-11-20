@@ -77,8 +77,11 @@ enum DesignTokens {
       --section-space: clamp(var(--space-8), calc(var(--space-6) + 2vw), var(--space-12));
       --page-gutter: var(--space-6);
       --page-navigation-inset: var(--space-6);
-      --hero-inset: clamp(var(--space-10), calc(var(--space-8) + 2vw), var(--space-16));
+      --hero-inset: clamp(var(--space-6), calc(var(--space-4) + 1vw), var(--space-10));
+      --hero-copy-gap: var(--space-4);
+      --hero-content-gap: var(--space-6);
       --card-inset: min(var(--space-10), 5vw);
+      --card-detail-inset: var(--space-3);
       --conference-inset: var(--space-10);
       --conference-inset-small: var(--space-6);
       --community-inset: calc(var(--section-space) * 1.5);

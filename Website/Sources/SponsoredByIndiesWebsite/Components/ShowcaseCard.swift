@@ -18,7 +18,7 @@ extension Components {
             Text(escaped(project.showcaseDescription)).margin(0)
             Section {
                 Text(people.count == 1 ? "Meet the builder" : "Meet the builders")
-                    .font(.title3).margin(.bottom, .small)
+                    .font(.title3)
                 for person in people { builderRow(person) }
             }.class("showcase-builders")
             List(editions) { edition in
@@ -34,7 +34,7 @@ extension Components {
     }
 
     private static func builderRow(_ person: IndiePerson) -> some HTML {
-        HStack(alignment: .top, spacing: .medium) {
+        HStack(alignment: .top, spacing: .none) {
             if let portrait = person.portraitPath {
                 Image(decorative: ImageOptimization.path(for: portrait))
                     .frame(width: .px(DesignTokens.builderPortraitSize), height: .px(DesignTokens.builderPortraitSize))
@@ -54,9 +54,14 @@ extension Components {
             Section {
                 Text(escaped(person.name)).fontWeight(.semibold).margin(0)
                 if let bio = person.bio { Text(escaped(bio)).font(.small).margin(0) }
-                Section {
-                    for link in person.showcaseLinks { builderLink(link.label, for: person.name, to: link.url) }
-                }.font(.small).class("builder-links")
+                if !person.showcaseLinks.isEmpty {
+                    Text {
+                        InlineForEach(Array(person.showcaseLinks.enumerated())) { index, link in
+                            if index > 0 { Span(" · ").aria(.hidden, "true") }
+                            builderLink(link.label, for: person.name, to: link.url)
+                        }
+                    }.font(.small).class("builder-links")
+                }
             }
         }.class("builder-row")
     }

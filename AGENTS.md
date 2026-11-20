@@ -33,6 +33,7 @@ Read [README.md](README.md) for project structure, local preview and verificatio
 - Keep full names in builder profiles; use `creditName` for short bundle credits. Link collaborators individually and match the order of names and conference roles.
 - Keep builder profiles to five links at most, including Website. Choose the most relevant verified profiles rather than filling every social slot.
 - Try X portraits first, then the maker’s website or another verified profile. Store images locally, retain the social link, and use initials if needed. Never guess profile URLs.
+- Fit generated square app icons to their near-opaque tile bounds so Mac-icon shadows do not make them appear smaller. For non-square covers, trim only fully transparent outer canvas and preserve proportions and visible pixels. Retain source masters and portrait framing; avoid per-project CSS scale adjustments.
 - Give profile photos a thin, subtle border so pale backgrounds remain distinct from the card.
 - Keep quotes brief and faithful. Omit attribution for a sole maker; use plain “– Name” for shared products. Leave quote credits unlinked; retain source URLs in the data.
 - Treat supplied maker copy and confirmed offer prices as the source of truth. Record confirmed prices explicitly; keep the supporting correspondence private.

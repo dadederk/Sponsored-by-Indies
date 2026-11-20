@@ -44,7 +44,10 @@ main:focus { outline: none; }
 .footer-identity { flex-wrap: wrap; gap: var(--space-4) var(--space-6); }
 .skip-link { position: fixed; top: -10rem; left: var(--space-4); z-index: 10; background: var(--blue); color: var(--white); padding: var(--button-inset-block) var(--space-4); }
 .skip-link:focus { top: var(--space-4); color: var(--white); }
-.hero { padding-block: var(--hero-inset) var(--section-space); }
+.hero { padding-block: var(--hero-inset) var(--hero-content-gap); }
+.hero h1,.hero h2,.hero .lead { margin-bottom: var(--hero-copy-gap); }
+.hero > :last-child { margin-bottom: 0; }
+.hero > p a { display: inline; min-height: 0; min-width: 0; }
 .hero h1 .title-accent { display: block; }
 .home-feature-grid,.section-grid { --bs-gutter-x: var(--section-space); --bs-gutter-y: var(--section-space); }
 @media (min-width: 992px) {
@@ -157,6 +160,7 @@ input.form-control:focus-visible,textarea.form-control:focus-visible,select.form
 .product-grid > .col { align-self: stretch !important; display: flex; }
 .product-card,.showcase-card,.discovery-card { --card-inset: min(var(--space-6), 5vw); display: flex; flex-direction: column; width: 100%; }
 .product-card,.discovery-card { gap: var(--space-4); }
+.product-card { gap: var(--card-detail-inset); }
 /* Intrinsic wrapping keeps enlarged text readable beside fixed-size artwork.
    Ignite has no wrapping/basis modifiers; descendants share a text-space token. */
 .product-card-heading a { gap: var(--space-4); text-decoration: none; flex-wrap: wrap; }
@@ -167,7 +171,7 @@ input.form-control:focus-visible,textarea.form-control:focus-visible,select.form
 .product-card-benefits { display: flex; flex-wrap: wrap; align-content: start; align-items: flex-start; gap: var(--space-2); padding: 0; margin: 0; list-style: none; }
 .product-card-benefits .badge { white-space: normal; text-align: left; line-height: inherit; font-size: inherit; }
 .product-card-benefits li + li { margin-top: 0; }
-.product-card-maker { display: flex; flex-direction: column; gap: var(--space-2); border-top: var(--border-width) solid var(--line); padding-top: var(--space-4); margin-top: 0; line-height: 1.5; }
+.product-card-maker { display: flex; flex-direction: column; gap: var(--space-2); border-top: var(--border-width) solid var(--line); padding-top: var(--card-detail-inset); margin-top: 0; line-height: 1.5; }
 /* Ignite applies Quote modifiers to a wrapper; reset the blockquote's own browser margin here. */
 .product-card-maker blockquote { margin: 0; }
 .product-card-maker p a { min-height: 0; display: inline; }
@@ -187,23 +191,24 @@ input.form-control:focus-visible,textarea.form-control:focus-visible,select.form
 
 /* Showcase tracks accommodate longer bios and teams of different sizes. */
 .showcase-grid > .col,.discovery-grid > .col { align-self: stretch !important; display: flex; }
-.showcase-card { gap: var(--space-6); }
+.showcase-card { gap: var(--card-detail-inset); }
 .showcase-project-title { font-size: var(--project-heading-size); max-width: none; }
-.showcase-builders h3 { font-size: var(--builder-heading-size); }
-.showcase-builders,.showcase-contributions { border-top: var(--border-width) solid var(--line); padding-top: var(--space-4); }
+.showcase-builders { display: flex; flex-direction: column; gap: var(--card-detail-inset); }
+.showcase-builders h3 { font-size: var(--builder-heading-size); margin: 0; }
+.showcase-builders,.showcase-contributions { border-top: var(--border-width) solid var(--line); padding-top: var(--card-detail-inset); }
 .showcase-contributions { margin-top: auto; }
 /* Bundle/date pairs wrap as compact list items while retaining native bullets. */
-.showcase-bundles { display: flex; flex-wrap: wrap; align-content: center; gap: 0 var(--space-6); margin-bottom: 0; padding-block: var(--space-2); padding-inline-start: var(--space-4); }
+.showcase-bundles { display: flex; flex-wrap: wrap; align-content: center; gap: 0 var(--space-6); margin-bottom: 0; padding-block: var(--card-detail-inset); padding-inline-start: var(--space-4); }
 .showcase-bundles li { margin: 0; max-width: 100%; }
 /* These are links within bundle/date text, so use its line height rather than control sizing. */
 .showcase-bundles a { display: inline; min-height: 0; min-width: 0; }
-.builder-row + .builder-row { margin-top: var(--space-4); }
-.builder-row { flex-wrap: wrap; }
+.builder-row { flex-wrap: wrap; gap: var(--card-detail-inset); }
 .builder-row > :first-child { flex: none; }
 .builder-row > :last-child { min-width: 0; flex: 1 1 min(100%, var(--card-text-basis)); }
 .builder-portrait { object-fit: cover; }
 .builder-initials { display: flex; align-items: center; justify-content: center; }
-.builder-links { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-4); }
+.builder-links { margin-block: var(--space-1) 0; }
+.builder-links a { display: inline; min-height: 0; min-width: 0; }
 
 /* Ignite supplies grid markup; native subgrid aligns section starts across each row. */
 @supports (grid-template-rows: subgrid) {

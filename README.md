@@ -60,7 +60,7 @@ Builder cards use the same profile across a person's projects. Write a short thi
 
 Keep each builder profile to five links at most, including Website. Choose the most relevant verified profiles from the agreed link order.
 
-Prefer original square App Store artwork for app icons, at 512 pixels or larger when available. Avoid store thumbnails with baked-in padding or rounded corners; the card applies its own corner radius. If Mac artwork includes extra canvas padding, use the maker’s unpadded press asset at the standard display size. Use the maker’s press kit or website for products without a store listing, and keep images locally. Profile photos use a thin, pale border to separate them from the card background.
+Prefer original square App Store artwork for app icons, at 512 pixels or larger when available. Avoid store thumbnails with baked-in padding or rounded corners; the card applies its own corner radius. If Mac artwork includes extra canvas padding, use the maker’s unpadded press asset at the standard display size. Use the maker’s press kit or website for products without a store listing, and keep images locally. The listed apps use locally stored 512px PNG artwork checked against their App Store listings. Profile photos use a thin, pale border to separate them from the card background.
 
 Read [AGENTS.md](AGENTS.md) for coding conventions and verification guidance.
 
@@ -98,7 +98,11 @@ brew install optipng
 
 Original icons and portraits stay in `Website/Assets`. Each build generates smaller
 copies under `optimized/` for the 64px icon and 56px portrait slots, capped at 3×
-their display size without enlarging smaller sources. Resampled copies use 8-bit
+their display size without enlarging smaller sources. Product copies are fitted before resizing. Square app icons use their near-opaque
+tile bounds, excluding soft outer shadows that make Mac icons appear smaller.
+Non-square covers trim only fully transparent outer canvas and retain their
+proportions. Translucent artwork without a solid tile uses its visible bounds.
+Source masters stay intact, and portraits keep their original framing. Resampled copies use 8-bit
 colour with preserved RGB profiles, transparency and aspect ratios. JPEG portraits use high-quality JPEG copies;
 WebP inputs use PNG copies. The shared Ignite components select these files and
 provide dimensions and asynchronous decoding, while portraits remain lazy-loaded.

@@ -19,12 +19,12 @@ enum ImageOptimization {
                 guard ["png", "jpg", "webp"].contains(file.pathExtension) else { continue }
                 let target = directory.appending(path: String(path(for: "/" + folder + "/" + file.lastPathComponent).dropFirst()))
                 try files.createDirectory(at: target.deletingLastPathComponent(), withIntermediateDirectories: true)
-                try resize(file, to: target, maximumDimension: size * 3)
+                try resize(file, to: target, maximumDimension: size * 3, trimTransparentPadding: folder == "app-icons")
             }
         }
     }
 
-    static func resize(_ source: URL, to target: URL, maximumDimension: Int) throws {
+    static func resize(_ source: URL, to target: URL, maximumDimension: Int, trimTransparentPadding: Bool = false) throws {
         guard maximumDimension > 0,
               let imageSource = CGImageSourceCreateWithURL(source as CFURL, nil),
               CGImageSourceGetCount(imageSource) == 1,
@@ -33,29 +33,35 @@ enum ImageOptimization {
               let height = properties[kCGImagePropertyPixelHeight] as? Int else {
             throw CatalogError.invalid("Cannot read a static image: \(source.path)")
         }
-        if max(width, height) <= maximumDimension && source.pathExtension == target.pathExtension {
+        if !trimTransparentPadding && max(width, height) <= maximumDimension && source.pathExtension == target.pathExtension {
             try FileManager.default.copyItem(at: source, to: target)
             return
         }
         // ImageIO applies EXIF orientation; the pixel bound never enlarges a source.
-        guard let image = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, [
+        guard let orientedImage = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, [
             kCGImageSourceCreateThumbnailFromImageAlways: true,
             kCGImageSourceCreateThumbnailWithTransform: true,
-            kCGImageSourceThumbnailMaxPixelSize: min(maximumDimension, max(width, height))
+            kCGImageSourceThumbnailMaxPixelSize: trimTransparentPadding ? max(width, height) : min(maximumDimension, max(width, height))
         ] as CFDictionary) else {
             throw CatalogError.invalid("Cannot resize image: \(source.path)")
         }
+        // Trim at source resolution so the visible artwork receives the full delivery size.
+        let image = try trimTransparentPadding ? normalizedProductArtwork(from: orientedImage) : orientedImage
+        let scale = min(1, Double(maximumDimension) / Double(max(image.width, image.height)))
+        let outputWidth = max(1, Int((Double(image.width) * scale).rounded()))
+        let outputHeight = max(1, Int((Double(image.height) * scale).rounded()))
         // High-bit-depth originals are useful masters, but not needed in tiny cards.
         // Keep RGB profiles (including Display P3) and alpha in 8-bit delivery copies.
         let colourSpace = image.colorSpace?.model == .rgb ? image.colorSpace : CGColorSpace(name: CGColorSpace.sRGB)
         guard let colourSpace,
-              let bitmap = CGContext(data: nil, width: image.width, height: image.height, bitsPerComponent: 8,
-                  bytesPerRow: image.width * 4, space: colourSpace,
+              let bitmap = CGContext(data: nil, width: outputWidth, height: outputHeight, bitsPerComponent: 8,
+                  bytesPerRow: outputWidth * 4, space: colourSpace,
                   bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else {
             throw CatalogError.invalid("Cannot prepare image colours: \(source.path)")
         }
         bitmap.setBlendMode(.copy)
-        bitmap.draw(image, in: CGRect(x: 0, y: 0, width: image.width, height: image.height))
+        bitmap.interpolationQuality = .high
+        bitmap.draw(image, in: CGRect(x: 0, y: 0, width: outputWidth, height: outputHeight))
         guard let deliveryImage = bitmap.makeImage() else {
             throw CatalogError.invalid("Cannot prepare image pixels: \(source.path)")
         }
@@ -70,6 +76,51 @@ enum ImageOptimization {
         guard CGImageDestinationFinalize(destination) else {
             throw CatalogError.invalid("Cannot finish image: \(target.path)")
         }
+    }
+
+    /// Square app icons fit their solid tile; covers retain their full visible artwork.
+    static func normalizedProductArtwork(from image: CGImage) throws -> CGImage {
+        // Mac icons include a soft outer shadow. Counting that shadow as the tile
+        // leaves them visibly smaller than full-bleed iOS icons in the same slot.
+        if image.width == image.height,
+           let tile = try? removingTransparentPadding(from: image, minimumAlpha: 250) {
+            return tile
+        }
+        return try removingTransparentPadding(from: image)
+    }
+
+    /// Trim to the requested alpha bounds while leaving the source image untouched.
+    static func removingTransparentPadding(from image: CGImage, minimumAlpha: UInt8 = 1) throws -> CGImage {
+        guard ![CGImageAlphaInfo.none, .noneSkipFirst, .noneSkipLast].contains(image.alphaInfo) else { return image }
+        guard let space = CGColorSpace(name: CGColorSpace.sRGB),
+              let bitmap = CGContext(data: nil, width: image.width, height: image.height,
+                  bitsPerComponent: 8, bytesPerRow: image.width * 4, space: space,
+                  bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.byteOrder32Big.rawValue),
+              let bytes = bitmap.data?.assumingMemoryBound(to: UInt8.self) else {
+            throw CatalogError.invalid("Cannot inspect artwork transparency.")
+        }
+        bitmap.setBlendMode(.copy)
+        bitmap.draw(image, in: CGRect(x: 0, y: 0, width: image.width, height: image.height))
+        func rowHasPixels(_ y: Int) -> Bool {
+            for x in 0..<image.width where bytes[(y * image.width + x) * 4 + 3] >= minimumAlpha { return true }
+            return false
+        }
+        func columnHasPixels(_ x: Int) -> Bool {
+            for y in 0..<image.height where bytes[(y * image.width + x) * 4 + 3] >= minimumAlpha { return true }
+            return false
+        }
+        // Search inward from the edges; full-canvas icons need only a few probes.
+        guard let minY = (0..<image.height).first(where: rowHasPixels),
+              let maxY = (minY..<image.height).reversed().first(where: rowHasPixels),
+              let minX = (0..<image.width).first(where: columnHasPixels),
+              let maxX = (minX..<image.width).reversed().first(where: columnHasPixels) else {
+            throw CatalogError.invalid("Product artwork must contain visible pixels.")
+        }
+        if minX == 0 && minY == 0 && maxX == image.width - 1 && maxY == image.height - 1 { return image }
+        guard let cropped = image.cropping(to: CGRect(x: minX, y: minY, width: maxX - minX + 1, height: maxY - minY + 1)) else {
+            throw CatalogError.invalid("Product artwork must contain visible pixels.")
+        }
+        return cropped
     }
 
     static func compressPNGs(in directory: URL, cacheDirectory: URL? = nil) throws {
