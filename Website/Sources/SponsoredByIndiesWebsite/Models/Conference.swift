@@ -97,6 +97,7 @@ struct Indie: Decodable {
     var socials: [SocialLink]
     var initials: String
     var people: [IndiePerson]? = nil
+    var disclosure: String? = nil
 }
 
 struct IndiePerson: Decodable {

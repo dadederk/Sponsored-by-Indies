@@ -189,6 +189,17 @@
       "connection": "Attendee ARCtic 2026",
       "quote": null,
       "publicationApproved": true
+    },
+    {
+      "editionID": "arctic-2027",
+      "indieID": "rob-whitaker",
+      "connection": "Workshop ARCtic 2025",
+      "quote": "ARCtic is best described as ‘an experience’. You owe it to yourself to get to it next time.",
+      "quoteAttribution": {
+        "name": "Rob Whitaker",
+        "sourceURL": "https://iosdev.space/@RobW/114157216357941082"
+      },
+      "publicationApproved": true
     }
   ],
   "offers": [
@@ -831,6 +842,24 @@
       "benefit": "1 year of Pro free",
       "terms": "Yearly Pro subscription. After the first year, the regular price at renewal applies.",
       "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through the conference.",
+      "publicationApproved": true
+    },
+    {
+      "id": "developing-inclusive-mobile-apps-ebook",
+      "editionID": "arctic-2027",
+      "projectID": "developing-inclusive-mobile-apps",
+      "benefit": "20% off eBook list price",
+      "terms": "Digital second edition in PDF and EPUB. Discount is calculated from the publisher’s list price. An existing sale may be cheaper.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through ARCtic.",
+      "publicationApproved": true
+    },
+    {
+      "id": "developing-inclusive-mobile-apps-paperback",
+      "editionID": "arctic-2027",
+      "projectID": "developing-inclusive-mobile-apps",
+      "benefit": "20% off paperback list price",
+      "terms": "Paperback second edition. Discount is calculated from the publisher’s list price. An existing sale may be cheaper.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through ARCtic.",
       "publicationApproved": true
     }
   ]

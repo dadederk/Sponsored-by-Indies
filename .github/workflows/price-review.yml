@@ -1,0 +1,41 @@
+name: Review price evidence
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '47 5 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: price-review
+  cancel-in-progress: false
+
+jobs:
+  price-review:
+    runs-on: macos-15
+    timeout-minutes: 15
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@v6
+      - name: Check evidence dates with seven days of notice
+        shell: bash
+        run: |
+          set -o pipefail
+          swift run --package-path Website --force-resolved-versions SponsoredByIndiesWebsite --check-maintenance 2>&1 | tee "$RUNNER_TEMP/price-maintenance.log"
+      - name: Summarise evidence dates
+        if: '!cancelled()'
+        shell: bash
+        run: |
+          {
+            echo '## Evidence dates'
+            echo
+            echo '```text'
+            cat "$RUNNER_TEMP/price-maintenance.log"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Compare current public price sources
+        if: '!cancelled()'
+        run: swift run --package-path Website --force-resolved-versions SponsoredByIndiesWebsite --verify-prices

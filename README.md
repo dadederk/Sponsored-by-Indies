@@ -60,6 +60,8 @@ Builder cards use the same profile across a person's projects. Write a short thi
 
 Keep each builder profile to five links at most, including Website. Choose the most relevant verified profiles from the agreed link order.
 
+Use an indie’s optional `disclosure` for a relevant relationship that applies to their projects. It appears beside their maker details in both bundle and showcase cards; keep it factual and specific.
+
 Prefer original square App Store artwork for app icons, at 512 pixels or larger when available. Avoid store thumbnails with baked-in padding or rounded corners; the card applies its own corner radius. If Mac artwork includes extra canvas padding, use the maker’s unpadded press asset at the standard display size. Use the maker’s press kit or website for products without a store listing, and keep images locally. The listed apps use locally stored 512px PNG artwork checked against their App Store listings. Profile photos use a thin, pale border to separate them from the card background.
 
 Read [AGENTS.md](AGENTS.md) for coding conventions and verification guidance.
@@ -79,6 +81,8 @@ swift run --package-path Website --force-resolved-versions SponsoredByIndiesWebs
 This read-only command checks approved offers for current and upcoming editions, leaving archived evidence intact. It compares exact App Store plan labels, or an exact product name in Schema.org JSON-LD offers, and all distinct matching USD prices against the recorded observations. For structured sources, set `sourceFormat` to `schemaOrg` and record `sourceProductName`; App Store sources are the default. Structured checks read the named product’s USD offer, not unrelated promotional text or team prices. Use the regular price applicable to the conference period, rather than an introductory offer that ends before it. Missing or changed prices fail the check; it never picks the first or largest price, changes content, or refreshes dates automatically. Multiple prices under one plan name require an explicitly marked provisional selection. Record the reasoning and any maker-confirmation task in private planning, outside the website repository. Matching a public listing does not confirm which price a particular customer or offer is eligible for; confirm ambiguous plans with the maker. After reviewing a successful check, update the evidence and check date together. Use `--verify-prices` and `--validate-only` separately; validation stays offline.
 
 For an official price page without supported machine-readable offers, use `sourceFormat: "manual"` after reviewing the exact product and USD price. This keeps the same calculation and freshness checks; the live verifier explicitly requests manual review instead of reporting an automatic match.
+
+The separate “Review price evidence” workflow checks dates and live sources daily and on demand. Its summary distinguishes automatic matches, provisional selections, manual sources and failures. Temporary network failures are retried; changed prices still fail. Fresh manual evidence is reported without an automatic match, and stale evidence fails. No check updates content or review dates automatically.
 
 The repository maintainer reviews scheduled price-check failures, confirms ambiguous plans with the maker, and updates the evidence and check date together. Run this offline check for seven days of notice before evidence expires:
 
@@ -161,6 +165,26 @@ Artwork filenames use lowercase words separated by hyphens and include their sit
 Both sites use the shared “by indies.” wordmark, with “Sponsored” above it for the conference site. The showcase’s generated repository README uses its own banner. After changing branding, regenerate both sites and refresh the exports following [the artwork instructions](assets/brand/README.md); the source README uses the Sponsored banner directly from that folder. Website builds do not overwrite the committed exports.
 
 Each bundle also generates a 1200 × 630 sharing card in `assets/social/<conference>/<edition>/`, using the conference’s JSON palette, name, edition, dates and location. Edition pages, their conference-home mirror and access pages share that card. Its filename changes when those details change, while renderer and logo changes update the asset version. Other pages keep their site’s general sharing card.
+
+### Book series artwork
+
+Use the original portrait cover files to make a consistent series montage. Keep source masters and an ordered JSON manifest together; keep unapproved books and their artwork in private planning. The offline renderer preserves cover text and proportions, uses fixed positions and a transparent sRGB canvas, and adds no generated lettering or timestamps.
+
+```json
+{
+  "layout": "staggered-v1",
+  "covers": [
+    { "file": "covers/first.png", "title": "First book" },
+    { "file": "covers/second.png", "title": "Second book" }
+  ]
+}
+```
+
+```sh
+swift Scripts/MakeBookMontage.swift /path/to/series.json /path/to/series.png
+```
+
+Paths are relative to the manifest. List two to five covers from back to front, with the most recognisable covers last. The renderer applies image orientation before checking the portrait shape and rejects output paths that refer to a source cover or the manifest. `staggered-v1` exports a 1240 × 1500 transparent PNG using fixed layouts for each cover count. The same inputs produce the same pixels on the same rendering platform. Retain the manifest and source files for later updates; introduce a new layout version if the composition rules change. Use the result as the product's local artwork and follow the usual card and promotional checks.
 
 ### Promotional artwork
 

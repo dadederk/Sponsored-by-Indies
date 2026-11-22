@@ -4,14 +4,25 @@ import Ignite
 @main
 struct SponsoredByIndiesWebsite {
     @MainActor
-    static func main() async throws {
+    static func main() async {
+        do {
+            try await run()
+        } catch {
+            FileHandle.standardError.write(Data("Error: \(error)\n".utf8))
+            exit(1)
+        }
+    }
+
+    @MainActor
+    static func run() async throws {
         let options = try BuildOptions(arguments: Array(CommandLine.arguments.dropFirst()))
         let preview = !options.isPublic
         let source = URL(fileURLWithPath: #filePath)
             .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
         let catalog = try Catalog.load(from: source.appendingPathComponent("Data"))
         if options.verifyPrices {
-            try await PriceVerification.verify(catalog)
+            let summary = ProcessInfo.processInfo.environment["GITHUB_STEP_SUMMARY"].map { URL(fileURLWithPath: $0) }
+            try await PriceVerification.verify(catalog, summaryURL: summary)
             return
         }
         if options.checkMaintenance {

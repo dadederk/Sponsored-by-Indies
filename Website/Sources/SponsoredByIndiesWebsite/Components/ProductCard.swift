@@ -70,6 +70,7 @@ extension Components {
                                 .aria(.hasPopup, "dialog").aria(.controls, termsID)
                         }.attribute("data-offer-terms-trigger", "true").attribute("hidden")
                     }.font(.small).margin(0)
+                    makerDisclosure(indie)
                     for social in indie.socials { Link(escaped(social.label), target: social.url).font(.small) }
                     productTerms(product, offers: offers, id: termsID)
                     offerSharingFallback

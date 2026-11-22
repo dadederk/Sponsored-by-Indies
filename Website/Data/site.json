@@ -2,28 +2,36 @@
   "contactURL": "mailto:hello@accessibilityUpTo11.com",
   "partnershipNote": "We’d love to hear from organisers who want to bring an indie bundle to their conference.",
   "terms": {
-    "updatedOn": "2026-11-14",
+    "updatedOn": "2026-11-22",
     "introduction": "A little extra from the community, offered in good faith. These terms explain how our websites and conference bundles work, who is responsible for what, and how we handle problems together.",
     "sections": [
       {
         "heading": "Who we are",
         "paragraphs": [
           "Sponsored by Indies is an informal volunteer initiative coordinated by Dani Devesa Derksen-Staats. We connect independent makers with developer conferences to share free resources, product access and discounts. We are not an incorporated company or formal organisation. In these terms, “we” means the people coordinating the initiative.",
-          "Participation is voluntary. Sponsored by Indies takes no money, fees or commission and collects no payments for tickets or products. Makers and conferences operate independently."
+          "Participation is voluntary. Makers and conferences operate independently."
         ]
       },
       {
         "heading": "What our websites do",
         "paragraphs": [
-          "These terms cover sponsored.byindies.com, which lists conference bundles and their offers, and byindies.com, which showcases contributing projects and makers. Past listings record previous participation; they do not mean an offer is still available.",
-          "We publish approved information and help coordinate contributions. Conferences verify attendee eligibility and distribute restricted codes or access instructions through their agreed attendee channels. Makers provide the products and redemption process. Our websites do not collect attendee lists, verify tickets, issue or redeem restricted codes, or process orders or payments.",
+          "These terms cover sponsored.byindies.com, which lists conference bundles and their offers, and byindies.com, which showcases contributing projects and makers. Past listings record previous participation; they do not mean an offer is still available. An enquiry alone does not confirm participation; agree arrangements directly with us.",
+          "We publish approved information and help coordinate contributions. Conferences verify attendees and distribute restricted codes or access instructions through agreed attendee channels. Makers provide the products and redemption process. Our websites do not collect attendee lists, verify tickets, issue or redeem restricted codes, or process orders or payments.",
           "Any ticket purchase, product purchase, licence or subscription is arranged with the relevant provider under their own terms. A listing recognises participation, not a guarantee of the product or event. Taking part does not create a legal partnership or allow anyone to make promises on someone else’s behalf."
+        ]
+      },
+      {
+        "heading": "Money and personal benefits",
+        "paragraphs": [
+          "We do not charge conferences or makers for participation. Dani receives no money or commission for running these websites or arranging bundles.",
+          "Dani may use attendee offers, receive separate discounts through personal relationships or arrangements unrelated to this initiative, and receive free or discounted conference tickets or access to related events.",
+          "These benefits do not buy a place in a bundle. We make relevant personal interests and benefits clear alongside affected listings or promotions, including when featuring our own work."
         ]
       },
       {
         "heading": "For attendees",
         "paragraphs": [
-          "Check the bundle page and each offer’s terms before buying a ticket and again before redeeming. Offers apply only to the named conference edition; approval and offers do not carry over to another year. Proposed contributions and preparation messages are not confirmed offers.",
+          "Check the bundle page and each offer’s terms before buying a ticket and again before redeeming. Offers apply only to the named conference edition, not automatically to another year. Proposed contributions are not confirmed offers.",
           "A discount can still require a purchase. Check any expiry date, quantity limit, payment requirement, length of free or discounted access, and renewal charge. A first-year discount does not automatically apply to later years or an existing subscription.",
           "Published savings are estimates subject to the stated assumptions and your eligibility. They are not cash, credit or a promise of what you will personally save.",
           "Use restricted codes only as permitted. Do not publish, resell or share them without permission."
@@ -46,17 +54,34 @@
         ]
       },
       {
+        "heading": "What we mean by indie",
+        "paragraphs": [
+          "Here, “indie” means work led by individual creators or small independent teams, including side projects and creator-led businesses. Forming a company does not by itself change that spirit.",
+          "An author-led contribution can qualify even when a large publisher publishes or distributes it. We focus on who creates and leads the work. Products led by large companies do not qualify.",
+          "We and each conference decide whether a contribution fits the community and bundle. Qualifying does not guarantee inclusion."
+        ]
+      },
+      {
+        "heading": "How projects are ordered",
+        "paragraphs": [
+          "Conference bundles list projects by their largest estimated saving from a single offer, highest first, using the stated US prices in USD. Alternative offers for the same product are not added together. Projects without a saving estimate follow those with one; equal savings are ordered by project name.",
+          "By Indies lists projects alphabetically by project name.",
+          "Placement is not a quality rating or a personal recommendation. Positions can change as projects, offers or price information change. Nobody can buy a higher position. Personal benefits or relationships do not affect the order, and our own projects follow the same rules."
+        ]
+      },
+      {
         "heading": "For independent makers",
         "paragraphs": [
-          "Agree your participation, offer and publication permission with us for each edition. An enquiry alone does not confirm participation. Provide accurate information, a support contact and clear offer terms: who qualifies, regional and technical restrictions, quantities, deadlines, redemption steps, costs and renewals. Make important conditions clear with the offer before people rely on it. Tell us promptly about errors, changes or redemption problems.",
-          "You remain responsible for your products, licences, delivery, support and commitments to attendees, including your legal obligations.",
+          "Agree your participation, offer and publication permission with us for each edition. Provide accurate information, a support contact and clear offer terms covering eligibility, restrictions, quantities, deadlines, redemption, costs and renewals. Make important conditions clear before people rely on the offer, and tell us promptly about errors, changes or redemption problems.",
+          "You must have permission to make and fulfil the offer, including any approval needed from a publisher or other rights holder. You remain responsible for your products, licences, delivery, support and commitments to attendees, including your legal obligations.",
           "You keep ownership of your materials and must have permission to share them. We publish only approved names, quotes, images and other materials for the uses agreed with you. Agree where they may appear, including conference pages, archives and the By Indies showcase. Permission does not transfer ownership or cover unrelated uses. Contact us to request a correction or removal."
         ]
       },
       {
         "heading": "For conference organisers",
         "paragraphs": [
-          "Before announcing a bundle, agree the edition’s participation, eligibility, attendee numbers, delivery, recognition and support arrangements with us and the makers. An enquiry alone does not confirm participation. Share approved claims and offers, and tell us promptly if plans change.",
+          "Before announcing a bundle, agree the edition’s participation, eligibility, attendee numbers, delivery, recognition and support arrangements with us and the makers. Share approved claims and offers, and tell us promptly if plans change.",
+          "Each conference has the final say on the products and projects in its bundle. It may decline a proposed contribution or ask us to remove an item. Removals follow the change process above and do not cancel existing commitments or attendee rights.",
           "You remain responsible for your event, tickets, attendee records and communications. Verify attendees and distribute access through the agreed channel, including to later ticket buyers who qualify. Keep attendee lists and restricted codes off the public websites."
         ]
       },
@@ -71,7 +96,7 @@
         "heading": "Solving problems together",
         "paragraphs": [
           "We act in good faith and ask everyone to be patient and respectful. Contact the maker or seller about products, billing or refunds, and the conference about tickets, the event or attendee access. We can help you find the right person and work through a problem together.",
-          "Tell us the conference edition, affected offer, what happened and what outcome would help. Do not send passwords, payment details or restricted codes. We will make reasonable efforts to understand the issue, correct information we control and help find a fair solution. We cannot promise a particular outcome or response time. Contacting us does not require you to delay or give up a complaint, refund request or legal remedy."
+          "Tell us the conference edition, affected offer, what happened and what outcome would help. Do not send passwords, payment details or restricted codes. We will make reasonable efforts to correct information we control and help find a fair solution, but cannot promise an outcome or response time. Contacting us does not require you to delay or give up a complaint, refund request or legal remedy."
         ]
       },
       {

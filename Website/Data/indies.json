@@ -6,6 +6,7 @@
     "websiteURL": "https://accessibilityupto11.com/",
     "socials": [],
     "initials": "DD",
+    "disclosure": "Dani also coordinates Sponsored by Indies.",
     "people": [
       {
         "name": "Dani Devesa",
@@ -428,6 +429,36 @@
           {
             "label": "GitHub",
             "url": "https://github.com/leoMehlig"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rob-whitaker",
+    "name": "Rob Whitaker",
+    "company": "Mobile A11y",
+    "websiteURL": "https://mobilea11y.com/",
+    "socials": [],
+    "initials": "RW",
+    "people": [
+      {
+        "name": "Rob Whitaker",
+        "websiteURL": "https://rwapp.co.uk/",
+        "bio": "Apple platforms engineer and mobile accessibility specialist. An invited expert on the W3C Mobile Accessibility Task Force, he shares practical guidance on inclusive design, development and testing.",
+        "portraitPath": "/portraits/rob-whitaker.jpg",
+        "socials": [
+          {
+            "label": "Mastodon",
+            "url": "https://iosdev.space/@RobW"
+          },
+          {
+            "label": "GitHub",
+            "url": "https://github.com/rwapp"
+          },
+          {
+            "label": "LinkedIn",
+            "url": "https://www.linkedin.com/in/rob-whitaker/"
           }
         ]
       }

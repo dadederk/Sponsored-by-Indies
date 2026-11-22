@@ -116,6 +116,7 @@ extension Catalog {
         }
         for indie in indies {
             try nonempty([indie.id, indie.name, indie.initials], "indie \(indie.id)")
+            if let disclosure = indie.disclosure { try nonempty([disclosure], "maker disclosure for \(indie.id)") }
             if let url = indie.websiteURL { try Self.validateURL(url) }
             if let people = indie.people {
                 try require(!people.isEmpty, "Named maker profiles cannot be empty.")

@@ -10,6 +10,7 @@ on:
       - Website/**
       - Scripts/**
       - .github/workflows/pages.yml
+      - .github/workflows/price-review.yml
   pull_request:
     paths:
       - README.md
@@ -18,6 +19,7 @@ on:
       - Website/**
       - Scripts/**
       - .github/workflows/pages.yml
+      - .github/workflows/price-review.yml
   workflow_dispatch:
   schedule:
     # Refresh date-dependent pages daily, including when no content has changed.
@@ -144,20 +146,6 @@ jobs:
             git -C pages commit -m "Publish By Indies from $GITHUB_SHA"
             git -C pages push origin HEAD:main
           fi
-
-  price-review:
-    # Live sources can be unavailable independently of date-only page rebuilds.
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-    runs-on: macos-15
-    env:
-      DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
-    steps:
-      - uses: actions/checkout@v6
-      - name: Check evidence dates with seven days of notice
-        run: swift run --package-path Website --force-resolved-versions SponsoredByIndiesWebsite --check-maintenance
-      - name: Compare current public price sources
-        if: '!cancelled()'
-        run: swift run --package-path Website --force-resolved-versions SponsoredByIndiesWebsite --verify-prices
 
   deploy:
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'

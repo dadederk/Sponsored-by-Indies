@@ -360,8 +360,9 @@ test('bundle maker credits align across rows with different quotes', async ({ pa
     for (let index=0; index+1<count; index+=2) {
       const left = cards.nth(index);
       const right = cards.nth(index+1);
-      const a = await left.locator('.product-card-footer > p').boundingBox();
-      const b = await right.locator('.product-card-footer > p').boundingBox();
+      // Optional maker disclosures follow the credit line in their own paragraph.
+      const a = await left.locator('.product-card-footer > p').first().boundingBox();
+      const b = await right.locator('.product-card-footer > p').first().boundingBox();
       expect(Math.abs(a.y-b.y), `maker credits in row ${index/2+1} at ${scale}`).toBeLessThan(1);
       const leftBox = await left.boundingBox();
       const rightBox = await right.boundingBox();

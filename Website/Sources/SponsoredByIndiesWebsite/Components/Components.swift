@@ -85,6 +85,14 @@ enum Components {
         Text(escaped(label)).class("eyebrow")
     }
 
+    static func makerDisclosure(_ indie: Indie) -> some HTML {
+        Group {
+            if let disclosure = indie.disclosure {
+                Text(escaped(disclosure)).font(.small).foregroundStyle(.secondary).margin(0)
+            }
+        }
+    }
+
     static func title(_ plain: String, emphasis: String, level: Font.Style = .title1) -> some HTML {
         Text {
             escaped(plain) + " "

@@ -45,7 +45,7 @@ func checkApprovals(_ data: Data, context: String) throws {
 let data = try gitOutput(["ls-files", "-z"])
 
 let paths = String(decoding: data, as: UTF8.self).split(separator: "\0").map(String.init)
-let rootFiles = Set(["README.md", "AGENTS.md", ".gitignore", ".github/workflows/pages.yml", "Scripts/CheckPublicRepository.swift", "Scripts/SetupByIndiesHosting.swift"])
+let rootFiles = Set(["README.md", "AGENTS.md", ".gitignore", ".github/workflows/pages.yml", ".github/workflows/price-review.yml", "Scripts/CheckPublicRepository.swift", "Scripts/SetupByIndiesHosting.swift", "Scripts/MakeBookMontage.swift"])
 let websiteFiles = Set(["Website/Package.swift", "Website/Package.resolved", "Website/package.json",
                         "Website/package-lock.json", "Website/playwright.config.mjs"])
 let websiteFolders = ["Website/Sources/", "Website/Tests/", "Website/Assets/", "Website/Data/"]

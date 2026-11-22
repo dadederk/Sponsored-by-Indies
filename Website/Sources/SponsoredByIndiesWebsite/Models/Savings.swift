@@ -100,18 +100,23 @@ extension Catalog {
     /// Builds are offline and deterministic. Refresh the evidence explicitly;
     /// current/upcoming editions must not quietly keep using old reference prices.
     func validatePriceFreshness(on date: Date, daysNotice: Int = 0) throws {
+        for offer in offersRequiringPriceChecks(on: date) {
+            try offer.savingEstimate?.validateFreshness(for: offer.id, on: date, daysNotice: daysNotice)
+        }
+    }
+}
+
+extension SavingEstimate {
+    func validateFreshness(for offerID: String, on date: Date, daysNotice: Int = 0) throws {
         let today = date.formatted(Edition.dayStyle)
         let startOfDay = try Date(today, strategy: Edition.dayStyle)
-        for offer in offersRequiringPriceChecks(on: date) {
-            guard let evidence = offer.savingEstimate else { continue }
-            let checked = try Date(evidence.verifiedOn, strategy: Edition.dayStyle)
-            let age = Int(startOfDay.timeIntervalSince(checked) / 86_400)
-            guard evidence.verifiedOn <= today, age < 31 else {
-                throw CatalogError.invalid("Price evidence for \(offer.id) is future-dated or over 30 days old. Recheck the US reference price.")
-            }
-            guard age < 31 - daysNotice else {
-                throw CatalogError.invalid("Price evidence for \(offer.id) expires in \(31 - age) day(s). Review the source and refresh the evidence before the next publication deadline.")
-            }
+        let checked = try Date(verifiedOn, strategy: Edition.dayStyle)
+        let age = Int(startOfDay.timeIntervalSince(checked) / 86_400)
+        guard verifiedOn <= today, age < 31 else {
+            throw CatalogError.invalid("Price evidence for \(offerID) is future-dated or over 30 days old. Recheck the US reference price.")
+        }
+        guard age < 31 - daysNotice else {
+            throw CatalogError.invalid("Price evidence for \(offerID) expires in \(31 - age) day(s). Review the source and refresh the evidence before the next publication deadline.")
         }
     }
 }

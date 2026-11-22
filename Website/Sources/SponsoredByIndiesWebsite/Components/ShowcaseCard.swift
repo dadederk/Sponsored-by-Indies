@@ -20,6 +20,7 @@ extension Components {
                 Text(people.count == 1 ? "Meet the builder" : "Meet the builders")
                     .font(.title3)
                 for person in people { builderRow(person) }
+                makerDisclosure(indie)
             }.class("showcase-builders")
             List(editions) { edition in
                 ListItem {

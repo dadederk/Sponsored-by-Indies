@@ -32,7 +32,7 @@ struct CatalogTests {
         #expect(throws: CatalogError.self) { try catalog.validate() }
     }
 
-    @Test(arguments: ["empty", "blank name", "blank credit", "unsafe URL", "duplicate URL"])
+    @Test(arguments: ["empty", "blank name", "blank credit", "blank disclosure", "unsafe URL", "duplicate URL"])
     func makerProfilesRequireValidDistinctLinks(problem: String) throws {
         var catalog = CatalogFixture.make()
         let person = IndiePerson(name: "Sample maker", websiteURL: "https://example.org/profile")
@@ -40,6 +40,7 @@ struct CatalogTests {
         case "empty": catalog.indies[0].people = []
         case "blank name": catalog.indies[0].people = [IndiePerson(name: " ", websiteURL: person.websiteURL)]
         case "blank credit": catalog.indies[0].people = [IndiePerson(name: person.name, websiteURL: person.websiteURL, creditName: " ")]
+        case "blank disclosure": catalog.indies[0].disclosure = " \n"
         case "unsafe URL": catalog.indies[0].people = [IndiePerson(name: person.name, websiteURL: "javascript:alert(1)")]
         default: catalog.indies[0].people = [person, person]
         }

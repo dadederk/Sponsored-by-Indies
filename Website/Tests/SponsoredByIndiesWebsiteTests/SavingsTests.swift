@@ -138,11 +138,16 @@ struct SavingsTests {
         let catalog = try Catalog.load(from: directory)
         let edition = try #require(catalog.editions.first { $0.id == "arctic-2027" })
         let products = catalog.visibleProductContributions(for: edition)
-        #expect(products.map(\.product.productName) == ["Swift & SwiftUI books", "The Shed", "Nunch", "Structured", "AI Fundamentals", "Whio", "Passable", "Dee: Muay Thai Coach", "Helm", "PocketShelf", "Kickstart", "RocketSim for Xcode", "RocketTrace for Xcode", "Xarra!", "SwiftData Architecture", "SwiftUI Architecture", "Movie Buzz", "LookUp", "Coca", "RetroRapid!"])
+        #expect(products.map(\.product.productName) == ["Swift & SwiftUI books", "The Shed", "Nunch", "Structured", "AI Fundamentals", "Whio", "Passable", "Dee: Muay Thai Coach", "Helm", "PocketShelf", "Kickstart", "RocketSim for Xcode", "RocketTrace for Xcode", "Xarra!", "SwiftData Architecture", "SwiftUI Architecture", "Movie Buzz", "LookUp", "Coca", "RetroRapid!", "Developing Inclusive Mobile Apps"])
         let value = try #require(catalog.bundleValue(for: edition))
         #expect(value.totalUSD == products.reduce(0) { $0 + ($1.maximumSavingUSD ?? 0) })
         #expect(value.totalUSD == Decimal(string: "606.00"))
         #expect(value.amountLabel == "US$606")
+        let robBook = try #require(products.first { $0.product.projectID == "developing-inclusive-mobile-apps" })
+        #expect(robBook.offers.count == 2)
+        // The confirmed percentage is publishable; UK prices cannot establish a USD estimate.
+        #expect(robBook.offers.allSatisfy { $0.savingEstimate == nil })
+        #expect(!value.offers.contains { $0.projectID == "developing-inclusive-mobile-apps" })
         let structured = try #require(products.first { $0.product.projectID == "structured" })
         #expect(structured.offers.count == 2)
         #expect(value.offers.filter { $0.projectID == "structured" }.map(\.id) == ["structured-lifetime"])
@@ -375,12 +380,9 @@ struct SavingsTests {
         catalog.editions[0].valueSummary = ValueSummary(explanation: "Reviewed reference.", offerIDs: [catalog.offers[0].id])
         try catalog.validate()
         #expect(catalog.bundleValue(for: catalog.editions[0])?.totalUSD == 10)
-        do {
-            try await PriceVerification.verify(catalog, on: Date("2026-11-13", strategy: Edition.dayStyle))
-            Issue.record("A manually reviewed source must not report an automatic match.")
-        } catch {
-            #expect(String(describing: error).contains("requires manual price review"))
-        }
+        let report = try await PriceVerification.verify(catalog, on: Date("2026-11-13", strategy: Edition.dayStyle))
+        #expect(report.entries.map(\.status) == [.manual])
+        #expect(report.console.contains("no automatic match is available"))
     }
 
     @Test(arguments: [true, false])
