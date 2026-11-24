@@ -1,0 +1,199 @@
+{
+  "conference": {
+    "id": "ioskonf",
+    "slug": "ioskonf",
+    "name": "iOSKonf",
+    "location": "Skopje, North Macedonia",
+    "websiteURL": "https://www.ioskonf.mk/",
+    "description": "The premier iOS conference in the Balkans returns to the Macedonian Philharmonic in Skopje for three days of talks, workshops and Apple-platform community connections.",
+    "descriptionLink": {
+      "text": "Macedonian Philharmonic",
+      "url": "https://www.ioskonf.mk/location"
+    },
+    "connectionEditions": [
+      "2026"
+    ],
+    "branding": {
+      "background": "#133750",
+      "accent": "#f9a970",
+      "highlight": "#ffffff",
+      "detail": "#e04538",
+      "artworkBackground": "#376584",
+      "websiteTheme": {
+        "background": "#133750",
+        "foreground": "#ffffff",
+        "accent": "#f9a970",
+        "highlight": "#f9a970",
+        "detail": "#e04538"
+      },
+      "logoPath": "/conference-logos/ioskonf.svg"
+    }
+  },
+  "editions": [
+    {
+      "id": "ioskonf-2027",
+      "conferenceID": "ioskonf",
+      "slug": "2027",
+      "label": "2027",
+      "dateLabel": "10–12 May 2027",
+      "startDate": "2027-05-10",
+      "endDate": "2027-05-12",
+      "introduction": "Indies connected to iOSKonf are putting together a bundle to add a little more to every attendee’s ticket.",
+      "accessIntroduction": "Redemption details are being arranged with the conference team. There is nothing to claim here yet. Once the bundle is ready, this page will explain how ticket holders receive their offers and how to redeem each one.",
+      "accessURL": null,
+      "valueSummary": {
+        "explanation": "The total counts the largest compatible saving per product. Alternative offers for the same product are not added together. Your saving depends on eligibility and which offers you choose.",
+        "offerIDs": [
+          "ioskonf-2027-xarra-lifetime",
+          "ioskonf-2027-retrorapid-free",
+          "ioskonf-2027-didget-yearly"
+        ]
+      },
+      "bundleNote": "We’re working on expanding the bundle and its value."
+    }
+  ],
+  "participations": [
+    {
+      "editionID": "ioskonf-2027",
+      "indieID": "dani-devesa",
+      "connection": "Speaker iOSKonf 2026",
+      "quote": "Had a blast… Kudos to the organisers for putting together a fantastic event!",
+      "publicationApproved": true,
+      "quoteAttribution": {
+        "name": "Dani",
+        "sourceURL": "https://x.com/dadederk/status/2053942425387680232"
+      }
+    },
+    {
+      "editionID": "ioskonf-2027",
+      "indieID": "rob-whitaker",
+      "publicationApproved": true,
+      "connection": "Speaker iOSKonf 2025",
+      "quote": "Filip and the team are so passionate: I came away having had a brilliant conference and seen the best of Skopje."
+    },
+    {
+      "editionID": "ioskonf-2027",
+      "indieID": "zlatko-kuvendjiski",
+      "connection": "Organiser, iOSKonf",
+      "publicationApproved": true
+    }
+  ],
+  "offers": [
+    {
+      "id": "ioskonf-2027-xarra-lifetime",
+      "editionID": "ioskonf-2027",
+      "benefit": "70% off lifetime Premium",
+      "terms": "One-time purchase.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through iOSKonf.",
+      "publicationApproved": true,
+      "savingEstimate": {
+        "regularPriceUSD": 29.99,
+        "discountPercent": 70,
+        "plan": "Lifetime Access",
+        "period": "lifetime",
+        "discountedPeriods": 1,
+        "currency": "USD",
+        "storefront": "US",
+        "observedPricesUSD": [
+          29.99
+        ],
+        "review": "unambiguous",
+        "verifiedOn": "2026-11-13",
+        "sourceURL": "https://apps.apple.com/us/app/xarra/id6759402266"
+      },
+      "projectID": "xarra"
+    },
+    {
+      "id": "ioskonf-2027-xarra-yearly",
+      "editionID": "ioskonf-2027",
+      "benefit": "1 year of Premium free",
+      "terms": "Yearly Premium subscription.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through iOSKonf.",
+      "publicationApproved": true,
+      "savingEstimate": {
+        "regularPriceUSD": 9.99,
+        "discountPercent": 100,
+        "plan": "Yearly Subscription",
+        "period": "year",
+        "discountedPeriods": 1,
+        "currency": "USD",
+        "storefront": "US",
+        "observedPricesUSD": [
+          9.99
+        ],
+        "review": "unambiguous",
+        "verifiedOn": "2026-11-13",
+        "sourceURL": "https://apps.apple.com/us/app/xarra/id6759402266"
+      },
+      "projectID": "xarra"
+    },
+    {
+      "id": "ioskonf-2027-retrorapid-free",
+      "editionID": "ioskonf-2027",
+      "benefit": "RetroRapid! Unlimited for free",
+      "terms": "Includes the Unlimited plan.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through iOSKonf.",
+      "publicationApproved": true,
+      "savingEstimate": {
+        "regularPriceUSD": 2.99,
+        "discountPercent": 100,
+        "plan": "Unlimited Plays",
+        "period": "oneTime",
+        "discountedPeriods": 1,
+        "currency": "USD",
+        "storefront": "US",
+        "observedPricesUSD": [
+          2.99
+        ],
+        "review": "unambiguous",
+        "verifiedOn": "2026-11-13",
+        "sourceURL": "https://apps.apple.com/us/app/retrorapid-retro-arcade-racer/id6758641625"
+      },
+      "projectID": "retrorapid"
+    },
+    {
+      "id": "ioskonf-2027-developing-inclusive-mobile-apps-ebook",
+      "editionID": "ioskonf-2027",
+      "projectID": "developing-inclusive-mobile-apps",
+      "benefit": "20% off eBook list price",
+      "terms": "Digital second edition in PDF and EPUB. Discount is calculated from the publisher’s list price. An existing sale may be cheaper.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through iOSKonf.",
+      "publicationApproved": true
+    },
+    {
+      "id": "ioskonf-2027-developing-inclusive-mobile-apps-paperback",
+      "editionID": "ioskonf-2027",
+      "projectID": "developing-inclusive-mobile-apps",
+      "benefit": "20% off paperback list price",
+      "terms": "Paperback second edition. Discount is calculated from the publisher’s list price. An existing sale may be cheaper.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through iOSKonf.",
+      "publicationApproved": true
+    },
+    {
+      "id": "ioskonf-2027-didget-yearly",
+      "editionID": "ioskonf-2027",
+      "projectID": "didget",
+      "benefit": "1 year of Premium free",
+      "terms": "Didget Premium yearly subscription.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through iOSKonf.",
+      "publicationApproved": true,
+      "savingEstimate": {
+        "regularPriceUSD": 19.99,
+        "discountPercent": 100,
+        "plan": "Premium Features",
+        "period": "year",
+        "discountedPeriods": 1,
+        "currency": "USD",
+        "storefront": "US",
+        "observedPricesUSD": [
+          19.99
+        ],
+        "review": "unambiguous",
+        "verifiedOn": "2026-11-22",
+        "sourceURL": "https://apps.apple.com/us/app/didget-data-usage-widget/id6468566182",
+        "confirmedOfferPriceUSD": 0,
+        "sourceFormat": "manual"
+      }
+    }
+  ]
+}

@@ -395,7 +395,14 @@ test('the wordmark remains visible when text is enlarged', async ({ page }) => {
   }
 });
 
-for (const path of ['/', '/conferences/', `/conferences/${record.conference.slug}/`, bundlePath, `${bundlePath}access/`, '/participate/', '/participate/conferences/', formPath, '/terms/']) {
+const conferencePaths = records.flatMap(record => [
+  `/conferences/${record.conference.slug}/`,
+  ...record.editions.flatMap(edition => {
+    const path = `/conferences/${record.conference.slug}/${edition.slug}/`;
+    return [path, `${path}access/`];
+  })
+]);
+for (const path of new Set(['/', '/conferences/', ...conferencePaths, '/participate/', '/participate/conferences/', formPath, '/terms/'])) {
   test(`page is accessible and fits the viewport: ${path}`, async ({ page }) => {
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));

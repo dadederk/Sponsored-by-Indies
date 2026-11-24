@@ -1,0 +1,58 @@
+{
+  "conferenceID" : "ioskonf",
+  "editionID" : "ioskonf-2027",
+  "height" : 1200,
+  "posts" : [
+    {
+      "images" : {
+        "cross" : "ioskonf-2027-sponsored-by-indies-cross.png"
+      },
+      "kind" : "sponsor",
+      "partnerID" : "sponsored-by-indies",
+      "projectIDs" : [
+
+      ]
+    },
+    {
+      "images" : {
+        "cross" : "ioskonf-2027-developing-inclusive-mobile-apps-cross.png"
+      },
+      "kind" : "projects",
+      "partnerID" : "developing-inclusive-mobile-apps",
+      "projectIDs" : [
+        "developing-inclusive-mobile-apps"
+      ]
+    },
+    {
+      "images" : {
+        "cross" : "ioskonf-2027-didget-cross.png"
+      },
+      "kind" : "projects",
+      "partnerID" : "didget",
+      "projectIDs" : [
+        "didget"
+      ]
+    },
+    {
+      "images" : {
+        "cross" : "ioskonf-2027-retrorapid-cross.png"
+      },
+      "kind" : "projects",
+      "partnerID" : "retrorapid",
+      "projectIDs" : [
+        "retrorapid"
+      ]
+    },
+    {
+      "images" : {
+        "cross" : "ioskonf-2027-xarra-cross.png"
+      },
+      "kind" : "projects",
+      "partnerID" : "xarra",
+      "projectIDs" : [
+        "xarra"
+      ]
+    }
+  ],
+  "width" : 1800
+}

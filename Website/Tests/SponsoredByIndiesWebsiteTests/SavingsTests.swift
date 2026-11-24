@@ -132,6 +132,30 @@ struct SavingsTests {
         #expect(throws: CatalogError.self) { try catalog.validate() }
     }
 
+    @Test func ioskonfIncludesOnlyItsApprovedProjectsAndCountsTheFreeDidgetYearOnce() throws {
+        let directory = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+            .deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("Data")
+        let catalog = try Catalog.load(from: directory)
+        let edition = try #require(catalog.editions.first { $0.id == "ioskonf-2027" })
+        let products = catalog.visibleProductContributions(for: edition)
+        #expect(products.map(\.product.projectID) == ["xarra", "didget", "retrorapid", "developing-inclusive-mobile-apps"])
+        let value = try #require(catalog.bundleValue(for: edition))
+        #expect(value.totalUSD == Decimal(string: "43.97"))
+        #expect(value.amountLabel == "US$43")
+        #expect(value.offers.filter { $0.projectID == "didget" }.count == 1)
+        let didget = try #require(products.first { $0.product.projectID == "didget" })
+        #expect(didget.offers.count == 1)
+        let estimate = try #require(didget.offers.first?.savingEstimate)
+        #expect(estimate.period == .year)
+        #expect(estimate.discountPercent == 100)
+        #expect(estimate.regularPriceUSD == Decimal(string: "19.99"))
+        #expect(estimate.amountUSD == Decimal(string: "19.99"))
+        #expect(estimate.offerPriceUSD == 0)
+        #expect(estimate.sourceFormat == .manual)
+        let project = try #require(catalog.projects.first { $0.id == "didget" })
+        #expect(catalog.contributingEditions(for: project).map(\.id) == ["ioskonf-2027"])
+    }
+
     @Test func catalogueTotalsAndRankingUseTheSamePriceEvidence() throws {
         let directory = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
             .deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("Data")

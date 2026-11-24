@@ -187,5 +187,14 @@
     "iconPath": "/app-icons/developing-inclusive-mobile-apps.png",
     "description": "Build accessible iOS apps with SwiftUI. Learn to support VoiceOver, improve navigation and interaction, test accessibility, and apply WCAG 2.2 guidance through practical examples.",
     "showcaseDescription": "Build accessible iOS apps with SwiftUI. Learn to support VoiceOver, improve navigation and interaction, test accessibility, and apply WCAG 2.2 guidance through practical examples."
+  },
+  {
+    "id": "didget",
+    "indieID": "zlatko-kuvendjiski",
+    "name": "Didget",
+    "websiteURL": "https://apps.apple.com/us/app/didget-data-usage-widget/id6468566182",
+    "iconPath": "/app-icons/didget.png",
+    "description": "Track cellular data use with clear dashboards, alerts, and Home Screen and Lock Screen widgets. Keep multiple plans organised and see whether your usage is on pace.",
+    "showcaseDescription": "Track cellular data use with clear dashboards, alerts, and Home Screen and Lock Screen widgets. Keep multiple plans organised, set flexible billing periods, and see whether your usage is on pace without sharing your data."
   }
 ]

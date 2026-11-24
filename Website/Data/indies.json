@@ -463,5 +463,31 @@
         ]
       }
     ]
+  },
+  {
+    "id": "zlatko-kuvendjiski",
+    "name": "Zlatko Kuvendjiski",
+    "company": "Kodium",
+    "websiteURL": "https://kodium.mk/",
+    "socials": [],
+    "initials": "ZK",
+    "people": [
+      {
+        "name": "Zlatko Kuvendjiski",
+        "websiteURL": "https://kodium.mk/",
+        "bio": "iOS engineer and iOSKonf organiser focused on polished mobile experiences. He builds Didget, a private utility for understanding cellular data use at a glance.",
+        "portraitPath": "/portraits/zlatko-kuvendjiski.jpg",
+        "socials": [
+          {
+            "label": "Twitter",
+            "url": "https://x.com/3latko"
+          },
+          {
+            "label": "LinkedIn",
+            "url": "https://www.linkedin.com/in/3latko/"
+          }
+        ]
+      }
+    ]
   }
 ]
