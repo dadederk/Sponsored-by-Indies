@@ -12,6 +12,7 @@ struct Catalog {
     var terms: CommunityTerms
     var projects: [Project] = []
     var discoveryResources: [DiscoveryResource] = []
+    var pressMention: PressMention? = nil
 
     /// A project remains discoverable after an edition ends, but only an approved
     /// contribution in that exact edition can establish its inclusion.

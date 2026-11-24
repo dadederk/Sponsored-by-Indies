@@ -30,6 +30,8 @@ extension PublishingTests {
         #expect(!sitemap.contains("/by-indies-preview/"))
         let home = try String(contentsOf: root.appending(path: "index.html"), encoding: .utf8)
         #expect(home.contains("brand-sponsored"))
+        #expect(!home.contains("Featured in "))
+        #expect(!home.contains("id=\"press-feature\""))
         #expect(home.contains("href=\"" + SiteIdentity.showcase.baseURL(preview: preview) + "/\""))
     }
 

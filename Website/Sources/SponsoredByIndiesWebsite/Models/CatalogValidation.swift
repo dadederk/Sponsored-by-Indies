@@ -39,6 +39,15 @@ extension Catalog {
             try nonempty([resource.name, resource.description], "indie discovery resource")
             try Self.validateURL(resource.url)
         }
+        if let mention = pressMention {
+            try nonempty([mention.label], "press mention")
+            try Self.validateURL(mention.url)
+            try require(validDate(mention.publishedOn), "Press mention needs a valid YYYY-MM-DD publication date.")
+            if let quote = mention.quote {
+                try nonempty([quote, mention.author ?? ""], "press quote and author")
+            }
+            try require(mention.author == nil || mention.quote != nil, "A press quote author requires a quote.")
+        }
         for conference in conferences {
             try nonempty([conference.id, conference.name, conference.location, conference.description], conference.id)
             if let editions = conference.connectionEditions {

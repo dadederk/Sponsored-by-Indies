@@ -126,6 +126,8 @@ enum DesignTokens {
       --font-size-small: .9375rem;
       --font-size-heading-small: 1.125rem;
       --font-size-heading-medium: 1.5rem;
+      --press-quote-size: clamp(1.5rem, calc(1.2rem + 1vw), 2.25rem);
+      --press-quote-line-height: 1.4;
       --offer-heading-size: var(--font-size-heading-small);
       --project-heading-size: var(--font-size-heading-medium);
       --builder-heading-size: var(--font-size-heading-small);

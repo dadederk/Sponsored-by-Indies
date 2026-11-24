@@ -489,5 +489,35 @@
         ]
       }
     ]
+  },
+  {
+    "id": "mustafa-yusuf",
+    "name": "Mustafa Yusuf",
+    "company": "Msquare Labs",
+    "websiteURL": "https://thetasks.app/",
+    "initials": "MY",
+    "socials": [],
+    "people": [
+      {
+        "name": "Mustafa Yusuf",
+        "websiteURL": "https://thetasks.app/about/",
+        "bio": "Independent developer and founder of Msquare Labs in Mumbai. He builds native apps for Apple devices and uses conversations with users to guide the details and improvements.",
+        "portraitPath": "/portraits/mustafa-yusuf.jpg",
+        "socials": [
+          {
+            "label": "Mastodon",
+            "url": "https://mastodon.world/@mufasayc"
+          },
+          {
+            "label": "Twitter",
+            "url": "https://x.com/mufasaYC"
+          },
+          {
+            "label": "GitHub",
+            "url": "https://github.com/mufasaYC"
+          }
+        ]
+      }
+    ]
   }
 ]

@@ -60,6 +60,8 @@ Builder cards use the same profile across a person's projects. Write a short thi
 
 Keep each builder profile to five links at most, including Website. Choose the most relevant verified profiles from the agreed link order.
 
+The Sponsored homepage can show an editorial feature in a tinted strip after the community section. Set `pressMention` in `site.json` with the publication and issue in `label`, the article’s HTTPS `url`, and its `publishedOn` date as `YYYY-MM-DD`. Add an optional short `quote` with its `author` for an attributed extract. Omit `pressMention` when no mention should appear.
+
 Use an indie’s optional `disclosure` for a relevant relationship that applies to their projects. It appears beside their maker details in both bundle and showcase cards; keep it factual and specific.
 
 Prefer original square App Store artwork for app icons, at 512 pixels or larger when available. Avoid store thumbnails with baked-in padding or rounded corners; the card applies its own corner radius. If Mac artwork includes extra canvas padding, use the maker’s unpadded press asset at the standard display size. Use the maker’s press kit or website for products without a store listing, and keep images locally. The listed apps use locally stored 512px PNG artwork checked against their App Store listings. Profile photos use a thin, pale border to separate them from the card background.

@@ -4,6 +4,34 @@ import Testing
 @testable import SponsoredByIndiesWebsite
 
 struct CatalogTests {
+    @Test(arguments: ["blank label", "unsafe URL", "invalid date"])
+    func pressMentionRequiresALabelSafeLinkAndPublicationDate(problem: String) throws {
+        var catalog = CatalogFixture.make()
+        catalog.pressMention = PressMention(label: "Weekly · Issue 1", url: "https://example.org/issue/1", publishedOn: "2026-11-20")
+        try catalog.validate()
+        #expect(catalog.pressMention?.dateLabel == "20 November 2026")
+        switch problem {
+        case "blank label": catalog.pressMention?.label = " "
+        case "unsafe URL": catalog.pressMention?.url = "javascript:alert(1)"
+        default: catalog.pressMention?.publishedOn = "2026-02-30"
+        }
+        #expect(throws: CatalogError.self) { try catalog.validate() }
+    }
+
+    @Test(arguments: ["blank quote", "missing author", "blank author", "missing quote"])
+    func pressQuotesRequireTextAndAttribution(problem: String) throws {
+        var catalog = CatalogFixture.make()
+        catalog.pressMention = PressMention(label: "Weekly", url: "https://example.org/issue", publishedOn: "2026-11-20", quote: "A thoughtful idea.", author: "Sample writer")
+        try catalog.validate()
+        switch problem {
+        case "blank quote": catalog.pressMention?.quote = " "
+        case "missing author": catalog.pressMention?.author = nil
+        case "blank author": catalog.pressMention?.author = " "
+        default: catalog.pressMention?.quote = nil
+        }
+        #expect(throws: CatalogError.self) { try catalog.validate() }
+    }
+
     @Test(arguments: ["missing text", "repeated text", "unsafe URL", "blank text"])
     func descriptionLinksRequireOneMatchingLabelAndASafeURL(problem: String) throws {
         var catalog = CatalogFixture.make()

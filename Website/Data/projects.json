@@ -196,5 +196,14 @@
     "iconPath": "/app-icons/didget.png",
     "description": "Track cellular data use with clear dashboards, alerts, and Home Screen and Lock Screen widgets. Keep multiple plans organised and see whether your usage is on pace.",
     "showcaseDescription": "Track cellular data use with clear dashboards, alerts, and Home Screen and Lock Screen widgets. Keep multiple plans organised, set flexible billing periods, and see whether your usage is on pace without sharing your data."
+  },
+  {
+    "id": "tasks",
+    "indieID": "mustafa-yusuf",
+    "name": "Tasks",
+    "websiteURL": "https://thetasks.app/",
+    "iconPath": "/app-icons/tasks.png",
+    "description": "Bring to-dos, reminders and shared projects together across your Apple devices. Switch between lists and Kanban boards, build custom workflows, and keep notes, files and conversations with each task.",
+    "showcaseDescription": "Bring to-dos, reminders and shared projects together across your Apple devices. Switch between lists and Kanban boards, build custom workflows, and keep notes, files and conversations with each task."
   }
 ]

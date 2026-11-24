@@ -177,6 +177,16 @@
     },
     {
       "images" : {
+        "cross" : "arctic-2027-tasks-cross.png"
+      },
+      "kind" : "projects",
+      "partnerID" : "tasks",
+      "projectIDs" : [
+        "tasks"
+      ]
+    },
+    {
+      "images" : {
         "cross" : "arctic-2027-the-shed-cross.png"
       },
       "kind" : "projects",

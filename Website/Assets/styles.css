@@ -69,6 +69,8 @@ main:focus { outline: none; }
 .btn-tertiary { background: var(--surface); border-color: var(--muted); --bs-btn-bg: var(--surface); --bs-btn-border-color: var(--muted); --bs-btn-hover-bg: var(--paper); --bs-btn-hover-border-color: var(--blue); --bs-btn-active-bg: var(--paper); --bs-btn-active-border-color: var(--blue); }
 .btn-tertiary:hover,.btn-tertiary:active { background: var(--paper); color: var(--ink); border-color: var(--blue); }
 .tinted-section { background: var(--tint); border-block: var(--border-width) solid var(--line); }
+/* Fluid quote typography shares the heading accent without changing its semantics. */
+.press-quote { font-size: var(--press-quote-size); line-height: var(--press-quote-line-height); text-wrap: balance; }
 .steps { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: var(--space-8); padding-left: var(--space-6); }
 .steps li { padding: var(--space-6) var(--space-4) 0 var(--step-inset); border-top: var(--border-width) solid var(--rule); margin-top: 0; }
 .steps li::marker { color: var(--accent); font-weight: 700; }

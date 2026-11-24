@@ -36,7 +36,7 @@ extension Catalog {
             indies: indies, participations: records.flatMap(\.participations),
             offers: try records.flatMap(\.offers).map { try $0.resolve(in: projectsByID) }, contactURL: settings.contactURL,
             partnershipNote: settings.partnershipNote, terms: settings.terms, projects: projects,
-            discoveryResources: settings.discoveryResources ?? []
+            discoveryResources: settings.discoveryResources ?? [], pressMention: settings.pressMention
         )
         try catalog.validate()
         let images = projects.compactMap(\.iconPath) + indies.flatMap { ($0.people ?? []).compactMap(\.portraitPath) }
@@ -56,6 +56,7 @@ private struct Settings: Decodable {
     let partnershipNote: String?
     let terms: CommunityTerms
     let discoveryResources: [DiscoveryResource]?
+    let pressMention: PressMention?
 }
 
 private struct ConferenceRecord: Decodable {

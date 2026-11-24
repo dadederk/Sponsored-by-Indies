@@ -24,6 +24,7 @@ extension Pages {
                         "community-title")
                 }.class("container", "reading-width")
             }.class("manifesto").aria(.labelledBy, "community-title")
+            if let mention = catalog.pressMention { pressFeature(mention) }
         }
     }
 
@@ -44,6 +45,34 @@ extension Pages {
                     .label, "On this page")
             }.class("actions")
         }.aria(.labelledBy, "home-title")
+    }
+
+    func pressFeature(_ mention: PressMention) -> some HTML {
+        Tag("aside") {
+            Section {
+                Tag("figure") {
+                    if let quote = mention.quote {
+                        Quote {
+                            Text("“" + escaped(quote) + "”")
+                                .class("title-accent", "press-quote").margin(0)
+                        }
+                    }
+                    Tag("figcaption") {
+                        Text {
+                            if let author = mention.author {
+                                "– " + escaped(author) + ", "
+                            } else {
+                                "Featured in "
+                            }
+                            Link(escaped(mention.label), target: escaped(mention.url))
+                            " ("
+                            Time(escaped(mention.dateLabel), dateTime: mention.publicationDate)
+                            ")."
+                        }.font(.small).foregroundStyle(.secondary).margin(0)
+                    }
+                }.margin(0).horizontalAlignment(.center)
+            }.class("container", "section-space", "reading-width")
+        }.id("press-feature").class("tinted-section").aria(.label, "Featured in " + escaped(mention.label))
     }
 
     var nextEdition: some HTML {

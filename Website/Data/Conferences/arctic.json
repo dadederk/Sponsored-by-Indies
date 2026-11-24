@@ -52,7 +52,8 @@
           "movie-buzz-yearly",
           "swiftui-architecture-ebook",
           "swiftdata-architecture-ebook",
-          "structured-lifetime"
+          "structured-lifetime",
+          "tasks-yearly"
         ]
       },
       "bundleNote": "We’re working on expanding the bundle and its value.",
@@ -199,6 +200,13 @@
         "name": "Rob Whitaker",
         "sourceURL": "https://iosdev.space/@RobW/114157216357941082"
       },
+      "publicationApproved": true
+    },
+    {
+      "editionID": "arctic-2027",
+      "indieID": "mustafa-yusuf",
+      "connection": "Workshop ARCtic 2026",
+      "quote": null,
       "publicationApproved": true
     }
   ],
@@ -861,6 +869,33 @@
       "terms": "Paperback second edition. Discount is calculated from the publisher’s list price. An existing sale may be cheaper.",
       "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through ARCtic.",
       "publicationApproved": true
+    },
+    {
+      "id": "tasks-yearly",
+      "editionID": "arctic-2027",
+      "projectID": "tasks",
+      "benefit": "1 year of Tasks Plus free",
+      "terms": "Tasks Plus annual subscription.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through the conference.",
+      "publicationApproved": true,
+      "savingEstimate": {
+        "regularPriceUSD": 24.99,
+        "discountPercent": 100,
+        "confirmedOfferPriceUSD": 0,
+        "plan": "Annual",
+        "period": "year",
+        "discountedPeriods": 1,
+        "currency": "USD",
+        "storefront": "US",
+        "observedPricesUSD": [
+          24.99
+        ],
+        "review": "unambiguous",
+        "verifiedOn": "2026-11-24",
+        "sourceURL": "https://apps.apple.com/us/app/tasks-to-do-lists-reminders/id1502903102",
+        "sourceFormat": "appStore",
+        "sourceProductName": "Tasks: To Do Lists & Reminders"
+      }
     }
   ]
 }

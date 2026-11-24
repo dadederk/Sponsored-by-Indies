@@ -1,6 +1,13 @@
 {
   "contactURL": "mailto:hello@accessibilityUpTo11.com",
   "partnershipNote": "We’d love to hear from organisers who want to bring an indie bundle to their conference.",
+  "pressMention": {
+    "label": "iOS Dev Weekly · Issue 777",
+    "url": "https://iosdevweekly.com/issues/777/",
+    "publishedOn": "2026-11-20",
+    "quote": "the brilliant idea of bundling conference tickets with indie products to make them more valuable for attendees.",
+    "author": "Alex Ozun"
+  },
   "terms": {
     "updatedOn": "2026-11-22",
     "introduction": "A little extra from the community, offered in good faith. These terms explain how our websites and conference bundles work, who is responsible for what, and how we handle problems together.",

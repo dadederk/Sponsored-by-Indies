@@ -8,6 +8,7 @@ extension PublishingTests {
     @Test(arguments: [true, false])
     func populatedPagesRespectApprovalAndEditionBoundaries(preview: Bool) async throws {
         var catalog = CatalogFixture.make()
+        catalog.pressMention = PressMention(label: "Weekly & <Issue>", url: "https://example.org/issue?a=1&b=2", publishedOn: "2026-11-20", quote: preview ? "A kind & <thoughtful> idea." : nil, author: preview ? "Alex & <Writer>" : nil)
         catalog.conferences[0].name = "Sample \"North\" & <Friends>"
         catalog.conferences[0].description = "A cool & <welcoming> conference."
         catalog.conferences[0].connectionEditions = ["2024", "2025 \"friends\" & crew"]
@@ -161,6 +162,19 @@ extension PublishingTests {
         }
         let home = try page("index.html")
         let directory = try page("conferences/index.html")
+        let benefitsPosition = try #require(home.range(of: "id=\"benefits-title\""))
+        let pressPosition = try #require(home.range(of: "id=\"press-feature\""))
+        let communityPosition = try #require(home.range(of: "id=\"community-title\""))
+        #expect(benefitsPosition.lowerBound < pressPosition.lowerBound)
+        #expect(communityPosition.lowerBound < pressPosition.lowerBound)
+        let introduction = home[..<benefitsPosition.lowerBound]
+        #expect(!introduction.contains("Weekly &amp; &lt;Issue&gt;"))
+        #expect(home.contains("<a href=\"https://example.org/issue?a=1&amp;b=2\">Weekly &amp; &lt;Issue&gt;</a>"))
+        #expect(home.contains(">Featured in <a") == !preview)
+        #expect(home.contains("A kind &amp; &lt;thoughtful&gt; idea.") == preview)
+        #expect(home.contains("– Alex &amp; &lt;Writer&gt;") == preview)
+        #expect(home.contains("<time datetime=\"2026-11-20T00:00:00Z\">20 November 2026</time>"))
+        #expect(!directory.contains("Weekly &amp; &lt;Issue&gt;"))
         #expect(home.contains("What’s in it"))
         #expect(!directory.contains("What’s in it"))
         #expect(directory.contains("id=\"benefits-title\""))
