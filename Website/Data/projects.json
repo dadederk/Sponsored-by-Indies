@@ -205,5 +205,32 @@
     "iconPath": "/app-icons/tasks.png",
     "description": "Bring to-dos, reminders and shared projects together across your Apple devices. Switch between lists and Kanban boards, build custom workflows, and keep notes, files and conversations with each task.",
     "showcaseDescription": "Bring to-dos, reminders and shared projects together across your Apple devices. Switch between lists and Kanban boards, build custom workflows, and keep notes, files and conversations with each task."
+  },
+  {
+    "id": "iconswapper",
+    "indieID": "michael-flarup",
+    "name": "IconSwapper",
+    "websiteURL": "https://iconswapper.app/",
+    "iconPath": "/app-icons/iconswapper.png",
+    "description": "Make your Mac feel like your own. Swap app icons, customise their artwork and materials, and add live animations that respond to music, app activity and real-time data.",
+    "showcaseDescription": "Make your Mac feel like your own. Swap app icons, customise their artwork and materials, and add live animations that respond to music, app activity and real-time data."
+  },
+  {
+    "id": "app-icon-design-masterclass",
+    "indieID": "michael-flarup",
+    "name": "App Icon Design Masterclass",
+    "websiteURL": "https://pixelresort.gumroad.com/l/masterclass",
+    "iconPath": "/app-icons/app-icon-design-masterclass.png",
+    "description": "Learn the craft of app icon design through 14 video lessons and practical icon templates. Explore what makes an icon memorable, with the digital iOS App Icon Book included.",
+    "showcaseDescription": "Learn the craft of app icon design through 14 video lessons and practical icon templates. Explore what makes an icon memorable, with the digital iOS App Icon Book included."
+  },
+  {
+    "id": "app-icon-books",
+    "indieID": "michael-flarup",
+    "name": "The App Icon Books",
+    "websiteURL": "https://flarup.shop/",
+    "iconPath": "/app-icons/app-icon-books.png",
+    "description": "Explore the art and history of iOS and macOS app icons through two illustrated books. Discover hundreds of designs and stories from their creators, in hardcover or digital editions.",
+    "showcaseDescription": "Explore the art and history of iOS and macOS app icons through two illustrated books. Discover hundreds of designs and stories from their creators, in hardcover or digital editions."
   }
 ]

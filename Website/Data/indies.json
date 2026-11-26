@@ -519,5 +519,31 @@
         ]
       }
     ]
+  },
+  {
+    "id": "michael-flarup",
+    "name": "Michael Flarup",
+    "company": "Flarup Industries",
+    "websiteURL": "https://flarup.co/",
+    "initials": "MF",
+    "socials": [],
+    "people": [
+      {
+        "name": "Michael Flarup",
+        "websiteURL": "https://flarup.co/",
+        "bio": "Designer and creative entrepreneur based in Køge, Denmark. He makes apps, games, icons and books, runs Northplay, and shares lessons from a career in visual design.",
+        "portraitPath": "/portraits/michael-flarup.jpg",
+        "socials": [
+          {
+            "label": "Twitter",
+            "url": "https://x.com/flarup"
+          },
+          {
+            "label": "Instagram",
+            "url": "https://www.instagram.com/flarup/"
+          }
+        ]
+      }
+    ]
   }
 ]

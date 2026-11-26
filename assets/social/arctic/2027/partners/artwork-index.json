@@ -25,6 +25,26 @@
     },
     {
       "images" : {
+        "cross" : "arctic-2027-app-icon-books-cross.png"
+      },
+      "kind" : "projects",
+      "partnerID" : "app-icon-books",
+      "projectIDs" : [
+        "app-icon-books"
+      ]
+    },
+    {
+      "images" : {
+        "cross" : "arctic-2027-app-icon-design-masterclass-cross.png"
+      },
+      "kind" : "projects",
+      "partnerID" : "app-icon-design-masterclass",
+      "projectIDs" : [
+        "app-icon-design-masterclass"
+      ]
+    },
+    {
+      "images" : {
         "cross" : "arctic-2027-azam-books-cross.png"
       },
       "kind" : "projects",
@@ -72,6 +92,16 @@
       "partnerID" : "helm",
       "projectIDs" : [
         "helm"
+      ]
+    },
+    {
+      "images" : {
+        "cross" : "arctic-2027-iconswapper-cross.png"
+      },
+      "kind" : "projects",
+      "partnerID" : "iconswapper",
+      "projectIDs" : [
+        "iconswapper"
       ]
     },
     {

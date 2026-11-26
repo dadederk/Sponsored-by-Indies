@@ -53,7 +53,10 @@
           "swiftui-architecture-ebook",
           "swiftdata-architecture-ebook",
           "structured-lifetime",
-          "tasks-yearly"
+          "tasks-yearly",
+          "arctic-2027-iconswapper-free",
+          "arctic-2027-app-icon-masterclass-free",
+          "arctic-2027-app-icon-books-hardcover"
         ]
       },
       "bundleNote": "We’re working on expanding the bundle and its value.",
@@ -207,6 +210,17 @@
       "indieID": "mustafa-yusuf",
       "connection": "Workshop ARCtic 2026",
       "quote": null,
+      "publicationApproved": true
+    },
+    {
+      "editionID": "arctic-2027",
+      "indieID": "michael-flarup",
+      "connection": "Speaker ARCtic 2026",
+      "quote": "The conversations. The shared experiences.",
+      "quoteAttribution": {
+        "name": "Michael Flarup",
+        "sourceURL": "https://www.flarup.email/p/the-comeback-of-small-conferences"
+      },
       "publicationApproved": true
     }
   ],
@@ -895,6 +909,112 @@
         "sourceURL": "https://apps.apple.com/us/app/tasks-to-do-lists-reminders/id1502903102",
         "sourceFormat": "appStore",
         "sourceProductName": "Tasks: To Do Lists & Reminders"
+      }
+    },
+    {
+      "id": "arctic-2027-iconswapper-free",
+      "editionID": "arctic-2027",
+      "projectID": "iconswapper",
+      "benefit": "IconSwapper for free",
+      "terms": "Full app licence for up to three Macs. Reference uses the current launch price.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through ARCtic.",
+      "publicationApproved": true,
+      "savingEstimate": {
+        "regularPriceUSD": 19,
+        "discountPercent": 100,
+        "plan": "IconSwapper — full licence (launch price)",
+        "period": "oneTime",
+        "discountedPeriods": 1,
+        "currency": "USD",
+        "storefront": "US",
+        "observedPricesUSD": [
+          19
+        ],
+        "review": "unambiguous",
+        "verifiedOn": "2026-11-26",
+        "sourceURL": "https://iconswapper.app/",
+        "sourceFormat": "manual",
+        "sourceProductName": "IconSwapper — full licence (launch price)",
+        "confirmedOfferPriceUSD": 0
+      }
+    },
+    {
+      "id": "arctic-2027-app-icon-masterclass-free",
+      "editionID": "arctic-2027",
+      "projectID": "app-icon-design-masterclass",
+      "benefit": "Masterclass access for free",
+      "terms": "Includes all 14 video lessons, icon templates and the digital iOS App Icon Book.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through ARCtic.",
+      "publicationApproved": true,
+      "savingEstimate": {
+        "regularPriceUSD": 49,
+        "discountPercent": 100,
+        "plan": "App Icon Design Masterclass",
+        "period": "oneTime",
+        "discountedPeriods": 1,
+        "currency": "USD",
+        "storefront": "US",
+        "observedPricesUSD": [
+          49
+        ],
+        "review": "unambiguous",
+        "verifiedOn": "2026-11-26",
+        "sourceURL": "https://pixelresort.gumroad.com/l/masterclass",
+        "sourceFormat": "schemaOrg",
+        "sourceProductName": "App Icon Design Masterclass",
+        "confirmedOfferPriceUSD": 0
+      }
+    },
+    {
+      "id": "arctic-2027-app-icon-books-hardcover",
+      "editionID": "arctic-2027",
+      "projectID": "app-icon-books",
+      "benefit": "20% off hardcover books",
+      "terms": "Two-book estimate; either title can be bought separately. Discounted price: US$62.40 per book. Shipping, taxes and any import fees are additional.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through ARCtic.",
+      "publicationApproved": true,
+      "savingEstimate": {
+        "regularPriceUSD": 156,
+        "discountPercent": 20,
+        "plan": "iOS + macOS App Icon Books — both hardcovers (US$78 each)",
+        "period": "oneTime",
+        "discountedPeriods": 1,
+        "currency": "USD",
+        "storefront": "US",
+        "observedPricesUSD": [
+          156
+        ],
+        "review": "unambiguous",
+        "verifiedOn": "2026-11-26",
+        "sourceURL": "https://flarup.shop/?country=US&currency=USD",
+        "sourceFormat": "manual",
+        "sourceProductName": "The App Icon Books — two hardcovers"
+      }
+    },
+    {
+      "id": "arctic-2027-app-icon-books-digital",
+      "editionID": "arctic-2027",
+      "projectID": "app-icon-books",
+      "benefit": "20% off digital books",
+      "terms": "Two-book estimate; US$35.20 per book with the offer. The digital iOS book is also included with the free masterclass.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through ARCtic.",
+      "publicationApproved": true,
+      "savingEstimate": {
+        "regularPriceUSD": 88,
+        "discountPercent": 20,
+        "plan": "iOS + macOS App Icon Books — both digital editions (US$44 each)",
+        "period": "oneTime",
+        "discountedPeriods": 1,
+        "currency": "USD",
+        "storefront": "US",
+        "observedPricesUSD": [
+          88
+        ],
+        "review": "unambiguous",
+        "verifiedOn": "2026-11-26",
+        "sourceURL": "https://flarup.shop/?country=US&currency=USD",
+        "sourceFormat": "manual",
+        "sourceProductName": "The App Icon Books — two digital editions"
       }
     }
   ]
