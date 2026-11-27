@@ -132,16 +132,36 @@ struct SavingsTests {
         #expect(throws: CatalogError.self) { try catalog.validate() }
     }
 
-    @Test func ioskonfIncludesOnlyItsApprovedProjectsAndCountsTheFreeDidgetYearOnce() throws {
+    @Test func ioskonfCountsCompatibleApprovedOffersWithoutOverlappingBooksAndCourse() throws {
         let directory = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
             .deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("Data")
         let catalog = try Catalog.load(from: directory)
         let edition = try #require(catalog.editions.first { $0.id == "ioskonf-2027" })
         let products = catalog.visibleProductContributions(for: edition)
-        #expect(products.map(\.product.projectID) == ["xarra", "didget", "retrorapid", "developing-inclusive-mobile-apps"])
+        #expect(products.map(\.product.projectID) == ["practical-bundle", "practical-swift-concurrency-course", "xarra", "didget", "maxine", "retrorapid", "developing-inclusive-mobile-apps"])
         let value = try #require(catalog.bundleValue(for: edition))
-        #expect(value.totalUSD == Decimal(string: "43.97"))
-        #expect(value.amountLabel == "US$43")
+        #expect(value.totalUSD == Decimal(string: "88.66"))
+        #expect(value.amountLabel == "US$88")
+        let donnyOffers = products.filter { $0.product.indieID == "donny-wals" }.flatMap(\.offers)
+        #expect(donnyOffers.count == 3)
+        #expect(donnyOffers.allSatisfy { $0.savingEstimate?.discountPercent == 30 })
+        #expect(Set(value.offers.filter { $0.indieID == "donny-wals" }.map(\.projectID)) == ["practical-bundle", "maxine"])
+        // The course stays visible, but its saving is excluded until book overlap is clear.
+        #expect(!value.offers.contains { $0.projectID == "practical-swift-concurrency-course" })
+        let videoCourse = try #require(donnyOffers.first { $0.projectID == "practical-swift-concurrency-course" }?.savingEstimate)
+        #expect(videoCourse.regularPriceUSD == 79)
+        #expect(videoCourse.offerPriceUSD == Decimal(string: "55.30"))
+        #expect(videoCourse.amountUSD == Decimal(string: "23.70"))
+        let practicalBundle = try #require(donnyOffers.first { $0.projectID == "practical-bundle" }?.savingEstimate)
+        #expect(practicalBundle.offerPriceUSD == Decimal(string: "69.30"))
+        #expect(practicalBundle.amountUSD == Decimal(string: "29.70"))
+        let maxine = try #require(donnyOffers.first { $0.projectID == "maxine" }?.savingEstimate)
+        #expect(maxine.period == .lifetime)
+        #expect(maxine.offerPriceUSD == 35)
+        #expect(maxine.amountUSD == Decimal(string: "14.99"))
+        for project in catalog.projects.filter({ $0.indieID == "donny-wals" }) {
+            #expect(catalog.contributingEditions(for: project).map(\.id) == ["ioskonf-2027"])
+        }
         #expect(value.offers.filter { $0.projectID == "didget" }.count == 1)
         let didget = try #require(products.first { $0.product.projectID == "didget" })
         #expect(didget.offers.count == 1)

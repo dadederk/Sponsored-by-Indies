@@ -545,5 +545,35 @@
         ]
       }
     ]
+  },
+  {
+    "id": "donny-wals",
+    "name": "Donny Wals",
+    "company": "donnywals.com",
+    "websiteURL": "https://www.donnywals.com/",
+    "initials": "DW",
+    "socials": [],
+    "people": [
+      {
+        "name": "Donny Wals",
+        "websiteURL": "https://www.donnywals.com/",
+        "bio": "Independent iOS developer, author and speaker who loves learning and sharing knowledge. He teaches Swift through practical examples, books, videos and workshops.",
+        "portraitPath": "/portraits/donny-wals.jpg",
+        "socials": [
+          {
+            "label": "Mastodon",
+            "url": "https://chaos.social/@donnywals"
+          },
+          {
+            "label": "Bluesky",
+            "url": "https://bsky.app/profile/donnywals.bsky.social"
+          },
+          {
+            "label": "Twitter",
+            "url": "https://twitter.com/donnywals"
+          }
+        ]
+      }
+    ]
   }
 ]

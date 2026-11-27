@@ -46,7 +46,9 @@
         "offerIDs": [
           "ioskonf-2027-xarra-lifetime",
           "ioskonf-2027-retrorapid-free",
-          "ioskonf-2027-didget-yearly"
+          "ioskonf-2027-didget-yearly",
+          "ioskonf-2027-practical-bundle",
+          "ioskonf-2027-maxine"
         ]
       },
       "bundleNote": "We’re working on expanding the bundle and its value."
@@ -75,6 +77,17 @@
       "editionID": "ioskonf-2027",
       "indieID": "zlatko-kuvendjiski",
       "connection": "Organiser, iOSKonf",
+      "publicationApproved": true
+    },
+    {
+      "editionID": "ioskonf-2027",
+      "indieID": "donny-wals",
+      "connection": "Speaker iOSKonf 2024 · Workshop leader 2026",
+      "quote": "The organizers go above and beyond.",
+      "quoteAttribution": {
+        "name": "Donny Wals",
+        "sourceURL": "https://www.ioskonf.mk/archive/2026"
+      },
       "publicationApproved": true
     }
   ],
@@ -193,6 +206,84 @@
         "sourceURL": "https://apps.apple.com/us/app/didget-data-usage-widget/id6468566182",
         "confirmedOfferPriceUSD": 0,
         "sourceFormat": "manual"
+      }
+    },
+    {
+      "id": "ioskonf-2027-practical-bundle",
+      "editionID": "ioskonf-2027",
+      "projectID": "practical-bundle",
+      "benefit": "30% off the Practical Bundle",
+      "terms": "Individual licence for all three digital books.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through iOSKonf.",
+      "publicationApproved": true,
+      "savingEstimate": {
+        "regularPriceUSD": 99,
+        "discountPercent": 30,
+        "plan": "Practical Bundle — Individual",
+        "period": "oneTime",
+        "discountedPeriods": 1,
+        "currency": "USD",
+        "storefront": "US",
+        "observedPricesUSD": [
+          99
+        ],
+        "review": "unambiguous",
+        "verifiedOn": "2026-11-22",
+        "sourceURL": "https://donnywals.gumroad.com/l/practical-bundle",
+        "sourceFormat": "schemaOrg",
+        "sourceProductName": "Practical Bundle: All three Practical books in a bundle!"
+      }
+    },
+    {
+      "id": "ioskonf-2027-practical-swift-concurrency-course",
+      "editionID": "ioskonf-2027",
+      "projectID": "practical-swift-concurrency-course",
+      "benefit": "30% off the video course",
+      "terms": "Video lessons and exercises. One-time purchase.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through iOSKonf.",
+      "publicationApproved": true,
+      "savingEstimate": {
+        "regularPriceUSD": 79,
+        "discountPercent": 30,
+        "plan": "Practical Swift Concurrency — The Video Course",
+        "period": "oneTime",
+        "discountedPeriods": 1,
+        "currency": "USD",
+        "storefront": "US",
+        "observedPricesUSD": [
+          79
+        ],
+        "review": "unambiguous",
+        "verifiedOn": "2026-11-22",
+        "sourceURL": "https://donny-wals-s-school.teachable.com/p/practical-swift-concurrency-the-video-course",
+        "sourceFormat": "manual",
+        "sourceProductName": "Practical Swift Concurrency - The Video Course"
+      }
+    },
+    {
+      "id": "ioskonf-2027-maxine",
+      "editionID": "ioskonf-2027",
+      "projectID": "maxine",
+      "benefit": "30% off lifetime access",
+      "terms": "One-time purchase of Maxine Lifetime.",
+      "redemptionInstructions": "Not open yet. Instructions, eligibility and deadline will be shared through iOSKonf.",
+      "publicationApproved": true,
+      "savingEstimate": {
+        "regularPriceUSD": 49.99,
+        "discountPercent": 30,
+        "plan": "Maxine Lifetime",
+        "period": "lifetime",
+        "discountedPeriods": 1,
+        "currency": "USD",
+        "storefront": "US",
+        "observedPricesUSD": [
+          49.99
+        ],
+        "review": "unambiguous",
+        "verifiedOn": "2026-11-22",
+        "sourceURL": "https://apps.apple.com/us/app/strength-tracker-maxine/id6615073254",
+        "sourceFormat": "appStore",
+        "sourceProductName": "Strength Tracker - Maxine"
       }
     }
   ]

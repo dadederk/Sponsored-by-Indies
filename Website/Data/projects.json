@@ -232,5 +232,32 @@
     "iconPath": "/app-icons/app-icon-books.png",
     "description": "Explore the art and history of iOS and macOS app icons through two illustrated books. Discover hundreds of designs and stories from their creators, in hardcover or digital editions.",
     "showcaseDescription": "Explore the art and history of iOS and macOS app icons through two illustrated books. Discover hundreds of designs and stories from their creators, in hardcover or digital editions."
+  },
+  {
+    "id": "practical-bundle",
+    "indieID": "donny-wals",
+    "name": "Practical Bundle",
+    "websiteURL": "https://donnywals.gumroad.com/l/practical-bundle",
+    "iconPath": "/app-icons/practical-bundle.png",
+    "description": "Learn Swift Concurrency, Combine and Core Data through three practical books. Work through examples covering asynchronous code, reactive programming and persistent data in your iOS apps.",
+    "showcaseDescription": "Learn Swift Concurrency, Combine and Core Data through three practical books. Work through examples covering asynchronous code, reactive programming and persistent data in your iOS apps."
+  },
+  {
+    "id": "practical-swift-concurrency-course",
+    "indieID": "donny-wals",
+    "name": "Practical Swift Concurrency: Video Course",
+    "websiteURL": "https://donny-wals-s-school.teachable.com/p/practical-swift-concurrency-the-video-course",
+    "iconPath": "/app-icons/practical-swift-concurrency-course.png",
+    "description": "Learn Swift Concurrency through video lessons and hands-on exercises. Explore async/await, tasks, actors and Sendable, then practise bridging existing code and testing asynchronous behaviour.",
+    "showcaseDescription": "Learn Swift Concurrency through video lessons and hands-on exercises. Explore async/await, tasks, actors and Sendable, then practise bridging existing code and testing asynchronous behaviour."
+  },
+  {
+    "id": "maxine",
+    "indieID": "donny-wals",
+    "name": "Maxine",
+    "websiteURL": "https://maxine-app.com/",
+    "iconPath": "/app-icons/maxine.png",
+    "description": "Track strength workouts, log sets and reps, and follow your progress on iPhone and Apple Watch. Set exercise goals, use rest timers and see estimated one-rep maxes and personal bests.",
+    "showcaseDescription": "Track strength workouts, log sets and reps, and follow your progress on iPhone and Apple Watch. Set exercise goals, use rest timers and see estimated one-rep maxes and personal bests."
   }
 ]

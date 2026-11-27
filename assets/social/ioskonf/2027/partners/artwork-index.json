@@ -35,6 +35,36 @@
     },
     {
       "images" : {
+        "cross" : "ioskonf-2027-maxine-cross.png"
+      },
+      "kind" : "projects",
+      "partnerID" : "maxine",
+      "projectIDs" : [
+        "maxine"
+      ]
+    },
+    {
+      "images" : {
+        "cross" : "ioskonf-2027-practical-bundle-cross.png"
+      },
+      "kind" : "projects",
+      "partnerID" : "practical-bundle",
+      "projectIDs" : [
+        "practical-bundle"
+      ]
+    },
+    {
+      "images" : {
+        "cross" : "ioskonf-2027-practical-swift-concurrency-course-cross.png"
+      },
+      "kind" : "projects",
+      "partnerID" : "practical-swift-concurrency-course",
+      "projectIDs" : [
+        "practical-swift-concurrency-course"
+      ]
+    },
+    {
+      "images" : {
         "cross" : "ioskonf-2027-retrorapid-cross.png"
       },
       "kind" : "projects",
